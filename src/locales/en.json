@@ -3553,7 +3553,6 @@
   "onboarding.shell.noBots": "No bots yet",
   "onboarding.hint.approval": "Bots ask before doing anything important.",
   "onboarding.hint.connector": "Sign in once in your browser and every bot can use it.",
-  "onboarding.intake.back": "Back",
   "onboarding.intake.continue": "Continue",
   "onboarding.intake.skip": "Skip for now",
   "onboarding.intake.about.title": "Tell us about your business",

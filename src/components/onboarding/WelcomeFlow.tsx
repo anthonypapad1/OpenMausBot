@@ -240,7 +240,7 @@ export function WelcomeFlow({
   else if (isIntakeBeat(beat)) {
     body = (
       <IntakeSteps beat={beat} answers={answers} setAnswers={setAnswers} job={job} setJob={setJob}
-        onNext={next} onBack={back}
+        onNext={next}
         onSkip={() => { setAnswers(withoutStep(answers, beat)); if (beat === "firstJob") setJob(null); next(); }} />
     );
   } else if (beat === "ai") body = <AiStep tested={tested} hosted={hosted} onChoose={setChosen} onNext={next} />;
@@ -267,7 +267,7 @@ export function WelcomeFlow({
         chief ? "ui-scrim items-center justify-center p-4" : "overflow-y-auto bg-app",
       )}
     >
-      {!chief && !isIntakeBeat(beat) && beat !== "welcome" && steps.length > 1 && <FunnelBar at={index} count={steps.length} onBack={previous} />}
+      {!chief && beat !== "welcome" && steps.length > 1 && <FunnelBar at={index} count={steps.length} onBack={previous} />}
       {chief ? body : <div key={beat} className="relative flex min-h-full w-full flex-col">{body}</div>}
       {/* the bring step says how its own bringing in went; every later step keeps the line at its foot */}
       {!chief && <BringStatus working={beat !== "bring" && bringRun.kind === "working"} line={notesLine ?? (beat !== "bring" && bringRun.kind === "done" ? bringRun.line : null)} />}

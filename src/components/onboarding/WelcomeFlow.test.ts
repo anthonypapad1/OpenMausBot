@@ -214,6 +214,7 @@ describe("Corso's questions", () => {
   it("goes back a step, and Skip for now leaves that step's answers out", async () => {
     await show();
     await throughHello();
+    expect(host.querySelector("[data-funnel-progress]")?.getAttribute("data-funnel-progress"), "the questions are steps of the same run").toBe("3/5");
     await type("Brokerage", "Kentwood");
     await press("Skip for now");
     await tick(100);
