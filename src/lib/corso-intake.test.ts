@@ -28,4 +28,11 @@ describe("corso intake", () => {
     const before = "Brokerage: Old Co\nI work weekends.\nMarket: Denver";
     expect(mergeAboutMe(before, { ...EMPTY_INTAKE, brokerage: "New Co" })).toBe("I work weekends.\nMarket: Denver\nBrokerage: New Co");
   });
+
+  it("replaces what another AI's notes said under the same label, and keeps the rest of what they brought", () => {
+    const before = "- 2026-11-14 · learned by ChatGPT · Brokerage: Summit Realty\n- 2026-11-14 · learned by ChatGPT · Market: Boulder County\n- 2026-11-14 · learned by ChatGPT · Work: Team lead";
+    expect(mergeAboutMe(before, { ...EMPTY_INTAKE, brokerage: "Kentwood", market: "Denver metro" }))
+      .toBe("- 2026-11-14 · learned by ChatGPT · Work: Team lead\nBrokerage: Kentwood\nMarket: Denver metro");
+    expect(mergeAboutMe(before, EMPTY_INTAKE), "a skipped question leaves the brought-in line").toBe(before);
+  });
 });

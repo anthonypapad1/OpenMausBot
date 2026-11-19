@@ -1,5 +1,6 @@
 // Corso's first-run questions (the about, voice and first-job steps in WelcomeFlow) and how their answers
 // reach the bots: as lines in the person's "About me" (profile.aboutMe), which every bot already reads.
+import { LEARNED_PREFIX } from "../../shared/assistant-notes";
 
 export type DealVolume = "1-5" | "6-15" | "16-40" | "40+";
 export type VoiceId = "direct" | "warm" | "casual";
@@ -42,12 +43,19 @@ export function intakeLines(answers: IntakeAnswers): string[] {
   return lines;
 }
 
-/** The person's About me with the intake's lines in it: an answered line replaces the old one with the same label,
- * an unanswered one leaves the old one alone, and everything else the person wrote stays where it was. */
+/** A line's label ("Brokerage:"), also on a fact another AI's notes brought in (`- date · learned by ChatGPT · Brokerage: …`). */
+const labelOf = (line: string) => {
+  const fact = line.replace(LEARNED_PREFIX, "");
+  return fact.slice(0, fact.indexOf(":") + 1);
+};
+
+/** The person's About me with the intake's lines in it: an answered line replaces the old one with the same label, and
+ * every fact brought in from another AI under it, an unanswered one leaves the old one alone, and everything else the
+ * person wrote stays where it was. */
 export function mergeAboutMe(existing: string, answers: IntakeAnswers): string {
   const fresh = intakeLines(answers);
-  const freshLabels = new Set(fresh.map((line) => line.slice(0, line.indexOf(":") + 1)));
-  const kept = existing.split("\n").filter((line) => !freshLabels.has(line.slice(0, line.indexOf(":") + 1)));
+  const freshLabels = new Set(fresh.map(labelOf));
+  const kept = existing.split("\n").filter((line) => !freshLabels.has(labelOf(line)));
   while (kept.length && !kept[kept.length - 1]!.trim()) kept.pop();
   return [...kept, ...fresh].join("\n").replace(/^\n+/, "");
 }
