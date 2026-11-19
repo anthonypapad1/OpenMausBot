@@ -12,6 +12,7 @@ import { json, readBody } from "../harness/http.ts";
 import { IMPORTED_SKILLS_DIR, importedSkillsFor } from "../imported-skills.ts";
 import type { RequestAuth } from "../request-auth.ts";
 import { thisMachine } from "../setup-import.ts";
+import { readMemoryTopic } from "../workspace.ts";
 import { removeTempDir } from "../testing/cleanup.ts";
 import { createSetupImportRoutes } from "./setup-import.ts";
 import { dispatchRoutes } from "./table.ts";
@@ -23,6 +24,7 @@ afterEach(async () => {
   await Promise.all(homes.splice(0).map((home) => removeTempDir(home)));
   rmSync(IMPORTED_SKILLS_DIR, { recursive: true, force: true });
   rmSync(join(DATA_DIR, "skill-state", "imported-skills.json"), { force: true });
+  rmSync(join(DATA_DIR, "skill-state", "imported-memory.json"), { force: true });
 });
 
 const AUTH: Record<string, RequestAuth> = {
@@ -41,6 +43,9 @@ function fixtureHome() {
   };
   put(".claude/skills/pdf/SKILL.md", "---\nname: pdf\ndescription: Works with PDF files.\n---\n\nRead the PDF.\n");
   put(".cursor/mcp.json", JSON.stringify({ mcpServers: { notion: { url: "https://mcp.notion.com/mcp", headers: { Authorization: "Bearer notion_secret" } } } }));
+  put(".claude/CLAUDE.md", "- I list homes in Denver and answer clients within the hour.\n");
+  put("Downloads/corso-notes.md", "---\nformat: corso-notes\nversion: 1\nfrom: ChatGPT\n---\n\n# Memories\n- Likes tea\n");
+  put("Downloads/bank-statement.md", "not for us");
   return home;
 }
 
@@ -67,6 +72,7 @@ async function serve({ local = true, home = fixtureHome(), dataDir, grokMove = f
     mcpConfigBusy: { get: () => busy, set: (value) => { busy = value; } },
     mcpPolicyRefusal: () => undefined,
     persistMcpServers: (next) => { cfg.mcpServers = next; },
+    botExists: (id) => id === bot.id,
     machine: () => ({ ...thisMachine(), home, platform: "darwin", env: {} }),
     ...(dataDir ? { dataDir } : {}),
     grokMove,
@@ -92,7 +98,7 @@ async function serve({ local = true, home = fixtureHome(), dataDir, grokMove = f
 describe("the setup import routes", () => {
   it("hands out what Grok Bot left on this computer only to the owner's own loopback there", async () => {
     const home = fixtureHome();
-    mkdirSync(join(home, "Downloads"));
+    mkdirSync(join(home, "Downloads"), { recursive: true });
     writeFileSync(join(home, "Downloads", "grok-bot-export-drew.json"), "reply");
     const local = await serve({ home });
     for (const auth of ["paired", "service"]) expect((await local.call("GET", "/api/setup-import/grok", { auth })).status, auth).toBe(403);
@@ -166,7 +172,12 @@ describe("the setup import routes", () => {
     const found = await call("GET", "/api/setup-import");
     expect(found.status).toBe(200);
     expect(found.headers.get("cache-control")).toBe("no-store");
-    expect(await found.json()).toEqual({ skills: [{ name: "pdf", source: "claudeCode" }], tools: [{ name: "notion", source: "cursor" }] });
+    const look = await found.json() as { activity: Record<string, number> };
+    expect(look).toMatchObject({
+      skills: [{ name: "pdf", source: "claudeCode" }], tools: [{ name: "notion", source: "cursor" }],
+      memory: [{ source: "claudeCode", files: 1, notes: 1 }],
+    });
+    expect(Object.keys(look.activity).sort()).toEqual(["claudeCode", "cursor"]);
 
     const brought = await call("POST", "/api/setup-import", { body: { skills: true, tools: true } });
     expect(brought.status).toBe(200);
@@ -178,7 +189,7 @@ describe("the setup import routes", () => {
     expect(text).not.toContain("notion_secret");
     expect(importedSkillsFor(bot.id, new Set()).map((skill) => skill.name)).toEqual(["pdf"]);
     expect(cfg.mcpServers).toEqual({ notion: { type: "http", url: "https://mcp.notion.com/mcp", headers: { Authorization: "Bearer notion_secret" }, enabled: false } });
-    expect(await (await call("GET", "/api/setup-import")).json()).toEqual({ skills: [], tools: [] });
+    expect(await (await call("GET", "/api/setup-import")).json()).toMatchObject({ skills: [], tools: [], memory: [{ source: "claudeCode" }] });
 
     expect(await (await call("GET", "/api/setup-import/other")).json()).toEqual({ from: "next handler" });
     expect((await call("DELETE", "/api/setup-import")).status).toBe(405);
@@ -194,7 +205,33 @@ describe("the setup import routes", () => {
     expect((await call("POST", "/api/setup-import", { body: {} })).status).toBe(400);
     expect((await call("POST", "/api/setup-import", { body: { skills: false, tools: false } })).status).toBe(400);
     expect((await call("POST", "/api/setup-import", { body: { skills: true, instructions: true } })).status).toBe(400);
+    expect((await call("POST", "/api/setup-import", { body: { skills: true, sources: ["windsurf"] } })).status).toBe(400);
     expect((await call("POST", "/api/setup-import", { body: { skills: "yes" } })).status).toBe(400);
     expect((await call("POST", "/api/setup-import", { body: "skills=true", type: "text/plain" })).status).toBe(415);
+  });
+
+  it("brings a tool's memory into one of the person's bots, and no other", async () => {
+    const { call, bot } = await serve();
+    expect((await call("POST", "/api/setup-import", { body: { memory: true } })).status).toBe(400);
+    expect((await call("POST", "/api/setup-import", { body: { memory: true, memoryBot: "someone-elses" } })).status).toBe(400);
+    const brought = await call("POST", "/api/setup-import", { body: { memory: true, memoryBot: bot.id, sources: ["claudeCode"] } });
+    expect(await brought.json()).toEqual({ memory: { added: 1, sources: ["claudeCode"], failed: false } });
+    expect(readMemoryTopic(bot.id, "imported-claude-code.md")).toContain("answer clients within the hour");
+    expect(((await (await call("GET", "/api/setup-import")).json()) as { memory?: unknown }).memory).toBeUndefined();
+  });
+
+  it("hands the notes file in Downloads only to the owner's own loopback, and only one saved after the copy", async () => {
+    const { call } = await serve();
+    for (const auth of ["paired", "service"]) expect((await call("GET", `/api/setup-import/notes?since=${Date.now() - 60_000}`, { auth })).status).toBe(403);
+    expect((await call("GET", "/api/setup-import/notes")).status).toBe(400);
+    expect((await call("POST", "/api/setup-import/notes", { body: {} })).status).toBe(405);
+    const found = await call("GET", `/api/setup-import/notes?since=${Date.now() - 60_000}`);
+    expect(found.headers.get("cache-control")).toBe("no-store");
+    const { files } = await found.json() as { files: Array<{ name: string; text: string }> };
+    expect(files.map((file) => file.name)).toEqual(["corso-notes.md"]);
+    expect(files[0]!.text).toContain("format: corso-notes");
+    expect((await (await call("GET", `/api/setup-import/notes?since=${Date.now() + 60_000}`)).json())).toEqual({ files: [] });
+    const hosted = await serve({ local: false });
+    expect((await hosted.call("GET", `/api/setup-import/notes?since=${Date.now() - 60_000}`)).status).toBe(403);
   });
 });

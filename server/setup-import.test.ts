@@ -56,9 +56,11 @@ function machineFor(home: string, platform: NodeJS.Platform = "darwin", env: Rec
     readlink: (path) => seen("readlink", path, real.readlink(path)),
     realpath: (path) => seen("realpath", path, real.realpath(path)),
     read: (path, max, follow, oneLink) => seen("read", path, real.read(path, max, follow, oneLink)),
+    mtime: (path) => seen("mtime", path, real.mtime(path)),
   };
   const machine: SetupMachine = { home, platform, env, fs };
-  return { machine, ops, touched: () => ops.map((entry) => entry.path) };
+  // a change time is looked at, never opened: what was touched is what was listed, opened or followed
+  return { machine, ops, touched: () => ops.filter((entry) => entry.op !== "mtime").map((entry) => entry.path) };
 }
 
 function hostFor(options: { servers?: Record<string, unknown>; refuse?: string[]; claudeUserMcp?: boolean; saveFails?: boolean } = {}) {
@@ -643,6 +645,19 @@ describe("bringing MCP servers in", () => {
     const skills = applySetupImport(machine, host, { skills: true, tools: true });
     expect(skills.skills).toEqual({ added: [], present: [], skipped: [{ name: "lint", reason: "failed" }, { name: "pdf", reason: "failed" }], filesLeftOut: 0, review: [] });
     expect(skills.tools?.added).toHaveLength(9);
+  });
+
+  it("brings in only the chosen tools' skills and servers when told which", () => {
+    const home = fixtureHome();
+    plantTools(home);
+    plantSkills(home);
+    const { machine } = machineFor(home);
+    const { host, servers } = hostFor();
+    const result = applySetupImport(machine, host, { skills: true, tools: true, sources: ["cursor", "codex"] });
+    expect(result.skills?.added).toEqual(["review"]);
+    expect(result.tools?.added).toEqual(["linear-mcp", "notion", "sentry", "figma"]);
+    expect(Object.keys(servers())).not.toContain("filesystem");
+    expect(Object.keys(servers())).not.toContain("github");
   });
 
   it("waits out another MCP change instead of interleaving with it", () => {
