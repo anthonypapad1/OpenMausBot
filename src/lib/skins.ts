@@ -21,16 +21,18 @@ export const SKINS: readonly Skin[] = [
   { id: "linen", name: "Linen", tagline: "Clean daylight with a restrained navy accent." },
   { id: "dusk", name: "Dusk", tagline: "Muted plum after dark, calm and low-key." },
   { id: "daylight", name: "Daylight", tagline: "Midnight in reverse. Near-white, ink-black bubbles." },
-  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green. The Corso look." },
+  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green." },
   { id: "pop", name: "Pop", tagline: "Cream paper, thick ink outlines, hard shadows. Chunky and cheerful." },
   { id: "halloween", name: "Halloween", tagline: "Plum after dark, lit in pumpkin orange. Bats optional." },
   { id: "diwali", name: "Diwali", tagline: "Indigo night, lit in marigold and diya gold. Fireworks optional." },
   { id: "aurora", name: "Aurora", tagline: "Near-black, crossed by a band of green light. Glass on top." },
+  { id: "corso", name: "Corso", tagline: "Bone paper and verdigris. The Corso look." },
+  { id: "corso-night", name: "Corso Night", tagline: "Corso after dark. Slate and soft verdigris." },
 ];
 
 /** "system" follows the OS between the light and dark skins below; anything else pins one skin. */
 export type SkinChoice = SkinId | "system";
-export const THEME_SKINS = { light: "daylight", dark: "midnight" } as const satisfies Record<"light" | "dark", SkinId>;
+export const THEME_SKINS = { light: "corso", dark: "corso-night" } as const satisfies Record<"light" | "dark", SkinId>;
 
 export const DEFAULT_SKIN_CHOICE: SkinChoice = "system";
 export const PRIOR_INSTALL_SKIN: SkinId = "midnight";
