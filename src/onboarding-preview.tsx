@@ -1,21 +1,21 @@
-// Dev-only gallery of the first run's two screens, served at /onboarding-preview.html; not in the packaged app.
+// Dev-only gallery of the first run's screens, served at /onboarding-preview.html; not in the packaged app.
 // It answers the app's own requests from a fixture, so it needs no server and never touches one.
 import { Component, StrictMode, useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { DesktopCapabilitiesProvider } from "@/components/DesktopCapabilities";
 import { WelcomeFlow } from "@/components/onboarding/WelcomeFlow";
 import { Select } from "@/components/Select";
-import { EMPTY_ONBOARDING, type BeatId } from "@/lib/onboarding";
+import { BEAT_ORDER, EMPTY_ONBOARDING, type BeatId } from "@/lib/onboarding";
 import { SKINS, type SkinId } from "@/lib/skins";
 import { StoreProvider } from "@/state/store";
 import "./styles.css";
 
-/** ?screen=chief&ai=0&bots=3&skin=daylight&reduced=1 opens any state directly; ?w=1338&h=870 sizes the stage. */
+/** ?screen=about|tools|voice|firstJob|chief&ai=0&bots=3&skin=daylight&reduced=1 opens any state directly; ?w=1338&h=870 sizes the stage. */
 function fromUrl() {
   const params = new URLSearchParams(location.search);
   const skin = params.get("skin") as SkinId | null;
   return {
-    screen: (params.get("screen") === "chief" ? "chief" : "meet") as BeatId,
+    screen: (BEAT_ORDER.find((beat) => beat === params.get("screen")) ?? "meet") as BeatId,
     skin: skin && SKINS.some((s) => s.id === skin) ? skin : ("midnight" as SkinId),
     ai: params.get("ai") !== "0",
     bots: Math.max(0, Math.min(20, Number(params.get("bots")) || 0)),
@@ -89,6 +89,10 @@ function Preview() {
         <label className="flex items-center gap-1.5">Screen
           <Select size="sm" value={screen} onChange={(e) => { setScreen(e.target.value as BeatId); setRun((r) => r + 1); }}>
             <option value="meet">Meet</option>
+            <option value="about">About your business</option>
+            <option value="tools">Tools</option>
+            <option value="voice">Voice</option>
+            <option value="firstJob">First job</option>
             <option value="chief">Chief of Staff</option>
           </Select>
         </label>

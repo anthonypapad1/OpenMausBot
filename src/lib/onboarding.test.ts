@@ -273,9 +273,10 @@ describe("persistence patches", () => {
 });
 
 describe("the first run's screens", () => {
-  it("is two screens, meeting the app and then the Chief of Staff, whatever this computer has", () => {
-    expect(beatsFor({})).toEqual(["meet", "chief"]);
-    expect(beatsFor({ hosted: false })).toEqual(["meet", "chief"]);
+  it("meets the app, asks Corso's questions, then brings in the Chief of Staff, whatever this computer has", () => {
+    expect(beatsFor({})).toEqual(["meet", "about", "tools", "voice", "firstJob", "chief"]);
+    expect(beatsFor({ hosted: false })).toEqual(["meet", "about", "tools", "voice", "firstJob", "chief"]);
+    expect(resumeBeat(beatsFor({}), "tools")).toBe("tools");
   });
 
   it("gives a hosted place's admin only the first: their team's bots and Chief are set up already", () => {

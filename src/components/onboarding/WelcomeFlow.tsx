@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { setEmailGateDone, track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
+import { EMPTY_INTAKE, intakeAnswered, mergeAboutMe, type FirstJobId, type IntakeAnswers } from "@/lib/corso-intake";
 import { chiefStepFits, myDefaultBot, setChiefStepOpen, useViewerEmail } from "@/lib/default-bot";
+import { appendComposerDraft } from "@/lib/drafts";
+import { t } from "@/lib/i18n";
 import { beatsFor, completionPatch, firstRunPatch, markWelcomeFinished, resumeBeat, showWelcome, type BeatId } from "@/lib/onboarding";
 import { clearWelcomeDraft, readWelcomeDraft, saveWelcomeDraft } from "@/lib/welcome-draft";
 import { api, useStore } from "@/state/store";
 import { ChiefIntro } from "./ChiefIntro";
+import { FIRST_JOB_KEYS, IntakeSteps, isIntakeBeat, withoutStep } from "./IntakeSteps";
 import { MeetScreen } from "./MeetScreen";
 import { localDesktopPage } from "./WelcomeGate";
 
 const LEAVE_MS = 100;
+
 const FADE_MS = 150;
 
 type Config = ReturnType<typeof useStore>["state"]["config"];
@@ -46,8 +51,9 @@ function trapTab(event: ReactKeyboardEvent<HTMLElement>, root: HTMLElement | nul
   }
 }
 
-/** The first run: two screens, then the chat. Meeting the app (with an AI to connect when none works), then the Chief of
- * Staff over the app itself. Its end is the chat with the bot chosen there (`onDone`). */
+/** The first run, then the chat. Meeting the app (with an AI to connect when none works), Corso's questions about the
+ * person's business (IntakeSteps), then the Chief of Staff over the app itself. Its end is the chat with the bot chosen
+ * there (`onDone`), with the first job picked in the questions waiting in its message box. */
 export function WelcomeFlow({
   onDone,
   replay = false,
@@ -72,6 +78,12 @@ export function WelcomeFlow({
   const finishing = useRef(false);
   const record = useRef(state.config?.onboarding);
   record.current = state.config?.onboarding;
+  const [answers, setAnswers] = useState<IntakeAnswers>(EMPTY_INTAKE);
+  const [job, setJob] = useState<FirstJobId | null>(null);
+  const firstJob = useRef<FirstJobId | null>(null);
+  firstJob.current = job;
+  const bots = useRef(state.bots);
+  bots.current = state.bots;
 
   useEffect(() => {
     track("onboarding_step", { step: beat, replay });
@@ -94,6 +106,9 @@ export function WelcomeFlow({
       if (!replay && !embedded) markWelcomeFinished();
       if (keepsDraft) clearWelcomeDraft();
       onDone(botId);
+      // The first job waits in the chosen bot's message box, for the person to send (Composer's draft id).
+      const lead = bots.current.find((bot) => bot.id === botId) ?? maus;
+      if (firstJob.current && lead) appendComposerDraft(`bot:${lead.id}:${lead.threadId}`, t(FIRST_JOB_KEYS[firstJob.current]));
       try {
         const patch = replay ? completionPatch() : firstRunPatch(record.current, new Date());
         const config = await api("/api/config", { method: "PUT", body: JSON.stringify(patch), signal: AbortSignal.timeout(10_000) });
@@ -101,23 +116,45 @@ export function WelcomeFlow({
       } catch {
       }
     },
-    [beat, dispatch, onDone, replay, embedded, keepsDraft, hosted],
+    [beat, dispatch, onDone, replay, embedded, keepsDraft, hosted, maus],
   );
 
-  // The first screen fades away before the Chief step comes up; a timer moves on, since a hidden window runs no
-  // animation to its end.
+  // The answers join the person's About me once the questions are behind them; a failed save leaves the run going.
+  const saveIntake = useCallback(async () => {
+    if (!intakeAnswered(answers)) return;
+    const aboutMe = mergeAboutMe(state.config?.profile?.aboutMe ?? "", answers);
+    try {
+      const config = await api<NonNullable<Config>>("/api/config", { method: "PUT", body: JSON.stringify({ profile: { aboutMe } }), signal: AbortSignal.timeout(10_000) });
+      dispatch({ type: "configStatus", config });
+    } catch {
+    }
+  }, [answers, state.config?.profile?.aboutMe, dispatch]);
+
+  // Each screen fades away before the next comes up; a timer moves on, since a hidden window runs no animation to its
+  // end. The Chief step comes only when it fits; without it the questions end the run.
   const toChief = beats.includes("chief") && chiefStepFits(state.bots, maus);
   const leaving = useRef(false);
-  const next = useCallback(() => {
-    if (finishing.current || leaving.current) return;
-    if (!toChief) return void finish("completed", null);
+  const go = useCallback((to: BeatId) => {
     leaving.current = true;
     root.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: LEAVE_MS, easing: "ease-in", fill: "forwards" });
     setTimeout(() => {
       root.current?.getAnimations().forEach((animation) => animation.cancel());
-      setBeat("chief");
+      leaving.current = false;
+      setBeat(to);
     }, LEAVE_MS);
-  }, [toChief, finish]);
+  }, []);
+  const next = useCallback(() => {
+    if (finishing.current || leaving.current) return;
+    if (beat === "firstJob") void saveIntake();
+    const to = beats[beats.indexOf(beat) + 1];
+    if (!to || (to === "chief" && !toChief)) return void finish("completed", null);
+    go(to);
+  }, [beat, beats, toChief, finish, go, saveIntake]);
+  const back = useCallback(() => {
+    if (finishing.current || leaving.current) return;
+    const to = beats[beats.indexOf(beat) - 1];
+    if (to) go(to);
+  }, [beat, beats, go]);
 
   const chief = beat === "chief";
   useEffect(() => {
@@ -133,17 +170,17 @@ export function WelcomeFlow({
   }, []);
 
   useEffect(() => {
-    if (beat === "meet") root.current?.focus({ preventScroll: true });
+    if (beat === "meet" || beat === "tools" || beat === "voice" || beat === "firstJob") root.current?.focus({ preventScroll: true });
   }, [beat]);
 
   // Escape moves on as Later does; Enter on the screen itself presses Next while it can be pressed.
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (beat === "meet" && event.key === "Escape") {
+    if ((beat === "meet" || isIntakeBeat(beat)) && event.key === "Escape") {
       event.preventDefault();
       next();
       return;
     }
-    if (beat === "meet" && event.key === "Enter" && event.target === root.current) {
+    if ((beat === "meet" || isIntakeBeat(beat)) && event.key === "Enter" && event.target === root.current) {
       event.preventDefault();
       root.current.querySelector<HTMLButtonElement>("[data-primary]:not([disabled])")?.click();
       return;
@@ -168,6 +205,10 @@ export function WelcomeFlow({
     >
       {chief ? (
         <ChiefIntro replay={replay} onLeave={fadeScrim} onDone={(botId) => void finish("completed", botId)} />
+      ) : isIntakeBeat(beat) ? (
+        <IntakeSteps beat={beat} answers={answers} setAnswers={setAnswers} job={job} setJob={setJob}
+          onNext={next} onBack={back}
+          onSkip={() => { setAnswers(withoutStep(answers, beat)); if (beat === "firstJob") setJob(null); next(); }} />
       ) : (
         <MeetScreen hosted={hosted} onNext={next} />
       )}

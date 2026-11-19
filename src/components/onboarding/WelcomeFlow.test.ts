@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
-// The first run: two screens, then the chat. Meeting the app (and connecting an AI when none works), then the Chief of
-// Staff over the app; what it saves, where it lands, and what a reload or a replay does.
+// The first run, then the chat. Meeting the app (and connecting an AI when none works), Corso's questions, then the Chief
+// of Staff over the app; what it saves, where it lands, and what a reload or a replay does.
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,8 +12,9 @@ import { saveWelcomeDraft } from "@/lib/welcome-draft";
 import type { InstanceInfo } from "@/state/store";
 
 const f = vi.hoisted(() => ({ state: {} as Record<string, unknown>, dispatch: vi.fn(), api: vi.fn(), landed: vi.fn(), onDone: vi.fn(),
-  checks: [] as string[] }));
+  checks: [] as string[], draft: vi.fn() }));
 vi.mock("@/state/store", () => ({ useStore: () => ({ state: f.state, dispatch: f.dispatch }), api: f.api }));
+vi.mock("@/lib/drafts", () => ({ appendComposerDraft: f.draft }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn(), setEmailGateDone: vi.fn() }));
 vi.mock("@/components/Avatar", () => ({ BotAvatar: () => null, MausAvatar: () => null }));
 vi.mock("@/components/mascot-clock", () => ({ usePrefersReducedMotion: () => true }));
@@ -59,11 +60,27 @@ const key = async (name: string) => {
 const show = async (extra: Record<string, unknown> = {}) => {
   await act(async () => { root.render([createElement(Watch, { key: "w" }), createElement(WelcomeFlow, { key: "f", onDone: f.onDone, ...extra })]); });
 };
-/** Next, the first screen's 100 ms fade, and the Chief dialog's input guard. */
+/** Corso's four questions, each passed with Continue (or Skip for now) and its 100 ms fade. */
+const throughQuestions = async (label = "Continue") => {
+  for (let i = 0; i < 4; i++) {
+    await press(label);
+    await tick(100);
+  }
+};
+/** Next, the first screen's 100 ms fade, the questions left unanswered, and the Chief dialog's input guard. */
 const toChief = async (label = "Next") => {
   await press(label);
   await tick(100);
+  await throughQuestions();
   await tick(CHIEF_GUARD_MS);
+};
+const pick = async (label: string) => { await act(async () => { [...host.querySelectorAll("button")].find((node) => node.textContent?.includes(label))!.click(); }); };
+const type = async (label: string, value: string) => {
+  const input = [...host.querySelectorAll("label")].find((node) => node.textContent?.startsWith(label))!.querySelector("input")!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
 };
 const saved = () => f.api.mock.calls.filter(([path, init]) => path === "/api/config" && init?.method === "PUT").map(([, init]) => JSON.parse(init.body));
 const memoryStorage = () => {
@@ -80,6 +97,7 @@ beforeEach(() => {
   f.dispatch.mockReset();
   f.landed.mockReset();
   f.onDone.mockReset();
+  f.draft.mockReset();
   f.api.mockReset();
   f.checks = [];
   f.api.mockImplementation(async (path: string, init?: { body?: string }) => {
@@ -100,7 +118,7 @@ afterEach(async () => {
 });
 
 describe("a new install's first run", () => {
-  it("is two screens with an AI already working: Next, then Create, and it lands in the Chief's chat", async () => {
+  it("with an AI already working: Next, the questions, then Create, and it lands in the Chief's chat", async () => {
     await show();
     expect(host.querySelector("h1")?.textContent).toBe("Meet Corso");
     expect(host.querySelector("[data-demo-composer]")?.textContent, "reduced motion shows the whole sentence").toContain("Hand off any task to your team of bots");
@@ -110,6 +128,8 @@ describe("a new install's first run", () => {
     await press("Next");
     expect(host.querySelector("[data-welcome]")?.getAttribute("data-welcome"), "the first screen fades out first").toBe("meet");
     await tick(100);
+    expect(host.querySelector("h1")?.textContent).toBe("Tell us about your business");
+    await throughQuestions();
     expect(host.querySelector("[role=dialog]")?.textContent).toContain("Introducing your Chief of Staff");
     expect(host.querySelector("[data-welcome]")!.className).toContain("ui-scrim");
     expect(chiefStep, "the app behind it is the empty shell").toBe(true);
@@ -123,7 +143,8 @@ describe("a new install's first run", () => {
     expect(f.onDone).toHaveBeenCalledExactlyOnceWith("maus");
     expect(introStaged("maus"), "its first messages arrive one at a time").toBe(true);
     await act(async () => {});
-    expect(saved()).toEqual([{ onboarding: expect.objectContaining({ version: WELCOME_VERSION, hintsSeen: [MET_CHIEF_HINT] }) }]);
+    expect(f.draft, "no first job picked").not.toHaveBeenCalled();
+    expect(saved(), "no answers, so About me stays as it was").toEqual([{ onboarding: expect.objectContaining({ version: WELCOME_VERSION, hintsSeen: [MET_CHIEF_HINT] }) }]);
   });
 
   it("counts an AI once it answered one tiny test message, and never before", async () => {
@@ -140,11 +161,60 @@ describe("a new install's first run", () => {
   });
 });
 
+describe("Corso's questions", () => {
+  it("saves the answers into About me, keeps what was there, and leaves the first job in the Chief's message box", async () => {
+    f.state = { ...f.state, config: { onboarding: EMPTY_ONBOARDING, profile: { name: "", aboutMe: "I have two kids." } } };
+    await show();
+    await press("Next");
+    await tick(100);
+    await type("Brokerage", "Kentwood");
+    await type("Where you work", "Denver");
+    await pick("6-15");
+    await press("Continue");
+    await tick(100);
+    expect(host.querySelector("h1")?.textContent).toBe("Which tools do you use?");
+    await pick("CTM eContracts");
+    await pick("Gmail");
+    await press("Continue");
+    await tick(100);
+    await pick("Straight to the point");
+    await press("Continue");
+    await tick(100);
+    await pick("Chase the signatures");
+    await press("Continue");
+    await act(async () => {});
+    expect(saved()[0]).toEqual({ profile: { aboutMe: "I have two kids.\nBrokerage: Kentwood\nMarket: Denver\nDeals open at a time: 6-15\nTools I use: CTM eContracts, Gmail\nHow to talk to me: short and to the point, facts first" } });
+    await tick(100);
+    await tick(CHIEF_GUARD_MS);
+    await press("Create Chief of Staff");
+    await tick(CHIEF_FADE_MS);
+    expect(f.draft).toHaveBeenCalledExactlyOnceWith("bot:maus:t", "Chase the signatures I'm still waiting on");
+  });
+
+  it("goes back a step, and Skip for now leaves that step's answers out", async () => {
+    await show();
+    await press("Next");
+    await tick(100);
+    await type("Brokerage", "Kentwood");
+    await press("Skip for now");
+    await tick(100);
+    expect(host.querySelector("h1")?.textContent).toBe("Which tools do you use?");
+    await press("Back");
+    await tick(100);
+    expect(host.querySelector("h1")?.textContent).toBe("Tell us about your business");
+    expect(host.querySelector("input")!.value, "skipped, so the typed brokerage is gone").toBe("");
+    await throughQuestions("Skip for now");
+    await act(async () => {});
+    expect(saved().filter((body) => "profile" in body), "nothing answered, nothing saved").toEqual([]);
+  });
+});
+
 describe("the Chief step", () => {
   const finishesAtNext = async () => {
     await show();
     await press("Next");
     await tick(100);
+    await throughQuestions();
     expect(text()).not.toContain("Introducing your Chief of Staff");
     expect(f.onDone).toHaveBeenCalledExactlyOnceWith(null);
     expect(chiefStep).toBe(false);
@@ -308,7 +378,7 @@ describe("with no AI working yet", () => {
     await act(async () => { host.querySelector("[data-connect-ai]")!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); });
     await key("Escape");
     await tick(100);
-    expect(text()).toContain("Introducing your Chief of Staff");
+    expect(text()).toContain("Tell us about your business");
   });
 });
 
