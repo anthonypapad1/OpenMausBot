@@ -96,23 +96,25 @@ export function hintSeenPatch(
 }
 
 
-export type BeatId = "meet" | "about" | "voice" | "firstJob" | "chief";
+export type BeatId = "welcome" | "ai" | "bring" | "about" | "voice" | "firstJob" | "chief";
 
 /** Every screen the first run can show, in the order it shows them. */
-export const BEAT_ORDER: readonly BeatId[] = ["meet", "about", "voice", "firstJob", "chief"];
+export const BEAT_ORDER: readonly BeatId[] = ["welcome", "ai", "bring", "about", "voice", "firstJob", "chief"];
 
-/** Corso's questions about the person's business (corso-intake.ts), between meeting the app and its Chief of Staff. */
+/** Corso's questions about the person's business (corso-intake.ts), between bringing in what they use and the Chief. */
 export const INTAKE_BEATS: readonly BeatId[] = ["about", "voice", "firstJob"];
 
-/** Meeting the app (and connecting an AI when none works), Corso's questions, then the Chief of Staff. A hosted place's
- * admin only meets the app: their team's bots, Chief and answers are already set up. */
-export function beatsFor(options: { hosted?: boolean }): BeatId[] {
-  return options.hosted ? ["meet"] : [...BEAT_ORDER];
+/** The hello, an AI, what this computer's other AI apps hold and the prompt for AIs online (`bring`: only in the
+ * desktop app on its own computer), Corso's questions, then the Chief of Staff. A hosted place's admin only meets the
+ * app and its AI: their team's bots, Chief and answers are already set up. */
+export function beatsFor(options: { hosted?: boolean; bring?: boolean }): BeatId[] {
+  if (options.hosted) return ["welcome", "ai"];
+  return BEAT_ORDER.filter((beat) => beat !== "bring" || options.bring === true);
 }
 
 /** Where a reloaded first run opens: the saved screen while it is offered, else the first. */
 export function resumeBeat(beats: readonly BeatId[], saved: BeatId | undefined): BeatId {
-  return saved && beats.includes(saved) ? saved : beats[0] ?? "meet";
+  return saved && beats.includes(saved) ? saved : beats[0] ?? "welcome";
 }
 
 export function onboardingCloudOffered(record: OnboardingStatus | undefined): boolean {

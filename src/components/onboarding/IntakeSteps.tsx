@@ -1,4 +1,4 @@
-// Corso's three first-run questions (about, voice, first job), shown by WelcomeFlow between MeetScreen and the
+// Corso's three first-run questions (about, voice, first job), shown by WelcomeFlow between the bring step and the
 // Chief of Staff. The answers are plain state here; WelcomeFlow saves them into About me (corso-intake.ts).
 import type { ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";

@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
 import { BotAvatar, MausAvatar } from "@/components/Avatar";
 import { usePrefersReducedMotion } from "@/components/mascot-clock";
-import { brand, productName } from "@/lib/brand";
+import { brand } from "@/lib/brand";
 import { cn } from "@/lib/cn";
 import { DEFAULT_BOT_NAME, myDefaultBot, useViewerEmail } from "@/lib/default-bot";
 import { t } from "@/lib/i18n";
@@ -68,9 +68,10 @@ export function StepFrame({ art, title, sub, children, footer, wide = false }: {
   );
 }
 
-/** A step's small picture: a lucide icon at the step's size, in a soft disc. */
+/** A step's small picture: a bare lucide icon (STEP_ICON px) in the supporting ink. */
+export const STEP_ICON = 32;
 export function StepIcon({ children }: { children: ReactNode }) {
-  return <span className="grid size-14 place-items-center rounded-full bg-ink/[0.05] text-ink-secondary">{children}</span>;
+  return <span className="flex text-ink-secondary">{children}</span>;
 }
 
 /** The app's own face: the brand's logo where it has one, else the person's first bot, else the default mascot. */
@@ -90,7 +91,7 @@ export function WelcomeStep({ onStart }: { onStart: () => void }) {
     <div className="flex min-h-full w-full flex-col">
       <StepFrame
         art={<AppFace size={72} mood="excited" />}
-        title={t("funnel.welcome.title", { app: productName() })}
+        title={t("funnel.welcome.title")}
         sub={t("funnel.welcome.sub")}
         footer={<button type="button" data-primary="" data-funnel-start="" autoFocus onClick={onStart} className={PRIMARY}>{t("funnel.welcome.start")}</button>}
       />

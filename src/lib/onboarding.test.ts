@@ -273,21 +273,26 @@ describe("persistence patches", () => {
 });
 
 describe("the first run's screens", () => {
-  it("meets the app, asks Corso's questions, then brings in the Chief of Staff, whatever this computer has", () => {
-    expect(beatsFor({})).toEqual(["meet", "about", "voice", "firstJob", "chief"]);
-    expect(beatsFor({ hosted: false })).toEqual(["meet", "about", "voice", "firstJob", "chief"]);
+  it("says hello, connects an AI, asks Corso's questions, then brings in the Chief of Staff", () => {
+    expect(beatsFor({})).toEqual(["welcome", "ai", "about", "voice", "firstJob", "chief"]);
+    expect(beatsFor({ hosted: false })).toEqual(["welcome", "ai", "about", "voice", "firstJob", "chief"]);
     expect(resumeBeat(beatsFor({}), "voice")).toBe("voice");
   });
 
-  it("gives a hosted place's admin only the first: their team's bots and Chief are set up already", () => {
-    expect(beatsFor({ hosted: true })).toEqual(["meet"]);
+  it("brings in what this computer's other AI apps hold, before the questions, only where it can read them", () => {
+    expect(beatsFor({ bring: true })).toEqual(["welcome", "ai", "bring", "about", "voice", "firstJob", "chief"]);
+    expect(resumeBeat(beatsFor({ bring: false }), "bring"), "a browser elsewhere starts over").toBe("welcome");
+  });
+
+  it("gives a hosted place's admin only the hello and its AI: their team's bots and Chief are set up already", () => {
+    expect(beatsFor({ hosted: true, bring: true })).toEqual(["welcome", "ai"]);
   });
 
   it("resumes the saved screen while it is offered, else starts at the first", () => {
     expect(resumeBeat(beatsFor({}), "chief")).toBe("chief");
-    expect(resumeBeat(beatsFor({}), undefined)).toBe("meet");
-    expect(resumeBeat(beatsFor({ hosted: true }), "chief")).toBe("meet");
-    expect(resumeBeat(beatsFor({}), "engines" as never), "a step from the longer welcome").toBe("meet");
+    expect(resumeBeat(beatsFor({}), undefined)).toBe("welcome");
+    expect(resumeBeat(beatsFor({ hosted: true }), "chief")).toBe("welcome");
+    expect(resumeBeat(beatsFor({}), "meet" as never), "a step from the earlier welcome").toBe("welcome");
   });
 });
 
