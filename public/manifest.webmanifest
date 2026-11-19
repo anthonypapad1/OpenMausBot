@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "OpenMausBot",
-  "short_name": "OpenMausBot",
+  "name": "Corso",
+  "short_name": "Corso",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

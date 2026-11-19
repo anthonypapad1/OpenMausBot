@@ -1,12 +1,14 @@
 {
   "id": "openmausbot-docs",
-  "name": "OpenMausBot Docs",
+  "name": "Corso Docs",
   "version": "0.1.0",
-  "description": "Answer how OpenMausBot itself is configured, from this install's files and the app's own docs.",
+  "description": "Answer how Corso itself is configured, from this install's files and the app's own docs.",
   "defaultEnabled": true,
   "triggerTerms": [
+    "corso",
     "openmausbot",
     "open mausbot",
+    "corso settings",
     "mausbot settings",
     "mausbot config",
     "mausbot 设置",

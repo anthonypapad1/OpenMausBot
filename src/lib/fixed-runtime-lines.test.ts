@@ -104,17 +104,17 @@ describe("report receipts", () => {
   it.each([undefined, 1, 120_000])("keeps complete wait lines and singular/plural minutes (%s)", (retryAfterMs) => {
     const outcome = { ok: false as const, retry: true as const, why: "limited" as const, ...(retryAfterMs ? { retryAfterMs } : {}) };
     const minutes = retryAfterMs ? Math.ceil(retryAfterMs / 60_000) : 0;
-    expect(notYetLine(outcome, "en")).toBe(`Not sent yet: the MausBot team takes only a few reports an hour from each app. The report is saved and goes on its own${minutes ? ` in about ${minutes} minute${minutes === 1 ? "" : "s"}` : " as soon as it can"}, so there is no need to send it again.`);
+    expect(notYetLine(outcome, "en")).toBe(`Not sent yet: the Corso team takes only a few reports an hour from each app. The report is saved and goes on its own${minutes ? ` in about ${minutes} minute${minutes === 1 ? "" : "s"}` : " as soon as it can"}, so there is no need to send it again.`);
     expect(notYetLine(outcome, "pt-br")).toContain(minutes ? `em cerca de ${minutes} minuto${minutes === 1 ? "" : "s"}` : "assim que possível");
   });
 
   it("localizes offline and refusal lines, with the diagnostic kept as data", () => {
-    expect(notYetLine({ ok: false, retry: true, why: "offline" }, "pt-br")).toContain("não foi possível conectar ao servidor da equipe do MausBot");
-    expect(notYetLine({ ok: false, retry: true, why: "server" }, "pt-br")).toContain("o servidor da equipe do MausBot não pôde receber o relatório agora");
-    expect(refusedLine("too large. \n", "en")).toBe("The MausBot team's server refused this bug report, so nothing was sent: too large.");
-    expect(refusedLine("too large. \n", "pt-br")).toBe("O servidor da equipe do MausBot recusou este relatório de problema, então nada foi enviado: too large.");
-    expect(fullLine(40, "pt-br")).toBe("Não foi enviado: já há 40 relatórios de problemas na fila para a equipe do MausBot. Aguarde o envio e digite @devs novamente.");
-    expect(droppedLine("pt-br")).toBe("Um relatório de problema desta conversa ficou uma semana sem chegar à equipe do MausBot e, por isso, foi descartado. Digite @devs novamente para enviar outro.");
+    expect(notYetLine({ ok: false, retry: true, why: "offline" }, "pt-br")).toContain("não foi possível conectar ao servidor da equipe do Corso");
+    expect(notYetLine({ ok: false, retry: true, why: "server" }, "pt-br")).toContain("o servidor da equipe do Corso não pôde receber o relatório agora");
+    expect(refusedLine("too large. \n", "en")).toBe("The Corso team's server refused this bug report, so nothing was sent: too large.");
+    expect(refusedLine("too large. \n", "pt-br")).toBe("O servidor da equipe do Corso recusou este relatório de problema, então nada foi enviado: too large.");
+    expect(fullLine(40, "pt-br")).toBe("Não foi enviado: já há 40 relatórios de problemas na fila para a equipe do Corso. Aguarde o envio e digite @devs novamente.");
+    expect(droppedLine("pt-br")).toBe("Um relatório de problema desta conversa ficou uma semana sem chegar à equipe do Corso e, por isso, foi descartado. Digite @devs novamente para enviar outro.");
   });
 });
 

@@ -18,6 +18,6 @@ describe("serverLine", () => {
   });
 
   it("leaves a {name} it was given no value for as it is", () => {
-    expect(serverLine("en", "server.reports.refused", {})).toBe("The MausBot team's server refused this bug report, so nothing was sent: {detail}.");
+    expect(serverLine("en", "server.reports.refused", {})).toBe("The Corso team's server refused this bug report, so nothing was sent: {detail}.");
   });
 });

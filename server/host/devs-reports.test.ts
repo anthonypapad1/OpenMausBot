@@ -24,7 +24,7 @@ function fixture(options: { dataDir?: string; sections?: string[]; outcomes?: Se
   profileEmail?: string; automated?: boolean; lineLanguage?: DevsReportsDeps["lineLanguage"]; appVersion?: string; clock?: number;
   /** The conversations, kept across a restart (another fixture on the same data). */
   threads?: Map<string, Message[]>;
-  /** The MausBot team's answer to each question about this app's reports; none: no answer (offline). */
+  /** The Corso team's answer to each question about this app's reports; none: no answer (offline). */
   answer?: (question: ReportStatusQuestion) => ReportStatusAnswer | null } = {}) {
   const dataDir = options.dataDir ?? mkdtempSync(join(tmpdir(), "omb-devs-reports-"));
   if (!options.dataDir) dirs.push(dataDir);
@@ -164,7 +164,7 @@ describe("a message that tags @devs", () => {
     expect(fx.reports.note("rover-main", false)).toBe("");
     fx.busy.delete("rover-main");
     await fx.settle();
-    expect(fx.sent[1]!.description).toContain("the bot's engine cannot use OpenMausBot's tools");
+    expect(fx.sent[1]!.description).toContain("the bot's engine cannot use Corso's tools");
     expect(fx.sent[1]!.diagnostics).toContain("Engine: Codex (codex), model gpt-5.5, effort high");
 
     fx.person("scout-main", "@devs it failed");
@@ -377,7 +377,7 @@ describe("what the person is told, in their language", () => {
     fx.busy.add("scout-main");
     fx.reports.note("scout-main", true);
     const answer = await fx.call("scout", "scout-main", { went_wrong: "offline" });
-    const waiting = "Noch nicht gesendet: der Server des MausBot-Teams war nicht erreichbar. Der Bericht ist gespeichert und wird so bald wie möglich von selbst gesendet, du musst ihn also nicht noch einmal senden.";
+    const waiting = "Noch nicht gesendet: der Server des Corso-Teams war nicht erreichbar. Der Bericht ist gespeichert und wird so bald wie möglich von selbst gesendet, du musst ihn also nicht noch einmal senden.";
     expect(answer.body.text).toBe(`Not sent. Tell the person this line in your reply, word for word: "${waiting}"`);
     fx.bot("scout-main", waiting, { turnId: "t1", turnSucceeded: true });
     fx.busy.delete("scout-main");
@@ -396,7 +396,7 @@ describe("a report that cannot go yet", () => {
     fx.person("scout-main", "@devs offline");
     fx.advance(NO_ANSWER_MS);
     await fx.settle();
-    expect(fx.notices("scout-main")).toEqual(["notice: Not sent yet: the MausBot team's server could not be reached. The report is saved and goes on its own as soon as it can, so there is no need to send it again."]);
+    expect(fx.notices("scout-main")).toEqual(["notice: Not sent yet: the Corso team's server could not be reached. The report is saved and goes on its own as soon as it can, so there is no need to send it again."]);
     const saved = JSON.parse(readFileSync(join(fx.dataDir, DEVS_REPORTS_FILE), "utf8"));
     expect(saved.outbox).toHaveLength(1);
     expect(saved.outbox[0].payload.description).toContain("offline");
@@ -421,7 +421,7 @@ describe("a report that cannot go yet", () => {
     fx.person("scout-main", "@devs refused");
     fx.advance(NO_ANSWER_MS);
     await fx.settle();
-    expect(fx.notices("scout-main")).toEqual(["notice: The MausBot team's server refused this bug report, so nothing was sent: description must be 1 to 10,000 characters of text."]);
+    expect(fx.notices("scout-main")).toEqual(["notice: The Corso team's server refused this bug report, so nothing was sent: description must be 1 to 10,000 characters of text."]);
     fx.advance(RETRY_MS.at(-1)! * 2);
     await fx.settle();
     expect(fx.sent).toHaveLength(1);
@@ -436,7 +436,7 @@ describe("a report that cannot go yet", () => {
     const second = fixture({ dataDir: first.dataDir });
     await second.settle();
     expect(second.sent).toHaveLength(1);
-    expect(second.sent[0]!.description).toContain("OpenMausBot restarted before a bot wrote one");
+    expect(second.sent[0]!.description).toContain("Corso restarted before a bot wrote one");
     second.stop();
     writeFileSync(join(first.dataDir, DEVS_REPORTS_FILE), "not json");
     const third = fixture({ dataDir: first.dataDir });
@@ -499,7 +499,7 @@ describe("a group chat", () => {
 });
 
 describe("closing the loop on a report", () => {
-  /** Every report asked about, answered as the MausBot team would: `fixedIn` for all of them, `notify` as given. */
+  /** Every report asked about, answered as the Corso team would: `fixedIn` for all of them, `notify` as given. */
   const team = (state: { status: "received" | "fixed"; fixedIn: string | null; notify: boolean }) => (question: ReportStatusQuestion): ReportStatusAnswer =>
     ({ reports: question.ids.map((id) => ({ id, status: state.status, fixedIn: state.fixedIn })), notify: state.notify });
   /** A report sent from Scout's chat by Bob, with Scout's summary; the person's message. */
