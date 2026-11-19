@@ -43,7 +43,7 @@ export const LINUX_CUA_RELEASE = Object.freeze({
   maxExpandedBytes: 128 * MIB,
 });
 
-// Pin the complete upstream archive shape, even though OpenMausBot extracts
+// Pin the complete upstream archive shape, even though Corso extracts
 // only the two CLI runtime files. A release that silently grows a new native
 // payload must receive an explicit review and checksum update first.
 const ARCHIVE_MEMBERS = Object.freeze({
@@ -365,8 +365,9 @@ async function validateStagedRuntime(stageDirectory, { licenseDirectory }) {
     const actual = await readFile(path.join(licensesDirectory, name));
     if (!actual.equals(expected)) throw new Error(`staged CUA license resource mismatch: ${name}`);
   }
-  if ((await binaryVersion(path.join(stageDirectory, "cua-driver"))) !== `cua-driver ${LINUX_CUA_RELEASE.version}`) {
-    throw new Error(`staged CUA Driver does not report version ${LINUX_CUA_RELEASE.version}`);
+  const reportedVersion = await binaryVersion(path.join(stageDirectory, "cua-driver"));
+  if (reportedVersion !== `cua-driver ${LINUX_CUA_RELEASE.version}`) {
+    throw new Error(`staged CUA Driver does not report version ${LINUX_CUA_RELEASE.version}: its --version printed ${JSON.stringify(reportedVersion.slice(0, 2_000))}`);
   }
   await validateBinaryManifest(path.join(stageDirectory, "cua-driver"));
   return manifest;

@@ -4,7 +4,7 @@ Ask a bot in ordinary language, for example:
 
 > Prepare a report at 9 am on the first of every month, in Asia/Kolkata.
 
-The bot turns calendar timing into a cron expression, and OpenMausBot validates
+The bot turns calendar timing into a cron expression, and Corso validates
 it. The change applies at once; its card shows the rule, its timezone and the
 next three dates, with Edit, Pause and Undo. The scheduler wakes the bot at the
 matching time; no model runs in the background to check the date.
@@ -19,6 +19,41 @@ In **Automations → Schedule**, choose **Monthly**, **Yearly**, or **Custom cro
 can be changed. Saved cron routines retain their own zone even on another
 computer. Editing just a title or instructions preserves the exact schedule.
 
+## Check back later
+
+For "check CI in 5 minutes", "check the payroll export reached the bank at 4 pm"
+or "chase the client Friday if they haven't replied", a bot uses `check_back`
+instead of a routine. It takes `when` ("in 2 hours", "Friday 9am",
+"tomorrow 16:00" in the person's zone, or an exact time with its offset),
+`note` (what to check) and an optional `if`. A day and a time are read in the
+person's zone: the computer's on a desktop, the one the person's app gave on a
+Cloud. A Team Cloud has one zone for everyone (the one its owner's app gave),
+so a member elsewhere is best served by a span or a time with its offset; the
+bot's answer names the zone and the exact time it set. At that time the same bot takes an
+ordinary turn in the same conversation with the note, checks, and carries on.
+It counts as a normal turn for usage. Nobody is asked to approve anything:
+the conversation shows one quiet line ("Will check back Fri 9:00 · Cancel"),
+which becomes "Checked back Fri 9:00" once it runs. Cancel is optional.
+
+- **Who may set one:** a turn the person's own request started in their
+  one-to-one chat with the bot, or a check-back's own turn (so it can look again
+  later). A room, work another bot handed on, a routine, an outside event and a
+  Cloud guest get a one-line refusal, and the bot finishes in its turn.
+- **Limits:** at least a minute and at most 90 days ahead; 10 waiting per
+  conversation and 50 per bot. Over a limit the bot is told why in one line.
+- **Reliable:** each check-back is kept in `check-backs.json`. The desktop runs
+  them only while Corso is running; a check-back that came due while the
+  computer slept or the app was closed runs once, late, when it is back, and
+  its turn says it is late. A Cloud wakes for the next one. One that was being
+  started when the server stopped is closed with a line, never started twice.
+  A paused bot is waited out; any other refused start is tried again each
+  minute for an hour, then its line says it couldn't check back.
+- **Gone with what it belongs to:** a check-back whose conversation or bot is
+  deleted is dropped. On a Team Cloud it belongs to the conversation's audience:
+  one set in a member's private chat runs for that member's request (the asker
+  owns the run) and stays in that chat; when they leave the team their private
+  chats, and so their check-backs, go.
+
 ## Off, on, and done
 
 The switch on **Automations** pauses a schedule or a webhook and turns it back
@@ -30,7 +65,7 @@ it with a new time turns it back on.
 
 Deleting a bot deletes its schedules and webhooks too, and their runs. A
 webhook's address stops working at once. Automations left behind by a bot
-deleted in an earlier version are removed the next time OpenMausBot starts, and
+deleted in an earlier version are removed the next time Corso starts, and
 never run meanwhile.
 
 ## Advanced cron
@@ -75,7 +110,7 @@ use an appropriate event/webhook workflow instead of a fake weekly schedule.
   own model works on its Boat. The agent tools call these `run_on: "maus"` and
   `run_on: "box"`; legacy stored `runOn: "cloud"` still means Boat and is not
   migrated to a different runner.
-- OpenMausBot must be running to dispatch routines, including cloud-targeted
+- Corso must be running to dispatch routines, including cloud-targeted
   routines. There is no external always-on scheduling service: the schedule
   runs inside the app on your computer — it is not Grok's or anyone's cloud —
   so a sleeping computer or a quit app runs nothing, and the app cannot wake
@@ -83,12 +118,12 @@ use an appropriate event/webhook workflow instead of a fake weekly schedule.
   in, it keeps the computer from idle-sleeping for the hour before a due
   routine and while one runs (Automations → *Keep this computer awake for
   routines*, on by default; a closed lid still sleeps). For true 24/7, run
-  OpenMausBot on a VPS — see [deploy-vps.md](deploy-vps.md).
+  Corso on a VPS — see [deploy-vps.md](deploy-vps.md).
 - Catching up after downtime (the app closed, the computer asleep, a Cloud
   home off or restarting): for each routine, the newest occurrence that came
   due meanwhile runs late, if it is no more than 12 hours past its time, and
   the ones before it close on one **Missed** row that counts them and says why
-  ("Missed 3 scheduled runs because this computer was asleep or OpenMausBot
+  ("Missed 3 scheduled runs because this computer was asleep or Corso
   was not running"; on a Cloud, "because this Cloud was asleep or
   restarting"). That row is shown as already seen: the newest one is running,
   so it asks nothing of you. When even the newest is more than 12 hours old,
@@ -255,12 +290,12 @@ use an appropriate event/webhook workflow instead of a fake weekly schedule.
 - An unattended run (scheduled, webhook or Run now) recovers from a passing
   failure by itself, the same on the desktop, a headless server and a Cloud
   home (`server/routine-recovery.ts`):
-  - Its engine stalled, OpenMausBot restarted while it ran, the provider
+  - Its engine stalled, Corso restarted while it ran, the provider
     rate-limited it, or the provider failed for a moment: it starts once more
     in the same conversation after a short wait (15 s; a minute after a rate
     limit), told to check what its first start already did. A second failure
     fails it: "Failed after one automatic retry: …".
-  - A run that a shutdown or crash cut off is picked up once when OpenMausBot
+  - A run that a shutdown or crash cut off is picked up once when Corso
     starts again; the same run, never a copy.
   - Its bot or conversation was busy when it started: it waits there,
     checking every 30 s, for up to an hour.
