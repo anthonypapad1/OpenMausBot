@@ -1,15 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_INTAKE, intakeAnswered, intakeLines, mergeAboutMe, toggleTool } from "./corso-intake";
+import { EMPTY_INTAKE, intakeAnswered, intakeLines, mergeAboutMe } from "./corso-intake";
 
-const full = { brokerage: " Kentwood ", market: "Denver", volume: "6-15" as const, tools: ["ctm" as const, "gmail" as const], voice: "warm" as const };
+const full = { brokerage: " Kentwood ", market: "Denver", volume: "6-15" as const, voice: "warm" as const };
 
 describe("corso intake", () => {
-  it("writes one labelled line per answer, trimmed, with tools by their product names", () => {
+  it("writes one labelled line per answer, trimmed", () => {
     expect(intakeLines(full)).toEqual([
       "Brokerage: Kentwood",
       "Market: Denver",
       "Deals open at a time: 6-15",
-      "Tools I use: CTM eContracts, Gmail",
       "How to talk to me: friendly and reassuring, but still brief",
     ]);
   });
@@ -28,10 +27,5 @@ describe("corso intake", () => {
   it("replaces an answered line and leaves an unanswered one", () => {
     const before = "Brokerage: Old Co\nI work weekends.\nMarket: Denver";
     expect(mergeAboutMe(before, { ...EMPTY_INTAKE, brokerage: "New Co" })).toBe("I work weekends.\nMarket: Denver\nBrokerage: New Co");
-  });
-
-  it("toggles a tool and keeps the list in catalogue order", () => {
-    expect(toggleTool(["gmail"], "ctm")).toEqual(["ctm", "gmail"]);
-    expect(toggleTool(["ctm", "gmail"], "ctm")).toEqual(["gmail"]);
   });
 });

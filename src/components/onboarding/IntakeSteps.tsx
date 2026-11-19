@@ -1,15 +1,12 @@
-// Corso's four first-run questions (about, tools, voice, first job), shown by WelcomeFlow between MeetScreen and the
+// Corso's three first-run questions (about, voice, first job), shown by WelcomeFlow between MeetScreen and the
 // Chief of Staff. The answers are plain state here; WelcomeFlow saves them into About me (corso-intake.ts).
 import type { ReactNode } from "react";
-import { Check, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
   DEAL_VOLUMES,
   FIRST_JOB_IDS,
-  TOOL_IDS,
-  TOOL_NAMES,
   VOICE_IDS,
-  toggleTool,
   type FirstJobId,
   type IntakeAnswers,
   type VoiceId,
@@ -20,7 +17,7 @@ import { INTAKE_BEATS, type BeatId } from "@/lib/onboarding";
 import { inputClass } from "./beats/shared";
 import { PILL } from "./SignInPill";
 
-export type IntakeBeat = "about" | "tools" | "voice" | "firstJob";
+export type IntakeBeat = "about" | "voice" | "firstJob";
 
 export function isIntakeBeat(beat: BeatId): beat is IntakeBeat {
   return INTAKE_BEATS.includes(beat);
@@ -124,24 +121,6 @@ function AboutStep({ answers, setAnswers }: StepProps) {
   );
 }
 
-function ToolsStep({ answers, setAnswers }: StepProps) {
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      {TOOL_IDS.map((id) => {
-        const on = answers.tools.includes(id);
-        return (
-          <Choice key={id} on={on} onClick={() => setAnswers({ ...answers, tools: toggleTool(answers.tools, id) })}>
-            <span className={cn("flex size-4 shrink-0 items-center justify-center rounded border", on ? "border-accent bg-accent text-white" : "border-hairline")}>
-              {on && <Check size={11} strokeWidth={3} aria-hidden="true" />}
-            </span>
-            {TOOL_NAMES[id]}
-          </Choice>
-        );
-      })}
-    </div>
-  );
-}
-
 function VoiceStep({ answers, setAnswers }: StepProps) {
   return (
     <div role="radiogroup" aria-label={t("onboarding.intake.voice.title")} className="flex flex-col gap-2">
@@ -171,7 +150,6 @@ function FirstJobStep({ job, setJob }: { job: FirstJobId | null; setJob: (job: F
 /** The answers with one step's left out, for Skip: a skipped question leaves nothing behind. */
 export function withoutStep(answers: IntakeAnswers, beat: IntakeBeat): IntakeAnswers {
   if (beat === "about") return { ...answers, brokerage: "", market: "", volume: null };
-  if (beat === "tools") return { ...answers, tools: [] };
   if (beat === "voice") return { ...answers, voice: null };
   return answers;
 }
@@ -195,13 +173,6 @@ export function IntakeSteps({ beat, answers, setAnswers, job, setJob, onNext, on
     return (
       <Frame {...frame} title={t("onboarding.intake.about.title")} lede={t("onboarding.intake.about.lede")}>
         <AboutStep answers={answers} setAnswers={setAnswers} />
-      </Frame>
-    );
-  }
-  if (beat === "tools") {
-    return (
-      <Frame {...frame} title={t("onboarding.intake.tools.title")} lede={t("onboarding.intake.tools.lede")}>
-        <ToolsStep answers={answers} setAnswers={setAnswers} />
       </Frame>
     );
   }

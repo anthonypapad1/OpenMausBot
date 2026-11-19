@@ -10,7 +10,7 @@ import { SKINS, type SkinId } from "@/lib/skins";
 import { StoreProvider } from "@/state/store";
 import "./styles.css";
 
-/** ?screen=about|tools|voice|firstJob|chief&ai=0&bots=3&skin=daylight&reduced=1 opens any state directly; ?w=1338&h=870 sizes the stage. */
+/** ?screen=about|voice|firstJob|chief&ai=0&bots=3&skin=daylight&reduced=1 opens any state directly; ?w=1338&h=870 sizes the stage. */
 function fromUrl() {
   const params = new URLSearchParams(location.search);
   const skin = params.get("skin") as SkinId | null;
@@ -90,7 +90,6 @@ function Preview() {
           <Select size="sm" value={screen} onChange={(e) => { setScreen(e.target.value as BeatId); setRun((r) => r + 1); }}>
             <option value="meet">Meet</option>
             <option value="about">About your business</option>
-            <option value="tools">Tools</option>
             <option value="voice">Voice</option>
             <option value="firstJob">First job</option>
             <option value="chief">Chief of Staff</option>

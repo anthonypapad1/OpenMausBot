@@ -60,9 +60,9 @@ const key = async (name: string) => {
 const show = async (extra: Record<string, unknown> = {}) => {
   await act(async () => { root.render([createElement(Watch, { key: "w" }), createElement(WelcomeFlow, { key: "f", onDone: f.onDone, ...extra })]); });
 };
-/** Corso's four questions, each passed with Continue (or Skip for now) and its 100 ms fade. */
+/** Corso's three questions, each passed with Continue (or Skip for now) and its 100 ms fade. */
 const throughQuestions = async (label = "Continue") => {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     await press(label);
     await tick(100);
   }
@@ -172,18 +172,14 @@ describe("Corso's questions", () => {
     await pick("6-15");
     await press("Continue");
     await tick(100);
-    expect(host.querySelector("h1")?.textContent).toBe("Which tools do you use?");
-    await pick("CTM eContracts");
-    await pick("Gmail");
-    await press("Continue");
-    await tick(100);
+    expect(host.querySelector("h1")?.textContent).toBe("How should your team talk?");
     await pick("Straight to the point");
     await press("Continue");
     await tick(100);
     await pick("Chase the signatures");
     await press("Continue");
     await act(async () => {});
-    expect(saved()[0]).toEqual({ profile: { aboutMe: "I have two kids.\nBrokerage: Kentwood\nMarket: Denver\nDeals open at a time: 6-15\nTools I use: CTM eContracts, Gmail\nHow to talk to me: short and to the point, facts first" } });
+    expect(saved()[0]).toEqual({ profile: { aboutMe: "I have two kids.\nBrokerage: Kentwood\nMarket: Denver\nDeals open at a time: 6-15\nHow to talk to me: short and to the point, facts first" } });
     await tick(100);
     await tick(CHIEF_GUARD_MS);
     await press("Create Chief of Staff");
@@ -198,7 +194,7 @@ describe("Corso's questions", () => {
     await type("Brokerage", "Kentwood");
     await press("Skip for now");
     await tick(100);
-    expect(host.querySelector("h1")?.textContent).toBe("Which tools do you use?");
+    expect(host.querySelector("h1")?.textContent).toBe("How should your team talk?");
     await press("Back");
     await tick(100);
     expect(host.querySelector("h1")?.textContent).toBe("Tell us about your business");

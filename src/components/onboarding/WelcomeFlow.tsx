@@ -170,7 +170,7 @@ export function WelcomeFlow({
   }, []);
 
   useEffect(() => {
-    if (beat === "meet" || beat === "tools" || beat === "voice" || beat === "firstJob") root.current?.focus({ preventScroll: true });
+    if (beat === "meet" || beat === "voice" || beat === "firstJob") root.current?.focus({ preventScroll: true });
   }, [beat]);
 
   // Escape moves on as Later does; Enter on the screen itself presses Next while it can be pressed.

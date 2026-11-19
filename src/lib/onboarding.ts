@@ -96,13 +96,13 @@ export function hintSeenPatch(
 }
 
 
-export type BeatId = "meet" | "about" | "tools" | "voice" | "firstJob" | "chief";
+export type BeatId = "meet" | "about" | "voice" | "firstJob" | "chief";
 
 /** Every screen the first run can show, in the order it shows them. */
-export const BEAT_ORDER: readonly BeatId[] = ["meet", "about", "tools", "voice", "firstJob", "chief"];
+export const BEAT_ORDER: readonly BeatId[] = ["meet", "about", "voice", "firstJob", "chief"];
 
 /** Corso's questions about the person's business (corso-intake.ts), between meeting the app and its Chief of Staff. */
-export const INTAKE_BEATS: readonly BeatId[] = ["about", "tools", "voice", "firstJob"];
+export const INTAKE_BEATS: readonly BeatId[] = ["about", "voice", "firstJob"];
 
 /** Meeting the app (and connecting an AI when none works), Corso's questions, then the Chief of Staff. A hosted place's
  * admin only meets the app: their team's bots, Chief and answers are already set up. */
