@@ -8,6 +8,7 @@ import { appendComposerDraft } from "@/lib/drafts";
 import { bringChosen, localFinds, useBringRun, type LocalFind } from "@/lib/first-run-import";
 import { t } from "@/lib/i18n";
 import { beatsFor, completionPatch, firstRunPatch, markWelcomeFinished, resumeBeat, showWelcome, type BeatId } from "@/lib/onboarding";
+import { macPermissionsBridge, permissionsMissing, type MacPermissionStatus } from "@/lib/mac-permissions";
 import { detectSetupWithin, localSetupImport, setupImportApi } from "@/lib/setup-import";
 import { clearWelcomeDraft, readWelcomeDraft, saveWelcomeDraft } from "@/lib/welcome-draft";
 import { api, useStore } from "@/state/store";
@@ -18,6 +19,7 @@ import { BringStatus, BringStep } from "./BringStep";
 import { ChiefIntro } from "./ChiefIntro";
 import { FunnelBar, WelcomeStep } from "./FunnelSteps";
 import { FIRST_JOB_KEYS, IntakeSteps, isIntakeBeat, withoutStep } from "./IntakeSteps";
+import { PermissionsStep } from "./PermissionsStep";
 import { useWelcomeAi } from "./welcome-ai";
 import { localDesktopPage } from "./WelcomeGate";
 
@@ -89,7 +91,17 @@ export function WelcomeFlow({
   // by the time it shows; the step's prompt for AIs online is there either way
   // by the time it shows; the step's prompt for AIs online is there either way. A gallery opened on the step looks too.
   const offersBring = (!replay && !embedded && !hosted && localSetupImport(state.config?.cloudHome === true)) || initialBeat === "bring";
-  const beats = beatsFor({ hosted, bring: offersBring });
+  // this Mac's permissions: read once, so the step stays put while the person grants them; offered until that read says
+  // nothing is missing, which lets a run reopened on this step (Screen Recording needs that) land back on it
+  const macAccess = useMemo(() => (!embedded || initialBeat === "permissions" ? macPermissionsBridge() : null), [embedded, initialBeat]);
+  const [firstAccess, setFirstAccess] = useState<MacPermissionStatus | null | undefined>(macAccess ? undefined : null);
+  useEffect(() => {
+    if (!macAccess) return;
+    void macAccess.status().then((found) => setFirstAccess((known) => (known === undefined ? found : known)),
+      () => setFirstAccess((known) => (known === undefined ? null : known)));
+  }, [macAccess]);
+  const permissions = !hosted && Boolean(macAccess) && (firstAccess === undefined || permissionsMissing(firstAccess) || initialBeat === "permissions");
+  const beats = beatsFor({ hosted, bring: offersBring, permissions });
   const [beat, setBeat] = useState<BeatId>(() => resumeBeat(beats, initialBeat ?? (keepsDraft ? readWelcomeDraft()?.beat : undefined)));
   const root = useRef<HTMLDivElement>(null);
   const finishing = useRef(false);
@@ -245,6 +257,10 @@ export function WelcomeFlow({
     );
   } else if (beat === "ai") body = <AiStep tested={tested} hosted={hosted} onChoose={setChosen} onNext={next} />;
   else if (beat === "bring") body = <BringStep finds={finds} run={bringRun} onBring={bring} onNext={next} />;
+  else if (beat === "permissions" && macAccess) {
+    const relaunch = window.ogb?.relaunch;
+    body = <PermissionsStep bridge={macAccess} relaunch={relaunch ? () => void relaunch().catch(() => {}) : null} onNext={next} />;
+  }
   else body = <WelcomeStep onStart={next} />;
 
   // the Chief is the app itself under a scrim, not a step of the run

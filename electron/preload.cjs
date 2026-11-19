@@ -376,6 +376,11 @@ const bridge = {
   permStatus: () => ipcRenderer.invoke("perm:status"),
   permRequestMic: () => ipcRenderer.invoke("perm:request-mic"),
   permOpenSettings: (pane) => ipcRenderer.invoke("perm:open-settings", pane),
+  /** Accessibility and Screen Recording, read and asked for one at a time: this computer's own page only. */
+  macPermissions: {
+    status: () => ipcRenderer.invoke("mac-permissions:status"),
+    request: (kind) => ipcRenderer.invoke("mac-permissions:request", String(kind)),
+  },
   relaunch: () => ipcRenderer.invoke("desktop:relaunch"),
 
   openInstallTerminal: (command) => ipcRenderer.invoke("engine:open-terminal", command),

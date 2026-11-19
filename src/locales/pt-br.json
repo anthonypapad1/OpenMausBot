@@ -11386,5 +11386,17 @@
   "funnel.ai.ready": "Conectado",
   "funnel.ai.sub": "Use uma conta que você já tem. Você entra no site deles, então sua senha fica com eles.",
   "funnel.ai.subMore": "Adicione outra se quiser, ou continue.",
-  "funnel.ai.title": "Conecte uma IA"
+  "funnel.ai.title": "Conecte uma IA",
+  "funnel.permissions.title": "Deixe seus bots usarem este Mac",
+  "funnel.permissions.sub": "Muitos apps do mercado imobiliário só podem ser usados pela tela. Com estas permissões, seus bots entram, olham e clicam como você.",
+  "funnel.permissions.accessibility": "Acessibilidade",
+  "funnel.permissions.accessibilityWhy": "Clicar e digitar por você",
+  "funnel.permissions.screen": "Gravação de tela",
+  "funnel.permissions.screenWhy": "Ver o que está na sua tela",
+  "funnel.permissions.allow": "Permitir",
+  "funnel.permissions.openSettings": "Abrir ajustes",
+  "funnel.permissions.allowed": "Permitido",
+  "funnel.permissions.reopenLine": "Ativou a gravação de tela? Reabra o {app} para concluir.",
+  "funnel.permissions.reopen": "Reabrir",
+  "funnel.permissions.later": "Depois"
 }

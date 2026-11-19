@@ -11386,5 +11386,17 @@
   "funnel.ai.ready": "Connected",
   "funnel.ai.sub": "Use an account you already have. You sign in on their site, so your password stays with them.",
   "funnel.ai.subMore": "Add another if you like, or go on.",
-  "funnel.ai.title": "Connect an AI"
+  "funnel.ai.title": "Connect an AI",
+  "funnel.permissions.title": "Let your bots use this Mac",
+  "funnel.permissions.sub": "Many real estate apps have no way in but the screen. With these on, your bots sign in, look and click like you do.",
+  "funnel.permissions.accessibility": "Accessibility",
+  "funnel.permissions.accessibilityWhy": "Click and type for you",
+  "funnel.permissions.screen": "Screen recording",
+  "funnel.permissions.screenWhy": "See what's on your screen",
+  "funnel.permissions.allow": "Allow",
+  "funnel.permissions.openSettings": "Open settings",
+  "funnel.permissions.allowed": "Allowed",
+  "funnel.permissions.reopenLine": "Turned on screen recording? Reopen {app} to finish.",
+  "funnel.permissions.reopen": "Reopen",
+  "funnel.permissions.later": "Later"
 }

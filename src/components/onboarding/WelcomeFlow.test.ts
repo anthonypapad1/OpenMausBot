@@ -412,6 +412,40 @@ describe("bringing in what this computer's AI apps hold", () => {
   });
 });
 
+describe("this Mac's permissions", () => {
+  const mac = (accessibility: string, screen: string) => ({
+    platform: "darwin",
+    macPermissions: { status: vi.fn(async () => ({ supported: true, accessibility, screen })), request: vi.fn(async () => ({ supported: true, accessibility: "granted", screen })) },
+  });
+
+  it("come last before the Chief while one a bot needs is off, each one press away", async () => {
+    const ogb = mac("missing", "granted");
+    vi.stubGlobal("ogb", ogb);
+    await show();
+    await act(async () => {});
+    await throughHello();
+    await throughQuestions();
+    expect(title()).toBe("Let your bots use this Mac");
+    expect(host.querySelector("[data-funnel-progress]")?.getAttribute("data-funnel-progress")).toBe("6/6");
+    await act(async () => { host.querySelector<HTMLButtonElement>('[data-permission-ask="accessibility"]')!.click(); });
+    expect(ogb.macPermissions.request).toHaveBeenCalledWith("accessibility");
+    await press("Continue");
+    await tick(100);
+    await tick(CHIEF_GUARD_MS);
+    expect(text()).toContain("Introducing your Chief of Staff");
+  });
+
+  it("are left out once everything is on", async () => {
+    vi.stubGlobal("ogb", mac("granted", "granted"));
+    await show();
+    await act(async () => {});
+    await throughHello();
+    await throughQuestions();
+    await tick(CHIEF_GUARD_MS);
+    expect(text()).toContain("Introducing your Chief of Staff");
+  });
+});
+
 describe("other first runs", () => {
   it("gives a hosted place's admin the hello and its AI only, then the chat", async () => {
     await show({ hosted: true });

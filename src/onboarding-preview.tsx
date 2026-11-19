@@ -12,10 +12,10 @@ import "./styles.css";
 
 const SCREENS: Record<BeatId, string> = {
   welcome: "Welcome", ai: "Connect an AI", bring: "Bring what you already use", about: "About your business", voice: "Voice",
-  firstJob: "First job", chief: "Chief of Staff",
+  firstJob: "First job", permissions: "This Mac's permissions", chief: "Chief of Staff",
 };
 
-/** ?screen=welcome|ai|bring|about|voice|firstJob|chief&ai=0&found=0&bots=3&skin=daylight&reduced=1 opens any state directly;
+/** ?screen=welcome|ai|bring|about|voice|firstJob|permissions|chief&ai=0&found=0&bots=3&skin=daylight&reduced=1 opens any state directly;
  * ?w=1338&h=870 sizes the stage. */
 function fromUrl() {
   const params = new URLSearchParams(location.search);
@@ -134,8 +134,18 @@ class Crash extends Component<{ children: ReactNode }, { error: Error | null }> 
   }
 }
 
+/** A Mac whose permissions start off and turn on when allowed, so the permissions step can be pressed through. */
+function fakeMac() {
+  const granted = { accessibility: "missing", screen: "missing" } as Record<"accessibility" | "screen", "granted" | "asked" | "missing">;
+  const status = async () => ({ supported: true as const, ...granted });
+  Object.assign(window, { ogb: { platform: "darwin", permOpenSettings: async () => {}, macPermissions: {
+    status, request: async (kind: "accessibility" | "screen") => { granted[kind] = kind === "screen" ? "asked" : "granted"; return status(); },
+  } } });
+}
+
 const { ai, bots, found } = fromUrl();
 answerFromFixture(ai, bots, found);
+fakeMac();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Crash>

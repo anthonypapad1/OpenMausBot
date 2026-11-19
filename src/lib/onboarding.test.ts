@@ -284,8 +284,13 @@ describe("the first run's screens", () => {
     expect(resumeBeat(beatsFor({ bring: false }), "bring"), "a browser elsewhere starts over").toBe("welcome");
   });
 
+  it("asks for this Mac's permissions after the questions, only while one a bot needs is off", () => {
+    expect(beatsFor({ bring: true, permissions: true })).toEqual(["welcome", "ai", "bring", "about", "voice", "firstJob", "permissions", "chief"]);
+    expect(beatsFor({ permissions: false })).not.toContain("permissions");
+  });
+
   it("gives a hosted place's admin only the hello and its AI: their team's bots and Chief are set up already", () => {
-    expect(beatsFor({ hosted: true, bring: true })).toEqual(["welcome", "ai"]);
+    expect(beatsFor({ hosted: true, bring: true, permissions: true })).toEqual(["welcome", "ai"]);
   });
 
   it("resumes the saved screen while it is offered, else starts at the first", () => {

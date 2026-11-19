@@ -29312,7 +29312,6 @@
       "onboarding.shell.noBots": "33534a334fa97b9a45fec2768fbef4b01b0144ae1ec8f63cf9f4241dba1c9017",
       "onboarding.hint.approval": "9eb8b152928a171642bd88d19b314681fdec0429adb57d6e48a971092304e8c6",
       "onboarding.hint.connector": "701d3e8365586fbdbecf4d85b85ab4f0be7843402b0eee919078a93a75cfbe48",
-      "onboarding.intake.back": "76900f1bfd16c8d4dd3d25e6f46638d7165aee23883ccea6bfe071c514421769",
       "onboarding.intake.continue": "31fbef162594de01bab0cd525c51f74de7bcb15063029fa1a54b2cf5944c80d8",
       "onboarding.intake.skip": "b58eb52c8810b97857e264ea9de45f7bd7edb754bb0edad30ffab78ff027c45e",
       "onboarding.intake.about.title": "f05233dd8fa12bc5a6d22c7f63ee6a2e4ce1182b7708334863a4947b25d167da",
@@ -37335,7 +37334,19 @@
       "funnel.ai.ready": "22965568d22a14ee17af055d2870b50afcfe9fd94a83eec3196e266932297bb2",
       "funnel.ai.sub": "ac4a860b0afbff3321e7204b5d6330fb119bac29b926de7bd65ab904caa7061f",
       "funnel.ai.subMore": "8e62e63bd907f2c3ab30ae7c354b446543d8ad3e09853976ea8046b9ccc9ddb3",
-      "funnel.ai.title": "d5a04f67de93508a660a387989fe4d599ef8ce5941a55a78b2802888751b8b32"
+      "funnel.ai.title": "d5a04f67de93508a660a387989fe4d599ef8ce5941a55a78b2802888751b8b32",
+      "funnel.permissions.title": "bc40f70976791c0902b9d5e63bb13dfaddc87fc9841a7ab21bcae52c649ef64b",
+      "funnel.permissions.sub": "8efbd1adcc06719c09804cb8740bb93637aeb635f4c42aa16412cdba9c40fa03",
+      "funnel.permissions.accessibility": "d3368cbffe23c98da887d279a1b5c74b7618ba5c0488cbed30cf304f8f9398a1",
+      "funnel.permissions.accessibilityWhy": "9d519af7a36d734d602d8f7673c433d0d39a332d7833cc4baf72fb51b5789601",
+      "funnel.permissions.screen": "9a7086639561d00fa2f6d2e5f0f49308fb61d6a6ea0c8d8bb375b25ea58a7447",
+      "funnel.permissions.screenWhy": "c134d38f732fca5754c865aabed55ff2b447b99d82c088a1e4cf05decfa5baf0",
+      "funnel.permissions.allow": "e213c161d5cefa520c8dd4155c9569076d9a40406111465136a6f1b207045761",
+      "funnel.permissions.openSettings": "ca381c1e76e681b6c18fa984a2e2fda6ed4a9f28e914f539db34a6dcb3737149",
+      "funnel.permissions.allowed": "1bb201d188352e9b4633f85e4fb8a31ea93fd14dec702443fd3e2713d657fd2d",
+      "funnel.permissions.reopenLine": "d596b12875092dc7d2fb656fa2800ab6ace8ddfe648803711a0390ddeae79bf4",
+      "funnel.permissions.reopen": "a886d1dc4f128e2791731e8b288c8d7c74f8a8608e23ca8e167b3038ab48054f",
+      "funnel.permissions.later": "73b6e48a1b552d112502d37a7b7870436efc5ea1de0bca58ccf12d6ae15d3a0c"
     },
     "zh": {
       "hostedMcp.otherAppsSetup": "b1dbc7573965f26789d835d7476b43d982daa02816580baf60e11da042e0d071",
