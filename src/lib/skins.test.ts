@@ -54,7 +54,7 @@ describe("skins", () => {
   it("selects a code-only light or dark palette in every nearest skin", () => {
     for (const id of SKIN_IDS) {
       const body = css.match(new RegExp(`\\[data-skin="${id}"\\]\\s*\\{([^}]*)\\}`))?.[1] ?? "";
-      const scheme = ["atelier", "lagoon", "linen", "daylight", "meadow", "pop"].includes(id) ? "light" : "dark";
+      const scheme = ["atelier", "lagoon", "linen", "daylight", "meadow", "pop", "corso"].includes(id) ? "light" : "dark";
       expect(body).toContain(`--code-color-scheme: ${scheme};`);
     }
     expect(css).toMatch(/\.chat-md \.shiki\s*\{\s*color-scheme:\s*var\(--code-color-scheme\);\s*\}/);
@@ -68,11 +68,11 @@ describe("skins", () => {
     expect(PRIOR_INSTALL_SKIN).toBe("midnight");
   });
 
-  it("follows the computer between Daylight and Midnight by default", () => {
+  it("follows the computer between Corso and Corso Night by default", () => {
     expect(DEFAULT_SKIN_CHOICE).toBe("system");
-    expect(THEME_SKINS).toEqual({ light: "daylight", dark: "midnight" });
-    expect(resolveSkin("system", false)).toBe("daylight");
-    expect(resolveSkin("system", true)).toBe("midnight");
+    expect(THEME_SKINS).toEqual({ light: "corso", dark: "corso-night" });
+    expect(resolveSkin("system", false)).toBe("corso");
+    expect(resolveSkin("system", true)).toBe("corso-night");
     expect(resolveSkin("meadow", true)).toBe("meadow");
   });
 
@@ -100,8 +100,9 @@ describe("skins", () => {
     },
   );
 
-  it("adds Aurora last, dark, with its light field kept off the picker miniature", () => {
-    expect(SKIN_IDS.at(-1)).toBe("aurora");
+  it("adds Aurora after the festival skins, dark, with its light field kept off the picker miniature", () => {
+    expect(SKIN_IDS[12]).toBe("aurora");
+    expect(SKIN_IDS.slice(13)).toEqual(["corso", "corso-night"]);
     expect(SKINS.find((s) => s.id === "aurora")?.name).toBe("Aurora");
     expect(css).toMatch(/\[data-skin="aurora"\] \{[^}]*--code-color-scheme: dark;/);
     expect(css).toMatch(/@scope \(\[data-skin="aurora"\]:not\(\[data-skin-preview\]\)\) to \(\[data-skin\]\)\s*\{\s*main\.bg-app\s*\{/);

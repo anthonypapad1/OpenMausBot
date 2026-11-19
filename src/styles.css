@@ -1114,6 +1114,120 @@
   --identity-chrome: #B3BAC4;
 }
 
+[data-skin="corso"] {
+  --code-color-scheme: light;
+  --color-app: #f4f0e6;
+  --color-panel: #eae4d6;
+  --color-raised: #ddd6c6;
+  --color-raised-hover: #d1c9b7;
+  --color-composer: #ffffff;
+  --color-composer-ring: transparent;
+  --color-card: #fbf8f1;
+  --color-menu: #fbf8f1;
+  --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  --color-menu-active: var(--color-raised);
+  --color-inset: #e3dccc;
+  --color-control: #d6d0c1;
+  --color-hairline: #c9bfab;
+
+  --color-ink: #1b1a17;
+  --color-ink-secondary: #4f4a43;
+  --color-ink-tertiary: #55504a;
+
+  --color-accent: #2a6f69;
+  --color-accent-border: #3a827b;
+  --color-accent-text: #24625c;
+  --color-focus: #24625c;
+  --color-accent-ink: #ffffff;
+  --color-bubble-user: #e6dfd0;
+  --color-bubble-user-ink: #1b1a17;
+
+  --color-success: #3f6b47;
+  --color-danger: #a33a32;
+  --color-danger-ink: #ffffff;
+  --color-success-ink: #ffffff;
+  --color-warning: #8a521c;
+  --color-scrollbar: #cbc1ad;
+  --color-maus-line: #5e584f;
+
+  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
+  --radius-2xl: 16px; --radius-3xl: 24px; --radius-4xl: 32px;
+  --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --identity-green: #007e48;
+  --identity-blue: #1b69da;
+  --identity-red: #d02c34;
+  --identity-orange: #a95814;
+  --identity-purple: #8056c8;
+  --identity-cyan: #0a788f;
+  --identity-pink: #c92d71;
+  --identity-yellow: #896919;
+  --identity-teal: #017b6e;
+  --identity-coral: #cb361e;
+  --identity-silver: #686e78;
+  --identity-chrome: #636e7f;
+}
+
+[data-skin="corso-night"] {
+  --code-color-scheme: dark;
+  --color-app: #121513;
+  --color-panel: #181c19;
+  --color-raised: #262b27;
+  --color-raised-hover: #303631;
+  --color-composer: #262b27;
+  --color-composer-ring: transparent;
+  --color-card: #1e2320;
+  --color-menu: #1e2320;
+  --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  --color-menu-active: var(--color-raised);
+  --color-inset: #0d0f0e;
+  --color-control: #262b27;
+  --color-hairline: #39403b;
+
+  --color-ink: #eceae4;
+  --color-ink-secondary: #aeb3ac;
+  --color-ink-tertiary: #9aa098;
+
+  --color-accent: #34766f;
+  --color-accent-border: #5aa79e;
+  --color-accent-text: #7cc4b9;
+  --color-focus: #7cc4b9;
+  --color-accent-ink: #ffffff;
+  --color-bubble-user: #2c322e;
+  --color-bubble-user-ink: #eceae4;
+
+  --color-success: #79b882;
+  --color-danger: #df7a72;
+  --color-danger-ink: #200c0a;
+  --color-success-ink: #0e1a10;
+  --color-warning: #dba660;
+  --color-scrollbar: #444c46;
+  --color-maus-line: #aeb3ac;
+
+  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
+  --radius-2xl: 16px; --radius-3xl: 24px; --radius-4xl: 32px;
+  --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --identity-green: #009957;
+  --identity-blue: #377FE6;
+  --identity-red: #da4d54;
+  --identity-orange: #E78531;
+  --identity-purple: #8f6bce;
+  --identity-cyan: #0EA5C6;
+  --identity-pink: #D84F8B;
+  --identity-yellow: #D8A729;
+  --identity-teal: #01A492;
+  --identity-coral: #E5634E;
+  --identity-silver: #A8ADB4;
+  --identity-chrome: #B3BAC4;
+}
+
 /* Every popover and menu in the menu tone, flat in Midnight and on a soft lift in Daylight. A popover's rim is its
    border, never a ring, so clearing box-shadow leaves the rim. */
 .popover-surface {
@@ -3430,11 +3544,11 @@ button:disabled.bg-danger {
   outline-offset: -1.5px;
 }
 :root,
-:is([data-skin="midnight"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="dusk"], [data-skin="halloween"], [data-skin="diwali"], [data-skin="aurora"]) {
+:is([data-skin="midnight"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="dusk"], [data-skin="halloween"], [data-skin="diwali"], [data-skin="aurora"], [data-skin="corso-night"]) {
   --radius-menu: 12px;
   --menu-shadow: 0 14px 32px -10px rgb(0 0 0 / 0.7), 0 2px 8px rgb(0 0 0 / 0.35);
 }
-:is([data-skin="atelier"], [data-skin="lagoon"], [data-skin="linen"], [data-skin="meadow"], [data-skin="pop"]) {
+:is([data-skin="atelier"], [data-skin="lagoon"], [data-skin="linen"], [data-skin="meadow"], [data-skin="pop"], [data-skin="corso"]) {
   --menu-shadow: 0 8px 24px -6px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.04);
 }
 :is([data-skin="daylight"]) {
