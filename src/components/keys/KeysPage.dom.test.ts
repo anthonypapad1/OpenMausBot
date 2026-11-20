@@ -26,6 +26,7 @@ vi.mock("@/state/store", async (original) => {
   };
 });
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
+vi.mock("../../../electron/corso-cloud.mjs", () => ({ CORSO_CLOUD_OFFERED: true }));
 vi.mock("@/lib/live-call-media", () => ({ dismissLiveNotice: vi.fn() }));
 
 const { KeysPage } = await import("./KeysPage");
