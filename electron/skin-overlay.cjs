@@ -16,8 +16,8 @@ const SKIN_CHROME = Object.freeze({
   halloween: Object.freeze({ color: "#110d16", symbolColor: "#c2b3cc" }),
   diwali: Object.freeze({ color: "#100d1f", symbolColor: "#cdbfdc" }),
   aurora: Object.freeze({ color: "#0b0c0b", symbolColor: "#b4bab4" }),
-  corso: Object.freeze({ color: "#f4f0e6", symbolColor: "#5e584f" }),
-  "corso-night": Object.freeze({ color: "#121513", symbolColor: "#aeb3ac" }),
+  corso: Object.freeze({ color: "#ffffff", symbolColor: "#46524b" }),
+  "corso-night": Object.freeze({ color: "#101714", symbolColor: "#b1bdb6" }),
 });
 
 const DEFAULT_SKIN = "midnight";

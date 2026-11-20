@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/figtree";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
 
@@ -1113,48 +1114,52 @@
   --identity-chrome: #B3BAC4;
 }
 
+/* ── Corso ──────────────────────────────────────────────────────────────────
+   The Corso look ("Alpine"): fresh snow, evergreen and aspen gold. White ground, one evergreen accent, gold kept for
+   what needs the person (the warning token). Figtree, and rounder corners than the other skins.
+   ───────────────────────────────────────────────────────────────────────── */
 [data-skin="corso"] {
   --code-color-scheme: light;
-  --color-app: #f4f0e6;
-  --color-panel: #eae4d6;
-  --color-raised: #ddd6c6;
-  --color-raised-hover: #d1c9b7;
+  --color-app: #ffffff;
+  --color-panel: #f2f5f3;
+  --color-raised: #e6ece8;
+  --color-raised-hover: #dde9e2;
   --color-composer: #ffffff;
-  --color-composer-ring: transparent;
-  --color-card: #fbf8f1;
-  --color-menu: #fbf8f1;
+  --color-composer-ring: #dfe5e1;
+  --color-card: #f4f7f5;
+  --color-menu: #ffffff;
   --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
   --color-menu-active: var(--color-raised);
-  --color-inset: #e3dccc;
-  --color-control: #d6d0c1;
-  --color-hairline: #c9bfab;
+  --color-inset: #eef2ef;
+  --color-control: #d3ddd7;
+  --color-hairline: #c9d3cd;
 
-  --color-ink: #1b1a17;
-  --color-ink-secondary: #4f4a43;
-  --color-ink-tertiary: #55504a;
+  --color-ink: #16211c;
+  --color-ink-secondary: #46524b;
+  --color-ink-tertiary: #55615a;
 
-  --color-accent: #2a6f69;
-  --color-accent-border: #3a827b;
-  --color-accent-text: #24625c;
-  --color-focus: #24625c;
+  --color-accent: #1e5b45;
+  --color-accent-border: #2a7257;
+  --color-accent-text: #1e5b45;
+  --color-focus: #1e5b45;
   --color-accent-ink: #ffffff;
-  --color-bubble-user: #e6dfd0;
-  --color-bubble-user-ink: #1b1a17;
+  --color-bubble-user: #e9efeb;
+  --color-bubble-user-ink: #16211c;
 
-  --color-success: #3f6b47;
-  --color-danger: #a33a32;
+  --color-success: #2f6f4c;
+  --color-danger: #b3362f;
   --color-danger-ink: #ffffff;
   --color-success-ink: #ffffff;
-  --color-warning: #8a521c;
-  --color-scrollbar: #cbc1ad;
-  --color-maus-line: #5e584f;
+  --color-warning: #7a5a0e;
+  --color-scrollbar: #c3ccc6;
+  --color-maus-line: #4a5650;
 
-  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont,
+  --font-sans: "Figtree Variable", "Figtree", -apple-system, BlinkMacSystemFont,
     "Segoe UI", system-ui, sans-serif;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
-  --radius-2xl: 16px; --radius-3xl: 24px; --radius-4xl: 32px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-xs: 3px; --radius-sm: 6px; --radius-md: 8px;
+  --radius-2xl: 22px; --radius-3xl: 28px; --radius-4xl: 32px;
   --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
   --identity-green: #007e48;
   --identity-blue: #1b69da;
@@ -1170,48 +1175,49 @@
   --identity-chrome: #636e7f;
 }
 
+/* Corso Night: the same look after dark, on deep spruce rather than black. */
 [data-skin="corso-night"] {
   --code-color-scheme: dark;
-  --color-app: #121513;
-  --color-panel: #181c19;
-  --color-raised: #262b27;
-  --color-raised-hover: #303631;
-  --color-composer: #262b27;
+  --color-app: #101714;
+  --color-panel: #0c1210;
+  --color-raised: #1f2a25;
+  --color-raised-hover: #26332d;
+  --color-composer: #1a2420;
   --color-composer-ring: transparent;
-  --color-card: #1e2320;
-  --color-menu: #1e2320;
+  --color-card: #18211d;
+  --color-menu: #1a2420;
   --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
   --color-menu-active: var(--color-raised);
-  --color-inset: #0d0f0e;
-  --color-control: #262b27;
-  --color-hairline: #39403b;
+  --color-inset: #0b100e;
+  --color-control: #2f3d36;
+  --color-hairline: #33413a;
 
-  --color-ink: #eceae4;
-  --color-ink-secondary: #aeb3ac;
-  --color-ink-tertiary: #9aa098;
+  --color-ink: #ecf1ee;
+  --color-ink-secondary: #b1bdb6;
+  --color-ink-tertiary: #9eaaa3;
 
-  --color-accent: #34766f;
-  --color-accent-border: #5aa79e;
-  --color-accent-text: #7cc4b9;
-  --color-focus: #7cc4b9;
+  --color-accent: #2a7257;
+  --color-accent-border: #4fa583;
+  --color-accent-text: #7fcaa8;
+  --color-focus: #7fcaa8;
   --color-accent-ink: #ffffff;
-  --color-bubble-user: #2c322e;
-  --color-bubble-user-ink: #eceae4;
+  --color-bubble-user: #24302a;
+  --color-bubble-user-ink: #ecf1ee;
 
-  --color-success: #79b882;
-  --color-danger: #df7a72;
-  --color-danger-ink: #200c0a;
-  --color-success-ink: #0e1a10;
-  --color-warning: #dba660;
-  --color-scrollbar: #444c46;
-  --color-maus-line: #aeb3ac;
+  --color-success: #6fc394;
+  --color-danger: #ef8a80;
+  --color-danger-ink: #22100d;
+  --color-success-ink: #0b1a12;
+  --color-warning: #e9b23a;
+  --color-scrollbar: #3a4842;
+  --color-maus-line: #b1bdb6;
 
-  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont,
+  --font-sans: "Figtree Variable", "Figtree", -apple-system, BlinkMacSystemFont,
     "Segoe UI", system-ui, sans-serif;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
-  --radius-2xl: 16px; --radius-3xl: 24px; --radius-4xl: 32px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-xs: 3px; --radius-sm: 6px; --radius-md: 8px;
+  --radius-2xl: 22px; --radius-3xl: 28px; --radius-4xl: 32px;
   --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
   --identity-green: #009957;
   --identity-blue: #377FE6;
