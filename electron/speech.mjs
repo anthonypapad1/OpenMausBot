@@ -28,6 +28,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(__dirname, "resources", "speech-helper.swift");
 const INFO = path.join(__dirname, "resources", "speech-helper-Info.plist");
 // A signed app bundle must never be rewritten: lazy compilation would break its seal.
+// The packaged name matches mac.extraResources in electron-builder.yml.
 const BUNDLE = app.isPackaged
   ? path.join(process.resourcesPath, "Corso Speech.app")
   : speechHelperBundle;

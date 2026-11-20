@@ -1,9 +1,20 @@
-appId: com.openmausbot.app
-productName: OpenMausBot
-artifactName: OpenMausBot-${version}-${arch}.${ext}
+# appId is the macOS bundle id; electron/cua.mjs passes the same id to the
+# embedded CUA driver as its host so macOS permissions land on this app.
+appId: ai.runcorso.desktop
+productName: Corso
+artifactName: Corso-${version}-${arch}.${ext}
+
+# Electron names the per-user data folder (~/Library/Application Support/<name>
+# on macOS, and the "<name> Safe Storage" keychain item that encrypts saved
+# credentials) after package.json productName, falling back to name. Setting it
+# only in the packaged package.json keeps the dev profile (`electron .`, folder
+# "openmausbot") untouched while installed builds use "Corso". The bots' own
+# data stays in ~/.openmausbot (OMB_DATA_DIR) either way.
+extraMetadata:
+  productName: Corso
 
 protocols:
-  - name: OpenMausBot package install
+  - name: Corso package install
     schemes: [openmausbot]
 
 # In-app auto-update reads latest-mac.yml + the .zip (macOS) or latest.yml +
@@ -37,6 +48,7 @@ files:
   - "!electron/resources/speech-helper"
   - "!electron/resources/speech-helper.swift"
   - "!electron/resources/speech-helper-Info.plist"
+  - "!electron/resources/Corso Speech.app/**"
   - "!electron/resources/OpenMausBot Speech.app/**"
   # The Teach a skill recorder is gone, but a machine that once ran
   # `pnpm build:recorder` may still hold its helper build; never ship it.
@@ -112,8 +124,10 @@ mac:
   entitlementsInherit: build/entitlements.mac.plist
   # the dictation helper is a signed background app — Windows and Linux never see it
   extraResources:
-    - from: electron/resources/OpenMausBot Speech.app
-      to: OpenMausBot Speech.app
+    # Bundle name shared with electron/build-speech-helper.mjs (builds it) and
+    # electron/speech.mjs (finds it in Resources); all three change together.
+    - from: electron/resources/Corso Speech.app
+      to: Corso Speech.app
     # CUA must live outside ASAR. prepare-cua stages the signed executable and
     # a self-contained JS/native SDK bundle selected for macOS arm64.
     # ${arch} resolves per built arch — each bundle carries its own natives
@@ -133,14 +147,14 @@ mac:
     - from: dist-native/duckdb/darwin-${arch}/node_modules
       to: duckdb/node_modules
   extendInfo:
-    NSMicrophoneUsageDescription: OpenMausBot uses the microphone for voice dictation into the composer.
-    NSSpeechRecognitionUsageDescription: OpenMausBot transcribes your voice on-device to type messages for you.
-    NSAccessibilityUsageDescription: OpenMausBot uses Accessibility when you let a bot control this Mac.
-    NSLocalNetworkUsageDescription: OpenMausBot connects to your phones and your other computers on this network and on Tailscale.
+    NSMicrophoneUsageDescription: Corso uses the microphone for voice dictation into the composer.
+    NSSpeechRecognitionUsageDescription: Corso transcribes your voice on-device to type messages for you.
+    NSAccessibilityUsageDescription: Corso uses Accessibility when you let a bot control this Mac.
+    NSLocalNetworkUsageDescription: Corso connects to your phones and your other computers on this network and on Tailscale.
     NSBonjourServices:
       - _openmausbot._tcp
-    NSScreenCaptureUsageDescription: OpenMausBot uses Screen Recording so bots can see this Mac before acting.
-    NSDownloadsFolderUsageDescription: OpenMausBot looks in Downloads for the file your Grok Bot saved when you move it here.
+    NSScreenCaptureUsageDescription: Corso uses Screen Recording so bots can see this Mac before acting.
+    NSDownloadsFolderUsageDescription: Corso looks in Downloads for the file your Grok Bot saved when you move it here.
   # Notarization runs manually after the build (notarytool + staple),
   # mirroring the BlueyLite ship_release.sh flow.
   notarize: false
@@ -150,7 +164,7 @@ dmg:
   # ${arch} is load-bearing: without it the x64 dmg silently overwrites
   # the arm64 one when both arches build (this section overrides both the
   # top-level and mac-level artifactName, so it must carry the arch itself)
-  artifactName: OpenMausBot-${version}-${arch}.dmg
+  artifactName: Corso-${version}-${arch}.dmg
   # x/y are icon centres in points. electron-builder 26.15.3 sizes the window
   # from build/background.png and ignores dmg.window whenever a background is set.
   iconSize: 112
@@ -197,11 +211,11 @@ win:
 nsis:
   oneClick: true
   perMachine: false
-  shortcutName: OpenMausBot
+  shortcutName: Corso
   # Versioned, like the .dmg. The README's /latest/download/ button needs a
   # STABLE filename, so ship a second copy named OpenMausBot-setup.exe on the
   # release — the same trick as OpenMausBot.dmg beside OpenMausBot-${version}.dmg.
-  artifactName: OpenMausBot-${version}-setup.${ext}
+  artifactName: Corso-${version}-setup.${ext}
 
 linux:
   target:

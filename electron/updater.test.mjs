@@ -225,6 +225,8 @@ it("a downloaded update installs when the app quits, except a system package, wh
   const resourcesPath = process.resourcesPath;
   const appImage = process.env.APPIMAGE;
   const resources = mkdtempSync(join(tmpdir(), "omb-updater-package-"));
+  // Every published package carries electron-builder's update feed.
+  writeFileSync(join(resources, "app-update.yml"), "provider: github\n");
   try {
     for (const [os, marker, image, installsOnQuit] of [
       ["darwin", null, null, true],
@@ -253,11 +255,30 @@ it("a downloaded update installs when the app quits, except a system package, wh
   }
 });
 
+it("a package built without an update feed (the unsigned beta) never looks for updates", async () => {
+  const resourcesPath = process.resourcesPath;
+  const resources = mkdtempSync(join(tmpdir(), "omb-updater-nofeed-"));
+  try {
+    process.resourcesPath = resources;
+    const { updater, autoUpdater, handlers } = await load(() => true);
+    updater.startUpdater();
+    await vi.advanceTimersByTimeAsync(15_000);
+    await settle();
+    expect(autoUpdater.checkForUpdates).not.toHaveBeenCalled();
+    expect((await handlers.get("update:get-state")({})).status).toBe("idle");
+  } finally {
+    process.resourcesPath = resourcesPath;
+    rmSync(resources, { recursive: true, force: true });
+  }
+});
+
 it("a downloaded update installs by itself at a quiet moment on macOS and Windows, and Linux installs stay the person's", async () => {
   const platform = Object.getOwnPropertyDescriptor(process, "platform");
   const resourcesPath = process.resourcesPath;
   const appImage = process.env.APPIMAGE;
   const resources = mkdtempSync(join(tmpdir(), "omb-updater-quiet-"));
+  // Every published package carries electron-builder's update feed.
+  writeFileSync(join(resources, "app-update.yml"), "provider: github\n");
   const quiet = { locked: () => true, idleMs: () => 0, typedAt: () => 0, shown: () => true, busy: () => null, work: async () => null, watch: () => {} };
   try {
     for (const [os, marker, image, installs] of [
