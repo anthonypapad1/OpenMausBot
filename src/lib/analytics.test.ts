@@ -3,6 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { analyticsEnabled, initAnalytics, optAction, setAnalyticsEnabled } from "./analytics";
 import { appVersion } from "./app-links";
 
+// A build with Corso's analytics key; without one, nothing is ever sent (see analytics.ts).
+vi.stubEnv("VITE_CORSO_POSTHOG_KEY", "phc_test");
+
 // `loads` counts evaluations of posthog-js (an opted-out session must leave it at 0); `calls` is what would reach PostHog.
 const ph = vi.hoisted(() => {
   const ph = {
@@ -85,6 +88,22 @@ async function freshAnalytics() {
 }
 
 const OPENED = ["init", "register", "capture app_first_open", "capture app_opened"];
+
+describe("a build without Corso's analytics key", () => {
+  it("never loads posthog-js, so nothing leaves the computer", async () => {
+    vi.stubEnv("VITE_CORSO_POSTHOG_KEY", "");
+    try {
+      const fresh = await freshAnalytics();
+      await fresh.initAnalytics();
+      fresh.setAnalyticsEnabled(true);
+      await fresh.initAnalytics();
+      expect(ph.loads).toBe(0);
+      expect(ph.calls).toEqual([]);
+    } finally {
+      vi.stubEnv("VITE_CORSO_POSTHOG_KEY", "phc_test");
+    }
+  });
+});
 
 describe("optAction", () => {
   it("initialises on the first opt-in of a session that started off", () => {

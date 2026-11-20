@@ -1,7 +1,12 @@
 const TOKEN = /^[0-9a-f]{64}$/;
 
-/** Corso's connected-apps service (cloudflare/composio-broker): the packaged desktop app and a Cloud home use it. */
-export const DEFAULT_MANAGED_COMPOSIO_BROKER_URL = "https://openmausbot-composio.milindsoni201.workers.dev";
+/**
+ * The connected-apps service (cloudflare/composio-broker) a packaged app uses when the person has no Composio key of
+ * their own. Empty: the address this fork came with is OpenMausBot's, which would hold a Corso user's app sign-ins.
+ * Corso deploys its own copy of cloudflare/composio-broker before this is set; until then apps connect with the
+ * person's own Composio key, or by signing in once in the bot's browser.
+ */
+export const DEFAULT_MANAGED_COMPOSIO_BROKER_URL = "";
 
 /** OMB_COMPOSIO_BROKER=off: nothing reaches the managed service, whatever else is set. */
 export function managedComposioBrokerOff(environment = process.env) {
