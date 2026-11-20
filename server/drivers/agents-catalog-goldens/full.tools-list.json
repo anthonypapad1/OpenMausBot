@@ -2436,7 +2436,7 @@
     },
     {
       "name": "deal_save",
-      "description": "Add a deal to the shared deal list, or change one: only the fields given change.",
+      "description": "Add a deal to the shared deal list, or change one: only the fields given change. Add to its notes with notes_append; notes replaces them all.",
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
@@ -2486,7 +2486,12 @@
             "type": "string"
           },
           "notes": {
-            "type": "string"
+            "type": "string",
+            "description": "Replaces every note, other bots' too."
+          },
+          "notes_append": {
+            "type": "string",
+            "description": "Added as a new line."
           },
           "clear": {
             "type": "array",
@@ -2543,6 +2548,16 @@
           "kind": {
             "type": "string",
             "description": "Such as inspection_objection, inspection_resolution, appraisal, loan, title, earnest_money, closing, other."
+          },
+          "clear": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "due_time"
+              ]
+            },
+            "description": "Fields to empty."
           }
         },
         "required": [

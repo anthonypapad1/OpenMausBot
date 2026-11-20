@@ -1,7 +1,7 @@
 // The shared deal list's tools: every bot reads and writes the same deals, parties, deadlines, documents and activity.
 // The internal route (server/routes/deals.ts) checks each input in full and keeps the rows; these schemas say the shape.
 import {
-  DEADLINE_KINDS, DEADLINE_STATUSES, DEAL_CLEARABLE, DEAL_LIST_FILTERS, DEAL_SIDES, DEAL_STATUSES, DOCUMENT_STATUSES, PARTY_CLEARABLE, PARTY_ROLES,
+  DEADLINE_CLEARABLE, DEADLINE_KINDS, DEADLINE_STATUSES, DEAL_CLEARABLE, DEAL_LIST_FILTERS, DEAL_SIDES, DEAL_STATUSES, DOCUMENT_STATUSES, PARTY_CLEARABLE, PARTY_ROLES,
 } from "../../shared/deals.ts";
 import type { ToolCallContext, ToolCallResult } from "./agents-call.ts";
 import type { Json } from "./agents-client.ts";
@@ -33,7 +33,7 @@ export const DEAL_TOOL_DEFINITIONS = [
   },
   {
     name: "deal_save",
-    description: "Add a deal to the shared deal list, or change one: only the fields given change.",
+    description: "Add a deal to the shared deal list, or change one: only the fields given change. Add to its notes with notes_append; notes replaces them all.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -47,7 +47,8 @@ export const DEAL_TOOL_DEFINITIONS = [
         closing_date: DATE,
         transaction_url: { type: "string", maxLength: 2000, description: "The deal's link in the transaction system, such as CTM eContracts." },
         transaction_id: { type: "string", maxLength: 200 },
-        notes: { type: "string", maxLength: 4000 },
+        notes: { type: "string", maxLength: 4000, description: "Replaces every note, other bots' too." },
+        notes_append: { type: "string", maxLength: 2000, description: "Added as a new line." },
         clear: clear(DEAL_CLEARABLE),
       },
     },
@@ -66,6 +67,7 @@ export const DEAL_TOOL_DEFINITIONS = [
         due_time: { type: "string", description: "HH:MM, 24-hour." },
         status: { type: "string", enum: DEADLINE_STATUSES },
         kind: { type: "string", description: `Such as ${DEADLINE_KINDS.join(", ")}.` },
+        clear: clear(DEADLINE_CLEARABLE),
       },
       required: ["deal_id"],
     },

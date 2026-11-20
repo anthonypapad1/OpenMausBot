@@ -27,7 +27,10 @@ export type PartyRole = (typeof PARTY_ROLES)[number];
 
 /** The fields a save empties when it names them in `clear`. */
 export const DEAL_CLEARABLE = ["price", "contract_date", "closing_date", "transaction_url", "transaction_id", "notes"] as const;
+export const DEADLINE_CLEARABLE = ["due_time"] as const;
 export const PARTY_CLEARABLE = ["email", "phone"] as const;
+/** The most a deal's notes hold, however they are added to. */
+export const DEAL_NOTES_MAX = 20_000;
 
 export interface Deal {
   id: string;

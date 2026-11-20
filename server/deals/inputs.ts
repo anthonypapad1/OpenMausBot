@@ -3,7 +3,7 @@
 import { z } from "zod";
 
 import {
-  DEADLINE_STATUSES, DEAL_CLEARABLE, DEAL_LIST_FILTERS, DEAL_SIDES, DEAL_STATUSES, DOCUMENT_STATUSES, PARTY_CLEARABLE, PARTY_ROLES,
+  DEADLINE_CLEARABLE, DEADLINE_STATUSES, DEAL_CLEARABLE, DEAL_LIST_FILTERS, DEAL_SIDES, DEAL_STATUSES, DOCUMENT_STATUSES, PARTY_CLEARABLE, PARTY_ROLES,
 } from "../../shared/deals.ts";
 
 export const DEAL_ID = /^[a-z]+-[0-9a-f]{12}$/;
@@ -48,6 +48,7 @@ export const dealSaveInput = z.object({
   transaction_url: optional(z.url({ protocol: /^https?$/, error: "must be a full link, like https://…" }).max(2000)),
   transaction_id: optional(text(200)),
   notes: optional(text(4000)),
+  notes_append: optional(text(2000)),
   clear: clear(DEAL_CLEARABLE),
 }).strict();
 
@@ -59,6 +60,7 @@ export const deadlineSaveInput = z.object({
   due_time: optional(time),
   status: optional(z.enum(DEADLINE_STATUSES)),
   kind: optional(z.string().regex(KIND, "must be lowercase words joined by _, like inspection_objection")),
+  clear: clear(DEADLINE_CLEARABLE),
 }).strict();
 
 export const documentSaveInput = z.object({
