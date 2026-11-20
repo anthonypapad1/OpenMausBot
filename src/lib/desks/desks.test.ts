@@ -8,6 +8,20 @@ import { newBotDefaultsSchema } from "../../../server/new-bot-defaults";
 
 const DEAL_TOOLS = ["deals_list", "deal_get", "deal_save", "deal_deadline_save", "deal_document_save", "deal_party_save", "deal_activity_add"];
 
+/** The deal-list tools' argument names and values (shared/deals.ts, server/deals/inputs.ts). */
+const DEAL_ARGUMENTS = [
+  "deal_id", "deadline_id", "document_id", "party_id", "address", "side", "price", "status", "contract_date", "closing_date",
+  "transaction_url", "transaction_id", "notes", "clear", "label", "due_date", "due_time", "kind", "name", "required", "role",
+  "email", "phone", "summary",
+];
+const DEAL_VALUES = [
+  "buyer", "seller", "both", "pre_contract", "under_contract", "closed", "cancelled", "open", "all", "done", "waived",
+  "missing", "received", "signed", "needs_signature", "lender", "title", "listing_agent", "buyer_agent", "other",
+  "inspection_objection", "inspection_resolution", "appraisal", "loan", "earnest_money", "closing",
+];
+/** Deadline kinds the contract skill adds beyond the ones the tools suggest; the tools keep any snake_case kind. */
+const MORE_KINDS = ["association", "disclosure", "survey", "inspection", "insurance", "due_diligence", "possession"];
+
 const defaults = (): NewBotDefaults => ({
   profile: { name: "Suggested", modelSelection: { instanceId: "claude", model: "opus" }, approvalMode: "ask" },
   memory: { "MEMORY.md": "- The person's own default note" },
@@ -55,10 +69,19 @@ describe("Corso's four Desks", () => {
 
   it("call only the deal-list tools by their contract names", () => {
     for (const bot of DESK_BOTS) {
-      for (const tool of everything(bot).match(/\bdeals?_[a-z_]+\b/g) ?? []) expect(DEAL_TOOLS, `${bot.id} calls ${tool}`).toContain(tool);
+      const tools = (everything(bot).match(/\bdeals?_[a-z_]+\b/g) ?? []).filter((word) => !DEAL_ARGUMENTS.includes(word));
+      for (const tool of tools) expect(DEAL_TOOLS, `${bot.id} calls ${tool}`).toContain(tool);
     }
     const contract = readyBot("deal-desk")!.skills!.find((text) => skillName(text) === "read-purchase-contract")!;
     for (const tool of ["deals_list", "deal_save", "deal_party_save", "deal_deadline_save", "deal_document_save", "deal_activity_add"]) expect(contract).toContain(tool);
+  });
+
+  it("use only the deal-list tools' own argument names and values", () => {
+    const allowed = new Set([...DEAL_TOOLS, ...DEAL_ARGUMENTS, ...DEAL_VALUES, ...MORE_KINDS, "request_sign_in"]);
+    for (const kind of MORE_KINDS) expect(kind).toMatch(/^[a-z][a-z0-9_]{0,39}$/);
+    for (const bot of DESK_BOTS) {
+      for (const [, word] of everything(bot).matchAll(/`([a-z_]+)`/g)) expect(allowed.has(word!), `${bot.id} uses \`${word}\``).toBe(true);
+    }
   });
 
   it("suggest their schedules paused: Deal Desk and Inbox Desk in the morning, Compliance Desk daily", () => {

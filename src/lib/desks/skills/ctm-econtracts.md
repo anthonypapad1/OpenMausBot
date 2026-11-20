@@ -36,7 +36,7 @@ When you ask, say exactly what you will click, on which transaction, and what ha
 
 - Transactions are usually listed by property address. Search with the street number and name, not the full address.
 - A transaction's documents show each form's status: draft, out for signature, partially signed, or fully executed. Map them to the deal list as `needs_signature` (draft, out for signature, partially signed) or `signed` (fully executed).
-- Note the CTM transaction link or id on the deal with `deal_save`, so you and the other Desks can open it again.
+- Save the CTM link and id on the deal with `deal_save` (`transaction_url`, `transaction_id`), so you and the other Desks can open it again.
 
 ## After you've looked
 

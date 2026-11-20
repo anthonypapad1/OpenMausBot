@@ -51,17 +51,17 @@ A deal on both sides gets every row.
 
 ## Checking a deal
 
-1. `deal_get` for the deal. Pick the rows that apply to its side.
-2. Make sure each applicable document is on the deal. Add any that are not with `deal_document_save`: status `missing`, `required` as the checklist says.
+1. `deals_list` (status `open`), then `deal_get` for each deal. Pick the rows that apply to its `side` (`buyer`, `seller` or `both`). A `pre_contract` deal has no contract date yet: check only what is already on it.
+2. Make sure each applicable document is on the deal. Add any that are not with `deal_document_save`: `name` as the checklist says it, `status` `missing`, and `required` true or false as the checklist says. To change one already there, pass its `document_id`.
 3. For each required document, compare its status with its due date:
    - `signed` or `received`: fine. A document that needs signatures and shows `received` but not `signed`: check it, and mark it `needs_signature` if signatures are missing.
    - `missing` or `needs_signature`, past due: **critical**, "Required document overdue: [name]".
    - `missing` or `needs_signature`, due within 3 days: **warning**, "Required document due soon: [name]".
    - Otherwise: not urgent yet. Leave it.
 4. Also flag:
-   - No contract date 2 days after the deal was added: **warning**, "Contract date not set, so due dates can't be worked out."
-   - A deal with a contract date still `draft` after 30 days: **info**, "In draft for over 30 days."
-   - A deal `active` with no activity for 7 days: **warning**, "No activity for over 7 days."
+   - An `under_contract` deal with no contract date: **warning**, "Contract date not set, so due dates can't be worked out."
+   - A deal with a contract date still marked `pre_contract`: **info**, "Has a contract date but is still marked pre-contract."
+   - An `under_contract` deal with no activity for 7 days: **warning**, "No activity for over 7 days."
    - A deal near closing that hasn't moved for 7 days: **warning**, "Check status with title and the lender."
 5. If CTM eContracts is where signatures happen, check signature status there with the `ctm-econtracts` skill. Read only.
 

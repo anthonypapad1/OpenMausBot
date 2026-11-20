@@ -9,7 +9,7 @@ description: Triage the inbox and write a short daily brief - what needs a reply
 
 - Unread and recent email from the last 24 hours (or since the last brief), from the connected email app.
 - Today's calendar: showings, inspections, closings, calls.
-- The deal list: `deals_list` for open deals, then `deal_get` for any deal an email or event touches. Note deadlines due today and tomorrow.
+- The deal list: `deals_list` for open deals (the default), then `deal_get` for any deal an email or event touches. Note deadlines due today and tomorrow.
 
 ## 2. Sort the email
 

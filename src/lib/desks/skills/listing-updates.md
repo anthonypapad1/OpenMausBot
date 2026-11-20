@@ -7,11 +7,11 @@ description: Run a listing from prep to contract - the listing prep checklist, s
 
 ## Keeping track of listings
 
-Save each listing on the deal list with `deal_save`: address, side `seller`, list price as the price, status `draft` until it goes under contract, and notes for the list date and MLS number. Save the sellers with `deal_party_save` (role `seller`). Once it goes under contract, the Deal Desk takes the contract from there.
+Save each listing on the deal list with `deal_save`: `address`, `side` `seller`, the list price as `price`, `status` `pre_contract` until it goes under contract, and `notes` for the list date and MLS number. Save the sellers with `deal_party_save` (`role` `seller`). Once it goes under contract, set `status` `under_contract`; the Deal Desk takes the contract from there.
 
 ## Listing prep checklist
 
-When the agent takes a new listing, track these as documents with `deal_document_save` (status `missing` until they're in):
+When the agent takes a new listing, track these as documents with `deal_document_save` (`status` `missing` until they're in, then `received` or `signed`; `required` as below):
 
 | Item | Required |
 | --- | --- |
@@ -37,7 +37,7 @@ When the agent forwards showing feedback (from email, a showing service, or a no
 
 ## Weekly seller update
 
-For each active listing, draft an update to the sellers:
+For each `pre_contract` listing, draft an update to the sellers:
 
 - Showings this week and the main feedback.
 - Any activity worth knowing (new nearby listings or sales, if the agent shared them).
@@ -47,7 +47,7 @@ Warm, short, plain. 2 to 3 short paragraphs. No price-drop nudging unless the ag
 
 ## Seller check-ins
 
-If a seller hasn't heard from the agent in 14 days or more (check recent activity on the deal), draft a check-in:
+If a seller hasn't heard from the agent in 14 days or more (check the deal's recent activity in `deal_get`), draft a check-in:
 
 - 2 to 3 short paragraphs, warm but professional.
 - Offer a quick market update or a showing recap, and ask one open-ended question.

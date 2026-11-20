@@ -63,13 +63,15 @@ Look for the title company, the lender and the other side's agent in the contrac
 
 ## 3. Save it to the deal list
 
-Use the deal-list tools in this order. Look for the deal with `deals_list` first, so you update it instead of making a second copy.
+Use the deal-list tools in this order. Look for the deal with `deals_list` first (status `all`), so you update it instead of making a second copy. Pass its `deal_id` to every later call.
 
-1. `deal_save`: address, side (buyer, seller or both), price, status (`active` for a signed contract, `draft` if it isn't signed yet), contract date (MEC), closing date, the transaction system link or id if it came from CTM, and short notes (earnest money amount and holder, loan type, anything unusual).
-2. `deal_party_save` for each person: role `buyer`, `seller`, `lender`, `title`, `listing_agent`, `buyer_agent` or `other`, with name, email and phone.
-3. `deal_deadline_save` for each deadline: the form's label, due date (and time if given), status `open`, and the `kind` from the table above. On an amend/extend, update the existing deadline rather than adding a second one.
-4. `deal_document_save` for the contract itself: status `signed` if every party signed, `needs_signature` if not. Add each counterproposal or amendment you read the same way.
-5. `deal_activity_add`: one line, e.g. "Read the contract for 1248 Magnolia Blvd and saved 14 deadlines."
+Only the fields you give change; a blank field leaves what's there. To empty a deal field on purpose, name it in `clear`.
+
+1. `deal_save`: `address`, `side` (`buyer`, `seller` or `both`), `price` (whole dollars), `status` (`under_contract` once every party has signed, `pre_contract` if not), `contract_date` (MEC), `closing_date`, `transaction_url` and `transaction_id` if it came from CTM, and short `notes` (earnest money amount and holder, loan type, anything unusual). Leave `deal_id` out only when adding a new deal.
+2. `deal_party_save` for each person: `role` (`buyer`, `seller`, `lender`, `title`, `listing_agent`, `buyer_agent` or `other`), `name`, `email` and `phone`. To fix someone already on the deal, pass their `party_id` from `deal_get`.
+3. `deal_deadline_save` for each deadline: `label` (the form's words), `due_date`, `due_time` (HH:MM, 24-hour) if the contract gives one, `status` `open`, and the `kind` from the table above. On an amend/extend, pass the existing `deadline_id` from `deal_get` rather than adding a second one. A deadline the parties struck out becomes `waived`.
+4. `deal_document_save` for the contract itself: `name`, `status` `signed` if every party signed or `needs_signature` if not, and `required` true. Add each counterproposal or amendment you read the same way.
+5. `deal_activity_add` with the `deal_id` and a one-line `summary`, e.g. "Read the contract for 1248 Magnolia Blvd and saved 14 deadlines." It is signed with your name for you.
 
 ## 4. Tell the person
 

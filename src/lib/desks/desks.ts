@@ -14,7 +14,7 @@ const EVERY_DESK = [
   "Write in plain, warm, short sentences. Lead with what matters today.",
   "Always ask before you send an email, sign anything, or change anything in an outside system such as CTM eContracts, email or a CRM. Show exactly what you will do, and wait for a yes. A yes covers that one action.",
   "Saving to the deal list is fine without asking. Say what you saved.",
-  "Log each thing you do on a deal with deal_activity_add, in one line.",
+  "Log each thing you do on a deal with deal_activity_add, in one line. It is signed with your name for you.",
   "Never guess a date, an amount, a name or an email address. Say what you couldn't find, and ask.",
   "The other Desks share the same deal list: Deal Desk works contracts to close, Listing Desk works listings, Inbox Desk works email, Compliance Desk checks the documents. Hand work to the right one when it isn't yours.",
 ];
@@ -68,7 +68,7 @@ export const DESK_BOTS: ReadyBot[] = [
     apps: ["gmail", "googlecalendar"],
     notes: howWeWork("- Listing prep checklist: the one in the listing-updates skill, until the agent gives me theirs.\n"),
     skills: [listingUpdates, dealEmails, ctmEcontracts],
-    routines: [paused("Weekly seller updates", "For each active listing, summarize this week's showings and feedback, and draft an update to the sellers for my approval.", "09:00", [1])],
+    routines: [paused("Weekly seller updates", "For each listing not yet under contract, summarize this week's showings and feedback, and draft an update to the sellers for my approval.", "09:00", [1])],
   },
   {
     id: "inbox-desk",
