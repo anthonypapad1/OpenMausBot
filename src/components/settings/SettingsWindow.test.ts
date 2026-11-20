@@ -14,6 +14,7 @@ const fixture = vi.hoisted(() => ({
   dispatch: vi.fn(),
   switches: [] as Array<{ "aria-labelledby"?: string; checked: boolean; onClick?: (event: never) => void }>,
 }));
+vi.mock("../../../electron/corso-cloud.mjs", () => ({ CORSO_CLOUD_OFFERED: true }));
 vi.mock("@/state/store", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/state/store")>(),
   api: vi.fn(() => new Promise(() => {})),
