@@ -85,7 +85,7 @@ import {
   doubleEnterSteersQueue,
   roomSteersQueued,
 } from "./ComposerQueuedMessages";
-import { skillAuthoringEnabled } from "@/lib/feature-flags";
+import { bugReportsEnabled, skillAuthoringEnabled } from "@/lib/feature-flags";
 import { mentionChoicesForQuery, mentionQueryAt } from "@/lib/mentions"; import { mentionPicksFor, restoreMentionPicks } from "@/lib/mention-picks";
 import { serializeThreadRefs, threadTokenFromPaste, threadTokenSpacing } from "@/lib/thread-refs";
 import {
@@ -329,7 +329,7 @@ export function Composer({
   }, [slash, dismissedSlashAt, group, bot, canLearn, state.instances, locale, slashSkills]);
   const commandPickerOpen = commandCandidates.length > 0;
 
-  const mention = mentionQueryAt(text, caret); const teammates = useTeammates(); const viewer = useViewerEmail();
+  const mention = mentionQueryAt(text, caret); const teammates = useTeammates(); const viewer = useViewerEmail(); const bugReports = bugReportsEnabled(state.config);
   const candidates = useMemo(() => {
     if (!mention || mention.start === dismissedAt) return [];
     const pool: MentionChoice[] = group
@@ -340,8 +340,8 @@ export function Composer({
       : bots
           .filter((member) => member.id !== bot?.id && !member.hidden && !hiddenFromSidebar(member, viewer))
           .map((member) => ({ id: member.id, name: member.name, bot: member }));
-    return mentionChoicesForQuery([...pool, ...teammateChoices(teammates.people), DEVS_CHOICE], mention.query);
-  }, [mention, dismissedAt, bots, bot?.id, group, members, teammates, viewer]);
+    return mentionChoicesForQuery([...pool, ...teammateChoices(teammates.people), ...(bugReports ? [DEVS_CHOICE] : [])], mention.query);
+  }, [mention, dismissedAt, bots, bot?.id, group, members, teammates, viewer, bugReports]);
   const mentionEveryoneCount = (members ?? []).filter((member) => !member.hidden).length;
   const mentionPickerOpen = candidates.length > 0;
   const commandMotion = useMenuMotion(commandPickerOpen);
