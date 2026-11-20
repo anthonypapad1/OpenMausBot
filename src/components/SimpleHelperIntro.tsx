@@ -6,6 +6,7 @@ import { activeLocale, t } from "@/lib/i18n";
 import { detectSetupWithin, localSetupImport, setupImportApi } from "@/lib/setup-import";
 import { api, useStore, type Bot, type InstanceInfo, type Message } from "@/state/store";
 import { useTeamPeople, type TeamPeople } from "@/state/team-people";
+import { CORSO_CLOUD_OFFERED } from "../../electron/corso-cloud.mjs";
 import { freeFallback } from "../../shared/ai-ranking";
 import { greetingName } from "../../shared/greeting-name";
 import { followupText, type HelperFollowupFacts } from "../../shared/helper-followup";
@@ -163,6 +164,7 @@ export function SimpleHelperIntro({ botId, threadId, message, answered, followup
     onCloud: state.config?.cloudHome === true,
     team: Boolean(state.config?.team),
     remote: typeof window !== "undefined" && window.ogb?.remoteClient?.active === true,
+    offersCloud: CORSO_CLOUD_OFFERED,
     appsConnected: Boolean(look.apps?.length),
     phonePaired: look.phonePaired,
     importFound: look.importFound,

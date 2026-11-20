@@ -13,7 +13,7 @@ import { launchDialogShown, markLaunchDialog } from "@/lib/launch-dialogs";
 import { createDesktopPrefs, registerDesktopPrefs } from "../../electron/desktop-prefs.mjs";
 import { createUpdatesConsent, registerUpdatesConsent } from "../../electron/updates-consent.mjs";
 
-const f = vi.hoisted(() => ({ values: [] as unknown[], index: 0, effects: [] as EffectCallback[], state: {} as any, updater: null as any, dispatch: null as any, brand: "default",
+const f = vi.hoisted(() => ({ values: [] as unknown[], index: 0, effects: [] as EffectCallback[], state: {} as any, updater: null as any, dispatch: null as any, brand: "default", offersHidden: false,
   viewerEmail: undefined as string | null | undefined }));
 vi.mock("./Layer", () => ({ Layer: ({ children }: { children: ReactNode }) => children, useIsTopLayer: () => () => true }));
 vi.mock("react", async original => ({ ...await original<typeof import("react")>(),
@@ -31,7 +31,8 @@ vi.mock("./cloud-buy/NightCard", () => ({ NightCard: ({ children }: { children: 
 vi.mock("./whats-new/TeamPicture", () => ({ TeamPicture: () => null }));
 // Who Corso belongs to: unknown (as before the session answers) unless a test says otherwise.
 vi.mock("@/lib/default-bot", async original => ({ ...await original<typeof import("@/lib/default-bot")>(), useViewerEmail: () => f.viewerEmail }));
-vi.mock("@/lib/brand", () => ({ brandStatus: () => ({ brand: { name: "Corso" }, source: f.brand, file: "" }), productName: () => "Corso" }));
+vi.mock("@/lib/brand", () => ({ brandStatus: () => ({ brand: { name: "Corso" }, source: f.brand, file: "" }), productName: () => "Corso",
+  offersHidden: () => f.offersHidden || f.brand === "file" }));
 vi.mock("./Avatar", async original => ({ ...await original<typeof import("./Avatar")>(), MausAvatar: () => null }));
 vi.mock("./lazy-screens", async original => ({ ...await original<typeof import("./lazy-screens")>(), GrokMoveDialog: () => "THE MOVE DIALOG" }));
 vi.mock("@/components/EngineLibrary", () => ({ engineReady: (instance: { snapshot: { state: string; authenticated?: boolean } }) =>
@@ -145,7 +146,7 @@ beforeEach(() => {
   // The page's announcement cards live beside the component for the session; no test inherits another's.
   forgetAnnouncementCards();
   vi.clearAllMocks(); vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
-  storage = new Map(); f.values = []; f.index = 0; f.effects = []; f.updater = null; f.brand = "default"; f.dispatch = vi.fn(); now = NOW; desk = desktopMachine();
+  storage = new Map(); f.values = []; f.index = 0; f.effects = []; f.updater = null; f.brand = "default"; f.offersHidden = false; f.dispatch = vi.fn(); now = NOW; desk = desktopMachine();
   setLocale("en"); viewer = LOCAL_VIEWER; account = signedOut; snapshot = { status: "none" }; offer = TRIAL_OFFER;
   session = new Map(); f.viewerEmail = undefined;
   vi.stubGlobal("sessionStorage", { getItem: (key: string) => session.get(key) ?? null, setItem: (key: string, value: string) => session.set(key, value) });
@@ -1863,6 +1864,14 @@ describe("the Teams What's new", () => {
     expect(render(), "nothing else that launch").toBe("");
     const next = await relaunch();
     expect(next, "the others keep their order after it").toContain(GROK); expect(next).not.toContain(TITLE);
+  });
+
+  it("never where offers are hidden: no Teams popup, nor the Grok Bot popup after it", async () => {
+    returning(); desk.saved = null; storage.delete(GROK_MOVE_NOTICE); storage.delete(STAR_NOTICE);
+    f.offersHidden = true;
+    const html = await launch();
+    for (const hidden of [TITLE, GROK]) expect(html).not.toContain(hidden);
+    expect(launchNotice()).not.toBe(TEAMS_NOTICE);
   });
 
   it("a Cloud plan of one's own on this desktop: Start a team opens the app's own Add a Cloud; a desktop already in a team is only told", async () => {

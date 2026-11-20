@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { CORSO_CLOUD_OFFERED } from "../../electron/corso-cloud.mjs";
 
 import { cn } from "@/lib/cn";
 import type { SidebarDensity } from "@/lib/sidebar-preferences";
@@ -63,7 +64,7 @@ export function SidebarFooter({ density, simple = false, owner = null, archived,
       <SidebarFooterNav density={density} collapsed={toolsCollapsed} onToggleCollapsed={onToggleTools} />
       {density === "icons" ? (
         <>
-          <SidebarPhoneButton density={density} onOpen={() => dispatch(phoneSettingsAction())} />
+          {CORSO_CLOUD_OFFERED && <SidebarPhoneButton density={density} onOpen={() => dispatch(phoneSettingsAction())} />}
           <div className="flex flex-col items-center justify-center gap-1">
             <UpdateIndicator />
             <SidebarProfileMenu iconOnly />
