@@ -2041,6 +2041,11 @@ body {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+/* A first-run step's title takes focus from code so a screen reader reads the new step (FunnelSteps); it is never
+   tabbed to, so it draws no ring. */
+.welcome-screen h1[tabindex="-1"]:focus-visible {
+  outline: none;
+}
 /* Settings: nav items, identity rows, search results and whole-row buttons (link, fold and card rows) take an inset
    ring, so it is never clipped by the card or drawn into the nav's edge. */
 [data-settings-look] :is([data-settings-page], [data-settings-hit], [data-settings-key-result], [data-settings-rows] > button, [data-settings-rows] > * > button[aria-expanded], [data-settings-fold] > button, [data-settings-rows] > button[data-pair-with-cloud]):focus-visible {
