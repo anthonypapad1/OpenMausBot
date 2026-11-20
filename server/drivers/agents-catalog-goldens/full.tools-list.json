@@ -2382,6 +2382,285 @@
           "action"
         ]
       }
+    },
+    {
+      "name": "deals_list",
+      "description": "The shared deal list every bot works from: each deal with its next open deadline.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pre_contract",
+              "under_contract",
+              "closed",
+              "cancelled",
+              "open",
+              "all"
+            ],
+            "description": "Default open."
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "deal_get",
+      "description": "One deal with its parties, deadlines, documents and recent activity.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "From deals_list."
+          }
+        },
+        "required": [
+          "deal_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "deal_save",
+      "description": "Add a deal to the shared deal list, or change one: only the fields given change.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "Omit to add a deal."
+          },
+          "address": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "buyer",
+              "seller",
+              "both"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Dollars."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pre_contract",
+              "under_contract",
+              "closed",
+              "cancelled"
+            ]
+          },
+          "contract_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "closing_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "transaction_url": {
+            "type": "string",
+            "description": "The deal's link in the transaction system, such as CTM eContracts."
+          },
+          "transaction_id": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "clear": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price",
+                "contract_date",
+                "closing_date",
+                "transaction_url",
+                "transaction_id",
+                "notes"
+              ]
+            },
+            "description": "Fields to empty."
+          }
+        }
+      }
+    },
+    {
+      "name": "deal_deadline_save",
+      "description": "Add or change a deal's deadline; mark it done or waived once met.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "From deals_list."
+          },
+          "deadline_id": {
+            "type": "string",
+            "description": "From deal_get, to change one. Omit to add."
+          },
+          "label": {
+            "type": "string"
+          },
+          "due_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "due_time": {
+            "type": "string",
+            "description": "HH:MM, 24-hour."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "done",
+              "waived"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "description": "Such as inspection_objection, inspection_resolution, appraisal, loan, title, earnest_money, closing, other."
+          }
+        },
+        "required": [
+          "deal_id"
+        ]
+      }
+    },
+    {
+      "name": "deal_document_save",
+      "description": "Add or change a deal's document and where it stands.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "From deals_list."
+          },
+          "document_id": {
+            "type": "string",
+            "description": "From deal_get, to change one. Omit to add."
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "received",
+              "signed",
+              "needs_signature"
+            ]
+          },
+          "required": {
+            "type": "boolean",
+            "description": "On the broker's checklist. Default true."
+          }
+        },
+        "required": [
+          "deal_id"
+        ]
+      }
+    },
+    {
+      "name": "deal_party_save",
+      "description": "Add or change a person on a deal.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "From deals_list."
+          },
+          "party_id": {
+            "type": "string",
+            "description": "From deal_get, to change one. Omit to add."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "buyer",
+              "seller",
+              "lender",
+              "title",
+              "listing_agent",
+              "buyer_agent",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "clear": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "email",
+                "phone"
+              ]
+            },
+            "description": "Fields to empty."
+          }
+        },
+        "required": [
+          "deal_id"
+        ]
+      }
+    },
+    {
+      "name": "deal_activity_add",
+      "description": "Note on a deal, in one line, what you just did for it. Every bot and the person see it.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deal_id": {
+            "type": "string",
+            "description": "From deals_list."
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "deal_id",
+          "summary"
+        ]
+      }
     }
   ]
 }
