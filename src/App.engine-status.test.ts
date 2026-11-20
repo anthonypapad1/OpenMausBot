@@ -22,7 +22,7 @@ it("keeps a saved conversation visible through an unavailable engine status and 
     modelSelection: { instanceId: "claude", model: "claude-sonnet-5" },
     messages: [{ id: "saved", role: "user", text: "Saved conversation before the status failure", timestamp: 1 }],
   } as unknown as Bot;
-  state = { ...initialState, connected: true, hydrated: true, bots: [bot], selectedId: bot.id,
+  state = { ...initialState, connected: true, hydrated: true, activeView: "chat", bots: [bot], selectedId: bot.id,
     instances: [{ instanceId: "claude", driverKind: "claudeAgent", displayName: "Claude", models: { default: "claude-sonnet-5", options: [{ id: "claude-sonnet-5", label: "Sonnet" }] }, snapshot: { state: "unavailable", reason: "CLI probe timed out" } }],
   };
   const container = document.createElement("div");
