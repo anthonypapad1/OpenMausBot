@@ -90,6 +90,12 @@ describe("the pages", () => {
     expect(cloud.filter((found) => found.entry.id === "other-computers")).toEqual([]);
   });
 
+  it("leaves Phone & devices out, and its rows out of search, where the app offers no phone pairing", () => {
+    const off = fullContext({ phone: false });
+    expect(visiblePages(off).map((page) => page.id)).not.toContain("phone");
+    expect(find("pair a phone", off).filter((found) => found.entry.page === "phone" && !found.elsewhere)).toEqual([]);
+  });
+
   it("names Phone & devices the same on every place: there is no This server page", () => {
     for (const ctx of Object.values(PEOPLE)) expect(visiblePages(ctx).find((page) => page.id === "phone")?.labelKey).toBe("settings.section.phoneDevices");
     expect(JSON.stringify(SETTINGS_PAGES)).not.toContain("thisServer");

@@ -1,3 +1,5 @@
+import { CORSO_CLOUD_OFFERED } from "../../electron/corso-cloud.mjs";
+
 export interface Brand {
   name: string;
   tagline?: string;
@@ -31,6 +33,11 @@ export function productName(): string {
 
 export function brandStatus(): BrandStatus {
   return current;
+}
+
+/** No Cloud upsell, Team plan popup or sponsor's card: a white-label build, or Corso while its Cloud isn't offered. */
+export function offersHidden(): boolean {
+  return !CORSO_CLOUD_OFFERED || current.source === "file";
 }
 
 const HEX = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i;

@@ -6,6 +6,7 @@ import { SettingsModal } from "./SettingsModal";
 
 // These pin the card as always offered; the server decides who may act.
 const fixture = vi.hoisted(() => ({ section: "companion" as AppSettingsSection, config: undefined as { cloudHome?: boolean } | undefined, phonePairing: 0 }));
+vi.mock("../../electron/corso-cloud.mjs", () => ({ CORSO_CLOUD_OFFERED: true }));
 vi.mock("@/lib/interface-mode", () => ({ useAdvancedMode: () => true, setAdvancedMode: () => {} }));
 vi.mock("./DesktopCapabilities", () => ({ useDesktopCapabilities: () => ({ capabilities: {} }) }));
 vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => true }));

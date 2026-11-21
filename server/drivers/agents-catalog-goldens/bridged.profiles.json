@@ -754,5 +754,29 @@
       "find_tool",
       "use_tool"
     ]
+  },
+  "default+no-bug-reports": {
+    "bytes": 18079,
+    "sha256": "8d7ae5a27dc79cdeaad52a85fef14a07810ce96662c5be39f1b15a701eaac919",
+    "tools": [
+      "tool_result_read",
+      "list_room_targets",
+      "coordinate_bots",
+      "list_bots",
+      "list_rooms",
+      "select_computer",
+      "attach_file",
+      "publish_page",
+      "post_to_room",
+      "post_to_thread",
+      "request_credential",
+      "request_sign_in",
+      "fill_login",
+      "message_person",
+      "share",
+      "memory_update",
+      "find_tool",
+      "use_tool"
+    ]
   }
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AppWindow, Bot as BotIcon, Cloud, Download, Mail, Smartphone, Sparkles, type LucideIcon } from "lucide-react";
 
+import { CORSO_CLOUD_OFFERED } from "../../electron/corso-cloud.mjs";
 import { track } from "@/lib/analytics";
 import { INTRO_CHIPS, setupSteps, type IntroChip, type SetupStep } from "@/lib/default-bot";
 import { t } from "@/lib/i18n";
@@ -40,6 +41,7 @@ export function HelperSetup() {
     onCloud: state.config?.cloudHome === true,
     team: Boolean(state.config?.team),
     remote: typeof window !== "undefined" && window.ogb?.remoteClient?.active === true,
+    offersCloud: CORSO_CLOUD_OFFERED,
   });
   if (!steps.length) return null;
   return (

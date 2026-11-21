@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CORSO_CLOUD_OFFERED } from "../../electron/corso-cloud.mjs";
 import {
   ArrowUpRight,
   Archive,
@@ -586,7 +587,7 @@ export function SidebarProfileMenu({ iconOnly = false, rail = false, circle = fa
     : summary.signedIn === false || summary.plan === t("settings.account.free") ? t("sidebar.menu.plan.free") : summary.plan ?? undefined;
 
   const items = profileMenuItems({
-    phone: remote ? null : phoneDevicesItem(phoneState, place.name, () => openSettings("phone")),
+    phone: remote || !CORSO_CLOUD_OFFERED ? null : phoneDevicesItem(phoneState, place.name, () => openSettings("phone")),
     update: update?.item ?? null,
     updateTop: simpleUpdateTop(update),
     move: move.items,

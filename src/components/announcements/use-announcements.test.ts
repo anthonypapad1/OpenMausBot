@@ -17,6 +17,7 @@ vi.mock("@/state/store", () => ({
   }),
 }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
+vi.mock("../../../electron/corso-cloud.mjs", () => ({ CORSO_CLOUD_OFFERED: true }));
 const { useAnnouncements } = await import("./use-announcements");
 const { forgetAnnouncementCards } = await import("@/lib/announcements");
 const { api } = await import("@/state/store");

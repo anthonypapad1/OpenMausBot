@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { builtInBrowserEnabled, parseSkillReviewSteps, roomMemoryCaptureEnabled, savedStepsEnabled, shareLearnedSkillsMode, sharedComputersEnabled, showToolCallsEnabled, skillAuthoringEnabled, skillReviewEnabled, skillReviewSteps, skillReviewUnavailableEngines, usbPhoneTakeoverEnabled } from "./feature-flags";
+import { bugReportsEnabled, builtInBrowserEnabled, parseSkillReviewSteps, roomMemoryCaptureEnabled, savedStepsEnabled, shareLearnedSkillsMode, sharedComputersEnabled, showToolCallsEnabled, skillAuthoringEnabled, skillReviewEnabled, skillReviewSteps, skillReviewUnavailableEngines, usbPhoneTakeoverEnabled } from "./feature-flags";
 
 describe("experimental feature flags", () => {
   it("keeps skill authoring on by default, before and after the config arrives", () => {
@@ -67,6 +67,13 @@ describe("experimental feature flags", () => {
     expect(sharedComputersEnabled({ features: {} })).toBe(false);
     expect(sharedComputersEnabled({ features: { sharedComputers: false } })).toBe(false);
     expect(sharedComputersEnabled({ features: { sharedComputers: true } })).toBe(true);
+  });
+
+  it("offers @devs only when the server has somewhere to send reports", () => {
+    expect(bugReportsEnabled(null)).toBe(false);
+    expect(bugReportsEnabled({ features: {} })).toBe(false);
+    expect(bugReportsEnabled({ features: { bugReports: false } })).toBe(false);
+    expect(bugReportsEnabled({ features: { bugReports: true } })).toBe(true);
   });
 
   it("keeps Learn from group chats off until it is switched on", () => {

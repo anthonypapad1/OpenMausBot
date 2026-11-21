@@ -31,7 +31,7 @@ function BringScene() {
           {Array.from({ length: 9 }, (_, index) => <span key={index} className="size-[3px] rounded-full bg-ink/15" />)}
         </span>
       </span>
-      <span className="shrink-0"><AppFace size={52} mood="happy" /></span>
+      <span className="shrink-0"><AppFace size={52} /></span>
     </div>
   );
 }

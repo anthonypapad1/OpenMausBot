@@ -671,7 +671,6 @@ describe("agents-proxy MCP surface", () => {
       "decide",
       "extract",
       "message_person",
-      "report_bug",
       "share",
       "memory_update",
       "retry_thread",

@@ -40,6 +40,7 @@ function profiles(): Record<string, Profile> {
               OMB_VOICE_NOTES: flag(voice),
               OMB_CHIEF_OF_STAFF: flag(chief),
               OMB_COMPUTER_SELECTION: "1",
+              OMB_BUG_REPORTS: "1",
             },
           };
         }
@@ -68,6 +69,8 @@ function profiles(): Record<string, Profile> {
   all["default+hosting"] = { env: { ...all.default!.env, OMB_APP_HOSTING: "1" } };
   // A bot whose person turned groups off; the fullest profile has every group on.
   all["default+tools-off"] = { env: { ...all.default!.env, OMB_TOOLS_OFF: "pages,meetings" } };
+  // No @devs address on this server: report_bug could only fail, so it is not mounted.
+  all["default+no-bug-reports"] = { env: { ...all.default!.env, OMB_BUG_REPORTS: "0" } };
   return all;
 }
 
@@ -87,37 +90,38 @@ const FULL = "skills+shared+voice+x+team+images+hosting";
 
 /** Bytes when the budget was last set; a profile may move at most 2% either way (lower it to lock in a win). */
 const BUDGET_BASELINE: Record<string, number> = {
-  "default": 62760,
-  "voice": 63541,
-  "shared": 65025,
-  "shared+voice": 65806,
-  "skills": 65081,
-  "skills+voice": 65862,
-  "skills+shared": 67346,
-  "skills+shared+voice": 68127,
-  "non-chief": 54212,
-  "voice+non-chief": 54993,
-  "shared+non-chief": 56477,
-  "shared+voice+non-chief": 57258,
-  "skills+non-chief": 56533,
-  "skills+voice+non-chief": 57314,
-  "skills+shared+non-chief": 58798,
-  "skills+shared+voice+non-chief": 59579,
-  "skills+shared+voice+cloud-home": 67893,
-  "skills+shared+voice+non-chief+cloud-home": 59345,
-  "default+legacy-switches": 62760,
-  "default+mausbot": 63411,
-  "skills+shared+voice+mausbot": 68778,
-  "skills+shared+voice+x": 71966,
-  "skills+shared+voice+x+team": 71966,
-  "default+no-computer-pick": 61560,
-  "default+room": 58120,
-  "non-chief+room": 49572,
-  "skills+shared+voice+x+team+images": 73913,
-  "default+images": 64707,
-  "skills+shared+voice+x+team+images+hosting": 75776,
-  "default+hosting": 64623,
-  "default+tools-off": 58442,
+  "default": 63049,
+  "voice": 63830,
+  "shared": 65314,
+  "shared+voice": 66095,
+  "skills": 65370,
+  "skills+voice": 66151,
+  "skills+shared": 67635,
+  "skills+shared+voice": 68416,
+  "non-chief": 54501,
+  "voice+non-chief": 55282,
+  "shared+non-chief": 56766,
+  "shared+voice+non-chief": 57547,
+  "skills+non-chief": 56822,
+  "skills+voice+non-chief": 57603,
+  "skills+shared+non-chief": 59087,
+  "skills+shared+voice+non-chief": 59868,
+  "skills+shared+voice+cloud-home": 68182,
+  "skills+shared+voice+non-chief+cloud-home": 59634,
+  "default+legacy-switches": 63049,
+  "default+mausbot": 63700,
+  "skills+shared+voice+mausbot": 69067,
+  "skills+shared+voice+x": 72255,
+  "skills+shared+voice+x+team": 72255,
+  "default+no-computer-pick": 61849,
+  "default+room": 58409,
+  "non-chief+room": 49861,
+  "skills+shared+voice+x+team+images": 74202,
+  "default+images": 64996,
+  "skills+shared+voice+x+team+images+hosting": 76065,
+  "default+hosting": 64912,
+  "default+tools-off": 58731,
+  "default+no-bug-reports": 62466,
 };
 
 const RPC_PREFIX = '{"jsonrpc":"2.0","id":1,"result":';
@@ -277,6 +281,12 @@ describe("agents proxy tools/list golden", () => {
     }
   });
 
+  it("mounts report_bug only where a @devs report has somewhere to go, and takes nothing else away", () => {
+    const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
+    expect(names(wires.default!).filter((tool) => tool !== "report_bug")).toEqual(names(wires["default+no-bug-reports"]!));
+    for (const [name, profile] of Object.entries(PROFILES)) expect(names(wires[name]!).includes("report_bug"), name).toBe(profile.env.OMB_BUG_REPORTS === "1");
+  });
+
   it("mounts generate_image and edit_image only when an image provider is set up, and adds nothing else", () => {
     const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
     expect(names(wires["default+images"]!).filter((tool) => tool !== "generate_image" && tool !== "edit_image")).toEqual(names(wires.default!));
@@ -296,7 +306,7 @@ describe("agents proxy tools/list golden", () => {
 
   it("ignores the switches that once picked a catalog profile", () => {
     expect(wires["default+legacy-switches"]).toBe(wires.default);
-    const profile = catalogProfileFromEnv({ OMB_BOT_ID: "bot-golden", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_ROOM_TURN: "1", OMB_OWN_THREAD_CREATION: "1", OMB_EXTERNAL_RUNTIME: "1", OMB_ACTIVE_WAITS: "0" });
+    const profile = catalogProfileFromEnv({ OMB_BOT_ID: "bot-golden", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_BUG_REPORTS: "1", OMB_ROOM_TURN: "1", OMB_OWN_THREAD_CREATION: "1", OMB_EXTERNAL_RUNTIME: "1", OMB_ACTIVE_WAITS: "0" });
     expect(JSON.stringify({ tools: availableTools(profile) })).toBe(wires.default);
     expect(profile).not.toHaveProperty("activeWaits");
     expect(profile).not.toHaveProperty("coordinating");

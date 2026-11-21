@@ -1,13 +1,10 @@
 // The first run's frame (Back, how far along it is, a step that arrives piece by piece) and its hello.
 import type { CSSProperties, ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
-import { BotAvatar, MausAvatar } from "@/components/Avatar";
-import { usePrefersReducedMotion } from "@/components/mascot-clock";
+import { CorsoMark } from "@/components/CorsoMark";
 import { brand } from "@/lib/brand";
 import { cn } from "@/lib/cn";
-import { DEFAULT_BOT_NAME, myDefaultBot, useViewerEmail } from "@/lib/default-bot";
 import { t } from "@/lib/i18n";
-import { useStore } from "@/state/store";
 import { useDesktopCapabilities } from "../DesktopCapabilities";
 
 export const PRIMARY = "ui-button ui-button-pill ui-button-lg ui-button-primary w-[288px] max-w-full";
@@ -74,15 +71,12 @@ export function StepIcon({ children }: { children: ReactNode }) {
   return <span className="flex text-ink-secondary">{children}</span>;
 }
 
-/** The app's own face: the brand's logo where it has one, else the person's first bot, else the default mascot. */
-export function AppFace({ size, mood = "idle" }: { size: number; mood?: "idle" | "happy" | "excited" }) {
-  const { state } = useStore();
-  const reduced = usePrefersReducedMotion();
-  const maus = myDefaultBot(state.bots, useViewerEmail());
+/** The app's own face: the brand's logo where it has one, else Corso's mark. The app, not a bot, says hello here, so
+ * it is never a bot's avatar. */
+export function AppFace({ size }: { size: number }) {
   const logo = brand().logo;
   if (logo) return <img src={logo} alt="" width={size} height={size} className="object-contain" style={{ width: size, height: size }} />;
-  if (maus) return <BotAvatar bot={maus} size={size} state={mood} animated={!reduced} />;
-  return <MausAvatar color="chrome" size={size} state={mood} animated={!reduced} label={DEFAULT_BOT_NAME} />;
+  return <CorsoMark size={size} />;
 }
 
 /** The hello: the app's face, its name, one line about it and Get started. */
@@ -90,7 +84,7 @@ export function WelcomeStep({ onStart }: { onStart: () => void }) {
   return (
     <div className="flex min-h-full w-full flex-col">
       <StepFrame
-        art={<AppFace size={72} mood="excited" />}
+        art={<AppFace size={72} />}
         title={t("funnel.welcome.title")}
         sub={t("funnel.welcome.sub")}
         footer={<button type="button" data-primary="" data-funnel-start="" autoFocus onClick={onStart} className={PRIMARY}>{t("funnel.welcome.start")}</button>}

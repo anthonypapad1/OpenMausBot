@@ -54,6 +54,7 @@ function profiles(): Record<string, Record<string, string>> {
             OMB_VOICE_NOTES: flag(voice),
             OMB_CHIEF_OF_STAFF: flag(chief),
             OMB_COMPUTER_SELECTION: "1",
+            OMB_BUG_REPORTS: "1",
           };
         }
       }
@@ -73,6 +74,7 @@ function profiles(): Record<string, Record<string, string>> {
   all["skills+shared+voice+x+team+images+hosting"] = { ...all["skills+shared+voice+x+team+images"]!, OMB_APP_HOSTING: "1" };
   all["default+hosting"] = { ...all.default!, OMB_APP_HOSTING: "1" };
   all["default+tools-off"] = { ...all.default!, OMB_TOOLS_OFF: "pages,meetings" };
+  all["default+no-bug-reports"] = { ...all.default!, OMB_BUG_REPORTS: "0" };
   return all;
 }
 
@@ -118,6 +120,7 @@ const BUDGET_BASELINE: Record<string, number> = {
   "skills+shared+voice+x+team+images+hosting": 19853,
   "default+hosting": 18928,
   "default+tools-off": 16434,
+  "default+no-bug-reports": 17970,
 };
 
 type RpcAnswer = { id: number; result?: { tools?: unknown[]; content?: Array<{ text: string }>; isError?: boolean }; error?: { code: number; message: string } };

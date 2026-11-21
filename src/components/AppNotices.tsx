@@ -9,7 +9,7 @@ import { announcementConditions, announcementPlan, announcementPlatform, announc
   reportAnnouncement, SPONSOR_CARDS_FOR_TEAM_MEMBERS, useAnnouncementCards, type SeenRecord } from "@/lib/announcements";
 import { boatOfferRuns } from "@/lib/boat-offer";
 import { modelgoOfferable, reportModelgoOffer } from "@/lib/modelgo-offer";
-import { brandStatus } from "@/lib/brand";
+import { brandStatus, offersHidden } from "@/lib/brand";
 import { buyOfferAllowed, cloudNoticeKind, cloudPlanView, cloudTrialNotice, cloudTrialView, offerTrialDays } from "@/lib/cloud-plan";
 import { jobRoutine, useCloudIntent } from "@/lib/cloud-intent";
 import { CLOUD_INTENT_GIVEN, cloudSetupStage } from "@/lib/cloud-setup";
@@ -169,7 +169,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   const simpleBlocked = useOtherDialogOpen(simpleDue) || Boolean(state.liveCall && state.liveCall.status !== "ended");
   // A sponsor's card is for whoever chooses a team's providers: its Owner and Admins, never its members.
   const sponsorsHere = SPONSOR_CARDS_FOR_TEAM_MEMBERS || !state.config?.team || viewer?.canSave === true;
-  const boatHere = sponsorsHere && boatOfferRuns(now()) && brandStatus().source !== "file";
+  const boatHere = sponsorsHere && boatOfferRuns(now()) && !offersHidden();
   const modelgoHere = sponsorsHere && modelgoOfferable(state.config?.managedPolicy);
 
   const trial = plan?.trial;
@@ -201,7 +201,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   const consentNow = consentWaits === true || consentFact === false ? false : consentWaits === null || mausBotFirst ? null : consentFact;
   // The Grok Bot popup: once for everyone who can add a bot, the one thing a first chat may be interrupted by. Nothing reads
   // this computer for it: GrokMoveDialog does that, once opened.
-  const grokDue = !remote && viewer?.canSave !== false && !state.config?.team && brandStatus().source !== "file" && organization !== true && moving !== true
+  const grokDue = !remote && viewer?.canSave !== false && !state.config?.team && !offersHidden() && organization !== true && moving !== true
     && launchDialogShown() !== "mausbot" && !noticeSeen(record, GROK_MOVE_NOTICE) && !desktopState?.seen.includes(GROK_MOVE_NOTICE);
   const grokBlocked = useOtherDialogOpen(grokDue) || Boolean(state.liveCall && state.liveCall.status !== "ended");
   const grokLanding = welcomeFinishedThisLaunch() && !grokLanded;
@@ -229,11 +229,11 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
     sponsors: !providersRestricted(state.config?.managedPolicy) && sponsorsHere,
   });
   const announcement = picked && picked !== "wait" ? picked : null;
-  // Teams: everyone once, ahead of every other notice, on every page but a branded build's or an organization's desktop;
+  // Teams: everyone once, ahead of every other notice, on every page but one that hides offers or an organization's desktop;
   // as the What's new popup, never in the launch a welcome or Corso's card took, before a first reply, over a first
   // run's own screens or another dialog, during a live call or a move.
   const teamsSeen = noticeSeen(record, TEAMS_NOTICE) || Boolean(desktopState?.seen.includes(TEAMS_NOTICE));
-  const teamsHere = !branded && organization !== true && !teamsSeen;
+  const teamsHere = !offersHidden() && organization !== true && !teamsSeen;
   const teamsBlocked = useOtherDialogOpen(teamsHere, true) || Boolean(state.liveCall && state.liveCall.status !== "ended");
   const teamsNow = !teamsHere || moving || afterWelcome === true ? false
     : organization === null || !viewer || (desktop && !desktopState) || afterWelcome === null || mausBotFirst || moving === null || teamsBlocked ? null : true;
