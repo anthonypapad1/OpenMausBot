@@ -102,13 +102,19 @@ export interface DealDetail {
   recentActivity: DealActivity[];
 }
 
-export type DealToday =
-  | { type: "deadline"; dealId: string; address: string; deadline: DealDeadline; overdue: boolean }
-  | { type: "document"; dealId: string; address: string; document: DealDocument };
-
-export interface DealComingUp {
+/** The deal a Today deadline belongs to, as much as the page needs to say which desk looks after it. */
+export interface DealTodayDeal {
   dealId: string;
   address: string;
+  side: DealSide;
+  dealStatus: DealStatus;
+}
+
+export type DealToday =
+  | ({ type: "deadline"; deadline: DealDeadline; overdue: boolean } & DealTodayDeal)
+  | { type: "document"; dealId: string; address: string; document: DealDocument };
+
+export interface DealComingUp extends DealTodayDeal {
   deadline: DealDeadline;
   /** Calendar days from today, 1 to 7. */
   daysAway: number;

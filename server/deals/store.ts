@@ -19,6 +19,8 @@ import {
   type DealListFilter,
   type DealListItem,
   type DealParty,
+  type DealSide,
+  type DealStatus,
   type DealToday,
   type DealTodayView,
 } from "../../shared/deals.ts";
@@ -387,7 +389,7 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
     const day = localDay(at, timeZone);
     const weekOut = addDays(day, COMING_UP_DAYS);
     const due = all(
-      `SELECT dl.*, d.address FROM deal_deadlines dl JOIN deals d ON d.id = dl.deal_id
+      `SELECT dl.*, d.address, d.side AS deal_side, d.status AS deal_status FROM deal_deadlines dl JOIN deals d ON d.id = dl.deal_id
        WHERE dl.status = 'open' AND d.status IN ${OPEN_IN} AND dl.due_date <= ? ORDER BY ${DUE_ORDER}`,
       weekOut,
     );
@@ -395,7 +397,7 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
     const comingUp: DealComingUp[] = [];
     for (const row of due) {
       const deadline = deadlineOf(row);
-      const item = { dealId: deadline.dealId, address: str(row.address), deadline };
+      const item = { dealId: deadline.dealId, address: str(row.address), side: str(row.deal_side) as DealSide, dealStatus: str(row.deal_status) as DealStatus, deadline };
       if (deadline.dueDate <= day) needsYou.push({ type: "deadline", ...item, overdue: deadline.dueDate < day });
       else comingUp.push({ ...item, daysAway: dayNumber(deadline.dueDate) - dayNumber(day) });
     }
