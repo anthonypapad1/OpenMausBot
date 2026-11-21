@@ -20,6 +20,8 @@ const DEAL_VALUES = [
   "inspection_objection", "inspection_resolution", "appraisal", "loan", "earnest_money", "closing",
 ];
 /** Deadline kinds the contract skill adds beyond the ones the tools suggest; the tools keep any snake_case kind. */
+/** The design tools Marketing Desk calls, and the sizes it names (server/design/). */
+const DESIGN_WORDS = ["design_templates_list", "design_render", "square", "portrait", "story", "flyer"];
 const MORE_KINDS = ["association", "disclosure", "survey", "inspection", "insurance", "due_diligence", "possession"];
 
 const defaults = (): NewBotDefaults => ({
@@ -37,10 +39,10 @@ const skillName = (text: string) => {
 
 const everything = (bot: (typeof DESK_BOTS)[number]) => [bot.soul, ...(bot.skills ?? []), ...Object.values(bot.notes ?? {})].join("\n");
 
-describe("Corso's four Desks", () => {
+describe("Corso's five Desks", () => {
   it("lead the ready-made bots, in their own first category", () => {
-    expect(DESK_BOTS.map((bot) => bot.name)).toEqual(["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk"]);
-    expect(READY_BOTS.slice(0, 4).map((bot) => bot.id)).toEqual(["deal-desk", "listing-desk", "inbox-desk", "compliance-desk"]);
+    expect(DESK_BOTS.map((bot) => bot.name)).toEqual(["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk", "Marketing Desk"]);
+    expect(READY_BOTS.slice(0, 5).map((bot) => bot.id)).toEqual(["deal-desk", "listing-desk", "inbox-desk", "compliance-desk", "marketing-desk"]);
     expect(READY_BOT_CATEGORIES[0]).toBe("realestate");
     expect(READY_BOTS.filter((bot) => bot.category === "realestate")).toEqual(DESK_BOTS);
   });
@@ -77,7 +79,7 @@ describe("Corso's four Desks", () => {
   });
 
   it("use only the deal-list tools' own argument names and values", () => {
-    const allowed = new Set([...DEAL_TOOLS, ...DEAL_ARGUMENTS, ...DEAL_VALUES, ...MORE_KINDS, "request_sign_in"]);
+    const allowed = new Set([...DEAL_TOOLS, ...DEAL_ARGUMENTS, ...DEAL_VALUES, ...MORE_KINDS, ...DESIGN_WORDS, "request_sign_in"]);
     for (const kind of MORE_KINDS) expect(kind).toMatch(/^[a-z][a-z0-9_]{0,39}$/);
     for (const bot of DESK_BOTS) {
       for (const [, word] of everything(bot).matchAll(/`([a-z_]+)`/g)) expect(allowed.has(word!), `${bot.id} uses \`${word}\``).toBe(true);
@@ -90,6 +92,7 @@ describe("Corso's four Desks", () => {
     expect(routine("inbox-desk")).toMatchObject({ name: "Morning brief", enabled: false, schedule: { type: "daily", time: "07:00" } });
     expect(routine("compliance-desk")).toMatchObject({ name: "Daily compliance check", enabled: false, schedule: { type: "daily", weekdays: [1, 2, 3, 4, 5] } });
     expect(routine("listing-desk")).toMatchObject({ enabled: false, schedule: { type: "daily", weekdays: [1] } });
+    expect(routine("marketing-desk")).toMatchObject({ name: "Weekend open house posts", enabled: false, schedule: { type: "daily", weekdays: [4] } });
   });
 
   it("ask for the apps they work with, and connect none", () => {
@@ -98,6 +101,7 @@ describe("Corso's four Desks", () => {
       "listing-desk": ["gmail", "googlecalendar"],
       "inbox-desk": ["gmail", "outlook", "googlecalendar"],
       "compliance-desk": ["googledrive", "gmail"],
+      "marketing-desk": ["gmail", "canva"],
     });
   });
 
@@ -128,5 +132,14 @@ describe("Corso's four Desks", () => {
     for (const [, name, required, due] of rows) expect(skill).toContain(`| ${name} | ${column[required!]} | ${due} |`);
     expect(note).toContain("Lead-based paint disclosure, signed by the buyer and every required licensee (§10.10.1) · required if built before 1978");
     expect(note).toMatch(/^---\ntitle: Required documents\n/);
+  });
+
+  it("keep Marketing Desk's marketing to drafts, in the agent's brand, under the marketing rules", () => {
+    const marketing = readyBot("marketing-desk")!;
+    expect(marketing.soul).toContain("You never post to social media, send a blast or order printing.");
+    expect(marketing.notes!["memory/brand.md"]).toMatch(/^---\ntitle: Brand and voice\n/);
+    expect(marketing.notes!["memory/brand.md"]).toContain("Brokerage (shown on every piece):");
+    const rules = marketing.skills!.find((text) => skillName(text) === "marketing-rules")!;
+    for (const rule of ["brokerage firm's name", "Describe the home, never the people", "Virtually staged", "Represented the buyer"]) expect(rules).toContain(rule);
   });
 });

@@ -4,7 +4,10 @@ import ctmEcontracts from "./skills/ctm-econtracts.md?raw";
 import complianceChecklist from "./skills/compliance-checklist.md?raw";
 import dailyDealCheck from "./skills/daily-deal-check.md?raw";
 import dealEmails from "./skills/deal-emails.md?raw";
+import brandAndVoice from "./skills/brand-and-voice.md?raw";
+import listingMarketing from "./skills/listing-marketing.md?raw";
 import listingUpdates from "./skills/listing-updates.md?raw";
+import marketingRules from "./skills/marketing-rules.md?raw";
 import morningBrief from "./skills/morning-brief.md?raw";
 import readPurchaseContract from "./skills/read-purchase-contract.md?raw";
 import requiredDocs from "./notes/required-docs.md?raw";
@@ -16,12 +19,14 @@ const EVERY_DESK = [
   "Saving to the deal list is fine without asking. Say what you saved.",
   "Log each thing you do on a deal with deal_activity_add, in one line. It is signed with your name for you.",
   "Never guess a date, an amount, a name or an email address. Say what you couldn't find, and ask.",
-  "The other Desks share the same deal list: Deal Desk works contracts to close, Listing Desk works listings, Inbox Desk works email, Compliance Desk checks the documents. Hand work to the right one when it isn't yours.",
+  "The other Desks share the same deal list: Deal Desk works contracts to close, Listing Desk works listings, Inbox Desk works email, Compliance Desk checks the documents, Marketing Desk makes the posts, flyers and marketing emails. Hand work to the right one when it isn't yours.",
 ];
 
 const soul = (...lines: string[]) => [...lines, ...EVERY_DESK].join("\n");
 
 const HOW_WE_WORK = "---\ntitle: How we work\naliases: [signature, brokerage, transaction coordinator, who I work for]\n---\n\n- Who I work for (the agent, or their transaction coordinator):\n- Name and email signature to sign with:\n- Brokerage:\n- Transaction system (for example CTM eContracts):\n- Lenders and title companies we use most:\n";
+
+const BRAND = "---\ntitle: Brand and voice\naliases: [brand kit, logo, headshot, colors, voice, brokerage]\n---\n\n## Brand\n\n- Name as it appears:\n- Phone:\n- Email:\n- Website:\n- Brokerage (shown on every piece):\n- Logo file:\n- Headshot file:\n- Brand colors (hex):\n- What the managing broker requires on ads:\n\n## How I write\n\n## Rules from the agent\n";
 
 const howWeWork = (index: string): Record<string, string> => ({
   "MEMORY.md": `- Who I work for, the signature to use and our usual partners live in memory/how-we-work.md.\n${index}`,
@@ -30,7 +35,8 @@ const howWeWork = (index: string): Record<string, string> => ({
 
 /** Corso's real estate defaults, listed first wherever ready-made bots are offered. They share one deal list, whose
  * tool names (deals_list, deal_get, deal_save, deal_deadline_save, deal_document_save, deal_party_save,
- * deal_activity_add) their instructions and skills call by name. */
+ * deal_activity_add) their instructions and skills call by name. Marketing Desk also calls the design tools
+ * (design_templates_list, design_render) and names their template ids and sizes, which server/design/ defines. */
 export const DESK_BOTS: ReadyBot[] = [
   {
     id: "deal-desk",
@@ -62,6 +68,7 @@ export const DESK_BOTS: ReadyBot[] = [
       "Use the listing-updates skill for listing prep, showing feedback, weekly seller updates and seller check-ins.",
       "Write every seller email with the deal-emails skill, and show it as a draft first.",
       "When a listing goes under contract, save the deal and tell the person Deal Desk takes it from there.",
+      "Posts, flyers and marketing emails for a listing are Marketing Desk's work: offer to hand them over.",
     ),
     look: { color: "coral", mascotBody: "star" },
     tryAsking: ["I just took a listing at 512 Pine Ave. Set it up", "Summarize this week's showing feedback", "Draft this week's update to my sellers"],
@@ -110,5 +117,28 @@ export const DESK_BOTS: ReadyBot[] = [
     },
     skills: [complianceChecklist, dealEmails, ctmEcontracts],
     routines: [paused("Daily compliance check", "Check every open deal's documents against memory/required-docs.md. Flag anything missing, unsigned or overdue, and log each deal you checked.", "16:00", WEEKDAYS)],
+  },
+  {
+    id: "marketing-desk",
+    category: "realestate",
+    name: "Marketing Desk",
+    title: "Posts, flyers and emails",
+    description: "Turns each listing into ready-to-post images, flyers, captions and email blasts in your brand, for your approval.",
+    soul: soul(
+      "You are Marketing Desk. You make the agent's marketing: Just Listed, Open House and Just Sold posts, print flyers, captions and email blasts.",
+      "Make each piece with the listing-marketing skill, in the brand and voice the brand-and-voice skill keeps in memory/brand.md. Every piece follows the marketing-rules skill.",
+      "Turn a template into a finished image or PDF with design_render, and look at the preview before you show it.",
+      "You never post to social media, send a blast or order printing. You hand the agent finished drafts, and wait for a yes before any send.",
+      "If the agent has connected Canva or another design app and asks for it, use it for that piece instead of the built-in templates, and still follow the marketing-rules skill.",
+    ),
+    look: { color: "pink", mascotBody: "squircle" },
+    tryAsking: ["Make the Just Listed post for 512 Pine Ave", "Open house Saturday 11 to 1: make the post and story", "Make a print flyer for my new listing"],
+    apps: ["gmail", "canva"],
+    notes: {
+      "MEMORY.md": "- My brand kit, voice and the agent's rules live in memory/brand.md. Read it before every piece.\n- Listing details live in the deal list (deals_list, deal_get), not in these notes.\n",
+      "memory/brand.md": BRAND,
+    },
+    skills: [listingMarketing, marketingRules, brandAndVoice, dealEmails],
+    routines: [paused("Weekend open house posts", "Check the deal list for open houses in the next seven days. For each one without posts yet, make the open house post and story and the captions, and show them to me as drafts.", "09:00", [4])],
   },
 ];
