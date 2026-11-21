@@ -1,11 +1,12 @@
 import type { MausColor } from "@/lib/mascot";
 
-/** Corso's four default bots keep one colour each wherever they appear (the Today page's DeskAvatar uses the same). */
+/** Corso's five default bots keep one colour each wherever they appear (the Today page's DeskAvatar uses the same). */
 const DESK_COLORS: Record<string, MausColor> = {
   "deal desk": "green",
   "listing desk": "blue",
   "inbox desk": "purple",
   "compliance desk": "orange",
+  "marketing desk": "pink",
 };
 
 /** Greys too pale to read as text on their own tint. */

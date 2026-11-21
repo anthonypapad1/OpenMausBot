@@ -10,8 +10,8 @@ describe("a bot's initials", () => {
   });
 
   it("gives each Desk its own colour, as the Today page does, and any other bot its own", () => {
-    expect(["Deal Desk", "listing desk", " Inbox Desk ", "Compliance Desk"].map((name) => botInitialsColor(name, "red")))
-      .toEqual(["green", "blue", "purple", "orange"]);
+    expect(["Deal Desk", "listing desk", " Inbox Desk ", "Compliance Desk", "Marketing Desk"].map((name) => botInitialsColor(name, "red")))
+      .toEqual(["green", "blue", "purple", "orange", "pink"]);
     expect(botInitialsColor("Scout", "teal")).toBe("teal");
     expect(botInitialsColor("Corso", "chrome")).toBe("green");
   });
