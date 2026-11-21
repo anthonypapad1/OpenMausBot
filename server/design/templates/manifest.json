@@ -1,0 +1,15 @@
+{
+  "templates": [
+    {
+      "id": "sample-card",
+      "name": "Sample card",
+      "purpose": "A plain square card with one photo, a headline and the address. It exists to exercise the template contract, not to post.",
+      "formats": ["square"],
+      "photos": { "min": 1, "max": 1 },
+      "fields": [
+        { "name": "headline", "required": true, "description": "A few words across the top, such as Just Listed.", "maxLength": 60 },
+        { "name": "address", "required": true, "description": "The property's street address.", "maxLength": 120 }
+      ]
+    }
+  ]
+}

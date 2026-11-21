@@ -13,8 +13,8 @@ describe("tool groups a bot has off", () => {
     expect(toolsOffPart(undefined).text).toBe("");
   });
 
-  it("offers the groups this workspace has, Pages and apps always", () => {
-    expect(availableToolGroups({ meetings: false, data: false, images: false, email: false })).toEqual(["pages"]);
-    expect(availableToolGroups({ meetings: true, data: true, images: true, email: true })).toEqual(["meetings", "data", "pages", "images", "email"]);
+  it("offers the groups this workspace has, Pages and apps and Images always", () => {
+    expect(availableToolGroups({ meetings: false, data: false, email: false })).toEqual(["pages", "images"]);
+    expect(availableToolGroups({ meetings: true, data: true, email: true })).toEqual(["meetings", "data", "pages", "images", "email"]);
   });
 });
