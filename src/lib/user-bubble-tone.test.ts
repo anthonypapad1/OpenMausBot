@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { contrastRatio, relativeLuminance, toOklch } from "./color-contrast";
 import { MAUS_COLORS, MAUS_COLOR_NAMES } from "./mascot";
-import { SKIN_IDS } from "./skins";
+import { ONE_ACCENT_SKINS, SKIN_IDS } from "./skins";
 import {
   BUBBLE_TEXT_MIN,
   mentionChipBackground,
@@ -12,6 +12,7 @@ import {
   selectionBackground,
   userBubbleStyle,
   userBubbleTone,
+  userBubbleToneOf,
 } from "./user-bubble-tone";
 
 const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../styles.css"), "utf8");
@@ -96,4 +97,15 @@ describe("user bubble tone", () => {
       }
     },
   );
+});
+
+describe("a one-accent skin's bubble", () => {
+  it.each(Object.entries(ONE_ACCENT_SKINS))("fills the person's bubble with %s's accent, not the bot's colour", (_skin, accent) => {
+    const style = userBubbleStyle("blue", { flat: true, palette: accent }) as Record<string, string>;
+    expect(style.backgroundColor).toBe(accent);
+    expect(style["--color-bubble-user"]).toBe(accent);
+    const tone = userBubbleToneOf(accent);
+    expect(contrastRatio(tone.ink, tone.background)).toBeGreaterThanOrEqual(BUBBLE_TEXT_MIN);
+    expect(contrastRatio(tone.secondary, tone.background)).toBeGreaterThanOrEqual(BUBBLE_TEXT_MIN);
+  });
 });

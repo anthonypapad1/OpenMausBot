@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { SKINS, SKIN_IDS, DEFAULT_SKIN_CHOICE, PRIOR_INSTALL_SKIN, THEME_SKINS, resolveSkin } from "./skins";
+import { SKINS, SKIN_IDS, DEFAULT_SKIN_CHOICE, ONE_ACCENT_SKINS, PRIOR_INSTALL_SKIN, THEME_SKINS, resolveSkin } from "./skins";
 import en from "@/locales/en.json";
 
 const css = readFileSync(
@@ -15,6 +15,14 @@ const blocks = new Set(
 );
 
 describe("skins", () => {
+  it("keeps each one-accent skin's accent equal to its stylesheet accent and gives it the bot-button swap", () => {
+    const scope = /@scope \(([^)]*)\) to \(\[data-skin\]\) \{\n  \.bot-button:enabled \{/.exec(css)?.[1] ?? "";
+    for (const [id, accent] of Object.entries(ONE_ACCENT_SKINS)) {
+      const block = new RegExp(`\\[data-skin="${id}"\\] \\{([^}]*)\\}`).exec(css)?.[1] ?? "";
+      expect(/--color-accent:\s*(#[0-9a-f]{6})/i.exec(block)?.[1]?.toLowerCase()).toBe(accent);
+      expect(scope).toContain(`[data-skin="${id}"]`);
+    }
+  });
   it("gives every registered skin a stylesheet block", () => {
     for (const id of SKIN_IDS) expect(blocks).toContain(id);
   });
