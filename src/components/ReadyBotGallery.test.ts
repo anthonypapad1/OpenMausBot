@@ -56,6 +56,15 @@ describe("ready-made bots gallery", () => {
     expect(cards()).toHaveLength(READY_BOTS.length);
   });
 
+  it("leads with Corso's four Desks, which Real estate narrows to", () => {
+    render();
+    expect(cards().slice(0, 4)).toEqual(["deal-desk", "listing-desk", "inbox-desk", "compliance-desk"]);
+    flushSync(() => button("Real estate").click());
+    expect(cards()).toEqual(["deal-desk", "listing-desk", "inbox-desk", "compliance-desk"]);
+    expect(host.textContent).toContain("Works with Gmail, Google Calendar, Google Drive");
+    expect(button("Add Deal Desk, Contract to close")).toBeDefined();
+  });
+
   it("follows the Templates search and hides itself when nothing matches", () => {
     render("plant");
     expect(cards()).toEqual(["plant-care"]);
