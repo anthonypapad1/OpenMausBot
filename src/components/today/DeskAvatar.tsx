@@ -8,6 +8,7 @@ const DESK_COLOR: Record<Desk, string> = {
   "Listing Desk": "var(--identity-blue)",
   "Inbox Desk": "var(--identity-purple)",
   "Compliance Desk": "var(--identity-orange)",
+  "Marketing Desk": "var(--identity-pink)",
 };
 
 /** A Desk's initials on a tint of its colour. Any other bot shows its own avatar, or its initials when it isn't here. */
