@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { DealTodayView } from "../../shared/deals";
 import { api } from "./api";
-import { currentDealsToday, DEALS_TODAY_POLL_MS, refreshDealsToday, setDealsToday, useDealsTodayLoader } from "./deals-today";
+import { currentDealsToday, DEALS_TODAY_POLL_MS, noteDealsTurnEvent, refreshDealsToday, setDealsToday, useDealsTodayLoader } from "./deals-today";
 
 vi.mock("./api", () => ({ api: vi.fn() }));
 
@@ -62,7 +62,7 @@ it("reads on mount, every minute and when the window gets focus, and stops when 
   vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
   vi.mocked(api).mockResolvedValue(day("2026-11-20"));
   function Probe({ enabled }: { enabled: boolean }) {
-    useDealsTodayLoader(enabled);
+    useDealsTodayLoader(enabled, false);
     return null;
   }
   const host = document.createElement("div");
@@ -81,4 +81,71 @@ it("reads on mount, every minute and when the window gets focus, and stops when 
   await act(async () => { vi.advanceTimersByTime(DEALS_TODAY_POLL_MS * 3); window.dispatchEvent(new Event("focus")); await flush(); });
   expect(api).toHaveBeenCalledTimes(3);
   expect(DEALS_TODAY_POLL_MS).toBe(60_000);
+});
+
+function Loader({ enabled = true, todayShown = false }: { enabled?: boolean; todayShown?: boolean }) {
+  useDealsTodayLoader(enabled, todayShown);
+  return null;
+}
+async function mount(props: { enabled?: boolean; todayShown?: boolean }) {
+  root ??= createRoot(document.createElement("div"));
+  await act(async () => root!.render(createElement(Loader, props)));
+  await flush();
+}
+
+it("reads the day again each time the Today page comes into view, not while it stays in view", async () => {
+  vi.mocked(api).mockResolvedValue(day("2026-11-20"));
+  await mount({ todayShown: false });
+  expect(api).toHaveBeenCalledTimes(1);
+  await mount({ todayShown: true });
+  expect(api).toHaveBeenCalledTimes(2);
+  await mount({ todayShown: true });
+  expect(api).toHaveBeenCalledTimes(2);
+  await mount({ todayShown: false });
+  await mount({ todayShown: true });
+  expect(api).toHaveBeenCalledTimes(3);
+});
+
+it("reads once when the app opens on the Today page, and not again as it gets ready", async () => {
+  vi.mocked(api).mockResolvedValue(day("2026-11-20"));
+  await mount({ enabled: false, todayShown: true });
+  expect(api).not.toHaveBeenCalled();
+  await mount({ enabled: true, todayShown: true });
+  expect(api).toHaveBeenCalledTimes(1);
+});
+
+it("reads the day again when a bot's turn ends, and only while the app keeps the day", async () => {
+  vi.mocked(api).mockResolvedValue(day("2026-11-20"));
+  noteDealsTurnEvent({ type: "turn.completed" });
+  await flush();
+  expect(api).not.toHaveBeenCalled();
+  await mount({});
+  expect(api).toHaveBeenCalledTimes(1);
+  noteDealsTurnEvent({ type: "turn.progress" });
+  noteDealsTurnEvent({ type: "content.delta" });
+  await flush();
+  expect(api).toHaveBeenCalledTimes(1);
+  for (const type of ["turn.completed", "cap.exhausted", "session.exited"] as const) {
+    noteDealsTurnEvent({ type });
+    await flush();
+  }
+  expect(api).toHaveBeenCalledTimes(4);
+});
+
+it("sends one more read after one already on its way when a turn ends, so the count shows what the turn saved", async () => {
+  const answers: ((view: DealTodayView) => void)[] = [];
+  vi.mocked(api).mockImplementation(() => new Promise((resolve) => { answers.push(resolve as (view: DealTodayView) => void); }));
+  await mount({});
+  expect(api).toHaveBeenCalledTimes(1);
+  noteDealsTurnEvent({ type: "turn.completed" });
+  noteDealsTurnEvent({ type: "turn.completed" });
+  await flush();
+  expect(api).toHaveBeenCalledTimes(1);
+  answers[0]!(day("2026-11-19"));
+  await flush();
+  expect(api).toHaveBeenCalledTimes(2);
+  const fresh = { ...day("2026-11-20"), needsYou: [{ type: "document", dealId: "d1", address: "622 W Pine St", document: { id: "doc", dealId: "d1", name: "Disclosure", status: "needs_signature", required: true, updatedAt: 0 } }] } as DealTodayView;
+  answers[1]!(fresh);
+  await flush();
+  expect(currentDealsToday().view?.needsYou).toHaveLength(1);
 });

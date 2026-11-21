@@ -100,7 +100,7 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
   useTeamPeopleLoader(state.config, needsYou);
   useInboxLoader(`${inboxVersion(state.bots) ?? ""}|${needsYou}`);
   useEffect(() => { refreshPublishedApps(); }, []);
-  useDealsTodayLoader(state.connected && state.hydrated === true);
+  useDealsTodayLoader(state.connected && state.hydrated === true, state.activeView === "today");
   const inboxReady = useInboxReady();
   const inboxShown = useInboxPanel().open && inboxReady;
   // A Switch AI pick lands once its stopped turn's chat is idle, wherever the person is by then.

@@ -1,4 +1,4 @@
-import type { DealActivityItem, DealComingUp, DealToday, DealTodayView } from "../../shared/deals";
+import type { DealActivityItem, DealComingUp, DealToday, DealTodayDeal, DealTodayView } from "../../shared/deals";
 import type { LocaleKey } from "@/locales";
 
 export const DESKS = ["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk"] as const;
@@ -46,11 +46,18 @@ export function botForDesk<B extends { name: string; hidden?: boolean }>(bots: r
   return bots.find((bot) => !bot.hidden && bot.name.trim().toLowerCase() === wanted);
 }
 
+/** Whose a deadline is. A seller's deal before it goes under contract is a listing still being prepped, shown and
+ * marketed, which is Listing Desk's work; once there's a contract, and on every buyer-side or both-sides deal, the
+ * deadlines are the contract's and Deal Desk's. The deal list records no owner bot, so this is read from the deal. */
+export function deskForDeadline(deal: Pick<DealTodayDeal, "side" | "dealStatus">): Desk {
+  return deal.side === "seller" && deal.dealStatus === "pre_contract" ? "Listing Desk" : "Deal Desk";
+}
+
 export interface TodayCard {
   key: string;
   dealId: string;
   address: string;
-  /** Who looks after it: Deal Desk for a deadline, Compliance Desk for a document waiting on a signature. */
+  /** Who looks after it: deskForDeadline's desk for a deadline, Compliance Desk for a document waiting on a signature. */
   desk: Desk;
   /** Overdue or due today: drawn on the warning tint, with the one primary button. */
   urgent: boolean;
@@ -73,7 +80,7 @@ export function todayCards(view: Pick<DealTodayView, "needsYou">, locale: string
       const tag = item.overdue
         ? { key: "today.card.overdue" as const, when: [shortDate(deadline.dueDate, locale), time].filter(Boolean).join(", ") }
         : time ? { key: "today.card.dueTodayAt" as const, when: time } : { key: "today.card.dueToday" as const, when: "" };
-      return { key: `deadline:${deadline.id}`, dealId: item.dealId, address: item.address, desk: "Deal Desk", urgent: true, title: deadline.label, tag };
+      return { key: `deadline:${deadline.id}`, dealId: item.dealId, address: item.address, desk: deskForDeadline(item), urgent: true, title: deadline.label, tag };
     }
     return { key: `document:${item.document.id}`, dealId: item.dealId, address: item.address, desk: "Compliance Desk", urgent: false, title: item.document.name, tag: { key: "today.card.needsSignature", when: "" } };
   });
@@ -120,7 +127,7 @@ export function comingUpTitle(row: DealComingUp, locale: string): string {
 /** "1847 Larkspur Ln" of "1847 Larkspur Ln, Boulder, CO 80304": what a row narrower than the whole address shows. */
 export const streetOf = (address: string): string => address.split(",")[0]!.trim() || address;
 
-/** A deal's deadlines are Deal Desk's; the activity panel shows whichever bot did the work. */
+/** The activity panel shows whichever bot did the work. */
 export const activityBot = (item: DealActivityItem): string => item.activity.botName || item.activity.botId;
 
 /** The views the app opens on: Today, and a bot's chat. First-run screens show over either. */

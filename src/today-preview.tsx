@@ -31,14 +31,14 @@ const full: DealTodayView = {
   today: day(0),
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   needsYou: [
-    { type: "deadline", dealId: "d1", address: LARKSPUR, overdue: true, deadline: deadline("k1", "d1", "Inspection objection", -1, "inspection_objection", "17:00") },
-    { type: "deadline", dealId: "d2", address: PINE, overdue: false, deadline: deadline("k2", "d2", "Title objection", 0, "title") },
+    { type: "deadline", dealId: "d1", address: LARKSPUR, side: "buyer", dealStatus: "under_contract", overdue: true, deadline: deadline("k1", "d1", "Inspection objection", -1, "inspection_objection", "17:00") },
+    { type: "deadline", dealId: "d2", address: PINE, side: "both", dealStatus: "under_contract", overdue: false, deadline: deadline("k2", "d2", "Title objection", 0, "title") },
     { type: "document", dealId: "d1", address: LARKSPUR, document: { id: "doc1", dealId: "d1", name: "Lead-based paint disclosure", status: "needs_signature", required: true, updatedAt: NOW } },
   ],
   comingUp: [
-    { dealId: "d3", address: RIDGE, daysAway: 2, deadline: deadline("k3", "d3", "Listing photos", 2, "other") },
-    { dealId: "d1", address: LARKSPUR, daysAway: 3, deadline: deadline("k4", "d1", "Appraisal deadline", 3, "appraisal") },
-    { dealId: "d2", address: PINE, daysAway: 6, deadline: deadline("k5", "d2", "Closing", 6, "closing", "14:00") },
+    { dealId: "d3", address: RIDGE, side: "seller", dealStatus: "pre_contract", daysAway: 2, deadline: deadline("k3", "d3", "Listing photos", 2, "other") },
+    { dealId: "d1", address: LARKSPUR, side: "buyer", dealStatus: "under_contract", daysAway: 3, deadline: deadline("k4", "d1", "Appraisal deadline", 3, "appraisal") },
+    { dealId: "d2", address: PINE, side: "both", dealStatus: "under_contract", daysAway: 6, deadline: deadline("k5", "d2", "Closing", 6, "closing", "14:00") },
   ],
   recentActivity: [
     { dealId: "d1", address: LARKSPUR, activity: { id: "a1", dealId: "d1", botId: "deal", botName: "Deal Desk", summary: "Read the contract and added its deadlines.", at: NOW - 12 * MINUTE } },

@@ -5,7 +5,7 @@ import { activeLocale, intlLocale, t } from "@/lib/i18n";
 import { cn } from "@/lib/cn";
 import { localizedRelativeTime } from "@/lib/relative-time";
 import { useShowThreads } from "@/lib/thread-preferences";
-import { activityBot, botForDesk, comingUpTitle, dayBlock, greetingFor, headlineKey, hourIn, longDate, streetOf, todayCards, type TodayCard } from "@/lib/today";
+import { activityBot, botForDesk, comingUpTitle, dayBlock, deskForDeadline, greetingFor, headlineKey, hourIn, longDate, streetOf, todayCards, type TodayCard } from "@/lib/today";
 import { refreshDealsToday, useDealsToday } from "@/state/deals-today";
 import { openBot, useStore, type Bot } from "@/state/store";
 import type { DealActivityItem, DealComingUp, DealTodayView } from "../../../shared/deals";
@@ -113,7 +113,6 @@ function NeedCard({ card, bot, onOpenBot }: { card: TodayCard; bot?: Bot; onOpen
 }
 
 function ComingUp({ rows, locale, bots }: { rows: DealComingUp[]; locale: string; bots: readonly Bot[] }) {
-  const deskBot = botForDesk(bots, "Deal Desk");
   return (
     <section aria-labelledby="today-coming-up">
       <h2 id="today-coming-up" className={cn(SECTION_TITLE, "flex items-baseline gap-2.5")}>
@@ -125,6 +124,7 @@ function ComingUp({ rows, locale, bots }: { rows: DealComingUp[]; locale: string
           {rows.map((row) => {
             const day = dayBlock(row.deadline.dueDate, locale);
             const title = comingUpTitle(row, locale);
+            const desk = deskForDeadline(row);
             return (
               <li key={row.deadline.id} data-today-deadline={row.deadline.id} className="flex items-center gap-5 border-b border-hairline px-1 py-3.5 text-[16px] leading-6">
                 <time dateTime={row.deadline.dueDate} className="w-14 shrink-0">
@@ -133,7 +133,7 @@ function ComingUp({ rows, locale, bots }: { rows: DealComingUp[]; locale: string
                 </time>
                 <span dir="auto" title={title} className="min-w-0 flex-1 truncate font-semibold text-ink">{title}</span>
                 <span dir="auto" title={row.address} className="hidden w-[200px] shrink-0 truncate text-ink-secondary sm:block">{streetOf(row.address)}</span>
-                <DeskAvatar name="Deal Desk" bot={deskBot} size={30} />
+                <DeskAvatar name={desk} bot={botForDesk(bots, desk)} size={30} />
               </li>
             );
           })}

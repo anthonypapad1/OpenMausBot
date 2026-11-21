@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { DealDeadline, DealToday } from "../../shared/deals";
-import { botForDesk, clockTime, dayBlock, deskInitials, deskOf, greetingFor, headlineKey, hourIn, isHomeView, longDate, streetOf, todayCards } from "./today";
+import type { DealDeadline, DealToday, DealTodayDeal } from "../../shared/deals";
+import { botForDesk, clockTime, dayBlock, deskForDeadline, deskInitials, deskOf, greetingFor, headlineKey, hourIn, isHomeView, longDate, streetOf, todayCards } from "./today";
 
 const deadline = (id: string, dueDate: string, dueTime: string | null = null): DealDeadline =>
   ({ id, dealId: "d1", label: `Deadline ${id}`, dueDate, dueTime, status: "open", kind: "other", updatedAt: 0 });
-const due = (id: string, dueDate: string, overdue: boolean, dueTime: string | null = null): DealToday =>
-  ({ type: "deadline", dealId: "d1", address: "1847 Larkspur Ln, Boulder, CO 80304", overdue, deadline: deadline(id, dueDate, dueTime) });
+const due = (id: string, dueDate: string, overdue: boolean, dueTime: string | null = null, deal: Partial<Pick<DealTodayDeal, "side" | "dealStatus">> = {}): DealToday =>
+  ({ type: "deadline", dealId: "d1", address: "1847 Larkspur Ln, Boulder, CO 80304", side: "buyer", dealStatus: "under_contract", ...deal, overdue, deadline: deadline(id, dueDate, dueTime) });
 const unsigned = (id: string): DealToday =>
   ({ type: "document", dealId: "d2", address: "622 W Pine St, Fort Collins, CO 80521", document: { id, dealId: "d2", name: "Inspection resolution", status: "needs_signature", required: true, updatedAt: 0 } });
 
@@ -55,6 +55,15 @@ describe("the desks", () => {
   it("knows the four desks by name, in any case", () => {
     expect(deskOf("deal desk")).toBe("Deal Desk");
     expect(deskOf("Transaction coordinator")).toBeNull();
+  });
+
+  it("gives a seller's deal before its contract to Listing Desk, and every other deal's deadlines to Deal Desk", () => {
+    expect(deskForDeadline({ side: "seller", dealStatus: "pre_contract" })).toBe("Listing Desk");
+    expect(deskForDeadline({ side: "seller", dealStatus: "under_contract" })).toBe("Deal Desk");
+    expect(deskForDeadline({ side: "buyer", dealStatus: "pre_contract" })).toBe("Deal Desk");
+    expect(deskForDeadline({ side: "both", dealStatus: "pre_contract" })).toBe("Deal Desk");
+    const [listing] = todayCards({ needsYou: [due("photos", "2026-11-20", false, null, { side: "seller", dealStatus: "pre_contract" })] }, "en-US");
+    expect(listing).toMatchObject({ desk: "Listing Desk", urgent: true });
   });
 
   it("finds the bot to open by its name, never a hidden one", () => {

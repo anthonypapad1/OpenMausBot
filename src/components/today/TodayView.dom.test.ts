@@ -8,7 +8,7 @@ import type { DealTodayView } from "../../../shared/deals";
 import { TodayPage, type TodayPageProps } from "./TodayView";
 
 const MORNING = Date.UTC(2026, 10, 20, 15, 0);
-const LARKSPUR = "1847 Larkspur Ln, Boulder, CO 80304";
+const LARKSPUR = "1847 Larkspur Ln, Boulder, CO 80304", RIDGE = "3310 Ridge View Dr, Colorado Springs, CO 80904";
 const deadline = (id: string, label: string, dueDate: string, dueTime: string | null = null) =>
   ({ id, dealId: "d1", label, dueDate, dueTime, status: "open" as const, kind: "other", updatedAt: 0 });
 const busy: DealTodayView = {
@@ -16,9 +16,12 @@ const busy: DealTodayView = {
   timeZone: "America/Denver",
   needsYou: [
     { type: "document", dealId: "d1", address: LARKSPUR, document: { id: "doc", dealId: "d1", name: "Lead-based paint disclosure", status: "needs_signature", required: true, updatedAt: 0 } },
-    { type: "deadline", dealId: "d1", address: LARKSPUR, overdue: true, deadline: deadline("k1", "Inspection objection", "2026-11-19", "17:00") },
+    { type: "deadline", dealId: "d1", address: LARKSPUR, side: "buyer", dealStatus: "under_contract", overdue: true, deadline: deadline("k1", "Inspection objection", "2026-11-19", "17:00") },
   ],
-  comingUp: [{ dealId: "d1", address: LARKSPUR, daysAway: 3, deadline: deadline("k2", "Closing", "2026-11-23", "10:00") }],
+  comingUp: [
+    { dealId: "d1", address: LARKSPUR, side: "buyer", dealStatus: "under_contract", daysAway: 3, deadline: deadline("k2", "Closing", "2026-11-23", "10:00") },
+    { dealId: "d3", address: RIDGE, side: "seller", dealStatus: "pre_contract", daysAway: 4, deadline: { ...deadline("k3", "Listing photos", "2026-11-24"), dealId: "d3" } },
+  ],
   recentActivity: [{ dealId: "d1", address: LARKSPUR, activity: { id: "a1", dealId: "d1", botId: "b1", botName: "Deal Desk", summary: "Read the contract and added its deadlines.", at: MORNING - 12 * 60_000 } }],
 };
 const calm: DealTodayView = { ...busy, needsYou: [], comingUp: [], recentActivity: [] };
@@ -90,6 +93,8 @@ it("lists the week's deadlines with their day and time, and what the team did wi
   expect(row.querySelector("time")?.textContent).toBe("Mon23");
   expect(row.textContent).toContain("Closing · 10:00 AM");
   expect(row.textContent).toContain("1847 Larkspur Ln");
+  expect(row.querySelector("[data-desk-avatar]")?.getAttribute("aria-label")).toBe("Deal Desk");
+  expect(host.querySelector("[data-today-deadline='k3'] [data-desk-avatar]")?.getAttribute("aria-label")).toBe("Listing Desk");
   const activity = host.querySelector("[data-today-activity='a1']")!;
   expect(activity.querySelector("[data-desk-avatar]")?.getAttribute("data-desk-avatar")).toBe("DD");
   expect(activity.textContent).toContain("Read the contract and added its deadlines.");
