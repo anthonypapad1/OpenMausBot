@@ -9,7 +9,7 @@ import { ALWAYS_LOAD_META, CLAUDE_ALWAYS_LOADED_TOOL_NAMES, CLAUDE_CHIEF_ALWAYS_
 import { agentsToolList } from "./agents-mcp.ts";
 
 const PROXY_SOURCE = join(dirname(fileURLToPath(import.meta.url)), "agents-proxy.ts");
-const BASE = { OMB_BOT_ID: "bot-defer", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_SKILL_AUTHORING_ENABLED: "0", OMB_SHARED_COMPUTERS_ENABLED: "0", OMB_VOICE_NOTES: "0" };
+const BASE = { OMB_BOT_ID: "bot-defer", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_SKILL_AUTHORING_ENABLED: "0", OMB_SHARED_COMPUTERS_ENABLED: "0", OMB_VOICE_NOTES: "0", OMB_BUG_REPORTS: "1" };
 /** The catalog wire test's default and fullest profiles (both a Chief's), and a bot that is not a Chief. */
 const PROFILES: Record<string, Record<string, string>> = {
   default: BASE,
