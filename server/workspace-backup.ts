@@ -37,7 +37,7 @@ const EXCLUDED = new Set([
   // Slack messages a Cloud took from the Admin (team-slack.ts): this machine's own, of no use anywhere else.
   "team-slack-messages.json",
   "openmausbot-server.lease", "box-create-requests.lock", "messages.db-wal", "messages.db-shm",
-  "runtime.db-wal", "runtime.db-shm",
+  "runtime.db-wal", "runtime.db-shm", "deals.db-wal", "deals.db-shm",
   "decider-log",
   "cloud-owner.json",
   "sync",
@@ -111,7 +111,8 @@ function preserved(name: string): boolean {
   const folded = name.toLowerCase();
   return excluded(folded) && !LIVE_DATABASE_SIDECARS.has(folded) && folded !== WAITS_FILE;
 }
-const SNAPSHOT_DATABASES: Record<string, string> = { "messages.db": "messages-snapshot.db", "runtime.db": "runtime-snapshot.db" };
+const SNAPSHOT_DATABASES: Record<string, string> = { "messages.db": "messages-snapshot.db", "runtime.db": "runtime-snapshot.db", "deals.db": "deals-snapshot.db" };
+const DATABASE_NAMES: Record<string, string> = { "messages.db": "message", "runtime.db": "runtime", "deals.db": "deal list" };
 const LIVE_DATABASE_SIDECARS = new Set(Object.keys(SNAPSHOT_DATABASES).flatMap((name) => [`${name}-wal`, `${name}-shm`]));
 function keptInPlace(name: string): boolean {
   return preserved(name) || name.toLowerCase() === "sessions.json.open";
@@ -331,7 +332,7 @@ export async function createWorkspaceBackupSnapshot(dataDir: string, options: Cr
     for (const [name, snapshotName] of Object.entries(SNAPSHOT_DATABASES)) {
       const sourceDb = join(root, name);
       if (!existsSync(sourceDb)) continue;
-      if (lstatSync(sourceDb).isSymbolicLink()) throw new Error(`The ${name === "messages.db" ? "message" : "runtime"} database must not be a symbolic link.`);
+      if (lstatSync(sourceDb).isSymbolicLink()) throw new Error(`The ${DATABASE_NAMES[name]} database must not be a symbolic link.`);
       // Another connection may open this database meanwhile; without a busy timeout the backup fails at once ("database is locked").
       const db = new DatabaseSync(sourceDb, { readOnly: true, timeout: 5_000 });
       // Node 26's native backup completion can wait on unrelated event-loop activity after an async scrypt; this pulse keeps it moving.
