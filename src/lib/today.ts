@@ -1,7 +1,7 @@
 import type { DealActivityItem, DealComingUp, DealToday, DealTodayDeal, DealTodayView } from "../../shared/deals";
 import type { LocaleKey } from "@/locales";
 
-export const DESKS = ["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk"] as const;
+export const DESKS = ["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk", "Marketing Desk"] as const;
 export type Desk = (typeof DESKS)[number];
 
 export type Greeting = "today.greeting.morning" | "today.greeting.afternoon" | "today.greeting.evening";

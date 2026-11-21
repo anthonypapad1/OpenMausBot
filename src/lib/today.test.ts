@@ -49,7 +49,7 @@ describe("the Needs you cards", () => {
 
 describe("the desks", () => {
   it("takes initials from the bot's name", () => {
-    expect(["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk", "Scout", "  ", "écrivain public"].map(deskInitials)).toEqual(["DD", "LD", "ID", "CD", "SC", "?", "ÉP"]);
+    expect(["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk", "Marketing Desk", "Scout", "  ", "écrivain public"].map(deskInitials)).toEqual(["DD", "LD", "ID", "CD", "MD", "SC", "?", "ÉP"]);
   });
 
   it("knows the four desks by name, in any case", () => {
