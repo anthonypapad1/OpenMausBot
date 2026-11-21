@@ -37,6 +37,22 @@ describe("the deal list's rows", () => {
     expect(cleared).toMatchObject({ price: null, notes: "", status: "closed" });
   });
 
+  it("adds to a deal's notes a line at a time, so two desks' notes both stay, and still lets notes replace them all", () => {
+    const store = open();
+    const deal = store.saveDeal(dealSaveInput.parse({ address: "622 W Pine St", notes_append: "Seller wants a 2pm closing." }));
+    expect(deal.notes).toBe("Seller wants a 2pm closing.");
+    store.saveDeal(dealSaveInput.parse({ deal_id: deal.id, notes_append: "Deal Desk: appraisal ordered.", notes: "" }));
+    store.saveDeal(dealSaveInput.parse({ deal_id: deal.id, notes_append: "Compliance Desk: disclosure unsigned." }));
+    expect(store.get(deal.id)!.deal.notes).toBe("Seller wants a 2pm closing.\nDeal Desk: appraisal ordered.\nCompliance Desk: disclosure unsigned.");
+    expect(() => store.saveDeal({ deal_id: deal.id, notes: "x", notes_append: "y" })).toThrow(/not both/);
+    expect(store.saveDeal({ deal_id: deal.id, clear: ["notes"], notes_append: "Fresh start." }).notes).toBe("Fresh start.");
+    expect(store.saveDeal({ deal_id: deal.id, notes: "Replaced." }).notes).toBe("Replaced.");
+    store.saveDeal({ deal_id: deal.id, notes: "n".repeat(4000) });
+    for (let i = 0; i < 7; i++) store.saveDeal({ deal_id: deal.id, notes_append: "a".repeat(2000) });
+    expect(() => store.saveDeal({ deal_id: deal.id, notes_append: "a".repeat(2000) })).toThrow(/would pass 20000 characters/);
+    expect(store.get(deal.id)!.deal.notes).toHaveLength(4000 + 7 * 2001);
+  });
+
   it("refuses an add without its required fields and a change to an id that is not there, in words naming the fix", () => {
     const store = open();
     expect(() => store.saveDeal({})).toThrow(/address is needed/);
@@ -61,7 +77,10 @@ describe("the deal list's rows", () => {
     store.saveParty({ deal_id: deal.id, party_id: buyer.id, clear: ["phone"] });
     store.saveDeadline({ deal_id: deal.id, label: "Closing", due_date: "2026-04-01", due_time: "10:00", kind: "closing" });
     const objection = store.saveDeadline({ deal_id: deal.id, label: "Inspection objection", due_date: "2026-03-10" });
-    store.saveDeadline(deadlineSaveInput.parse({ deal_id: deal.id, deadline_id: objection.id, status: "done", due_time: "" }));
+    store.saveDeadline(deadlineSaveInput.parse({ deal_id: deal.id, deadline_id: objection.id, due_time: "17:00" }));
+    // A blank time leaves it as it is; only clear empties it.
+    expect(store.saveDeadline(deadlineSaveInput.parse({ deal_id: deal.id, deadline_id: objection.id, status: "done", due_time: "" })).dueTime).toBe("17:00");
+    expect(store.saveDeadline(deadlineSaveInput.parse({ deal_id: deal.id, deadline_id: objection.id, clear: ["due_time"] })).dueTime).toBeNull();
     const disclosure = store.saveDocument({ deal_id: deal.id, name: "Lead-based paint disclosure" });
     store.saveDocument({ deal_id: deal.id, document_id: disclosure.id, status: "signed", required: false });
     store.addActivity({ deal_id: deal.id, summary: "Read the contract.", botId: "b1", botName: "Deal Desk" });

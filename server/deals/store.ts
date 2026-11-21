@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 import {
+  DEAL_NOTES_MAX,
   OPEN_DEAL_STATUSES,
   type DEAL_CLEARABLE,
   type Deal,
@@ -254,13 +255,22 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
     return transaction(() => {
       const at = now();
       const cleared = new Set<DealClearable>(input.clear ?? []);
+      if (input.notes !== undefined && input.notes_append !== undefined) {
+        throw new DealStoreError(400, "give notes or notes_append, not both: notes_append adds a line, notes replaces them all.");
+      }
+      const withNote = (notes: string) => {
+        if (input.notes_append === undefined) return notes;
+        const next = notes ? `${notes}\n${input.notes_append}` : input.notes_append;
+        if (next.length > DEAL_NOTES_MAX) throw new DealStoreError(400, `the deal's notes would pass ${DEAL_NOTES_MAX} characters. Shorten them with notes, which replaces them all.`);
+        return next;
+      };
       if (!input.deal_id) {
         needed(input.address, "address");
         const id = newId("deal");
         db.prepare(`INSERT INTO deals (id, address, side, price, status, contract_date, closing_date, transaction_url, transaction_id, notes, created_at, updated_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
           id, input.address!, input.side ?? "buyer", input.price ?? null, input.status ?? "under_contract",
-          input.contract_date ?? null, input.closing_date ?? null, input.transaction_url ?? null, input.transaction_id ?? null, input.notes ?? "", at, at,
+          input.contract_date ?? null, input.closing_date ?? null, input.transaction_url ?? null, input.transaction_id ?? null, withNote(input.notes ?? ""), at, at,
         );
         return dealRow(id);
       }
@@ -277,7 +287,7 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
         pick("closing_date", input.closing_date, was.closingDate, null),
         pick("transaction_url", input.transaction_url, was.transactionUrl, null),
         pick("transaction_id", input.transaction_id, was.transactionId, null),
-        pick("notes", input.notes, was.notes, ""),
+        withNote(pick("notes", input.notes, was.notes, "")),
         at,
         was.id,
       );
@@ -300,7 +310,7 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
       } else {
         const was = deadlineOf(childRow("deal_deadlines", "deadline", input.deal_id, id));
         db.prepare("UPDATE deal_deadlines SET label = ?, due_date = ?, due_time = ?, status = ?, kind = ?, updated_at = ? WHERE id = ?").run(
-          input.label ?? was.label, input.due_date ?? was.dueDate, input.due_time ?? was.dueTime, input.status ?? was.status, input.kind ?? was.kind, at, id,
+          input.label ?? was.label, input.due_date ?? was.dueDate, input.clear?.includes("due_time") ? null : input.due_time ?? was.dueTime, input.status ?? was.status, input.kind ?? was.kind, at, id,
         );
       }
       touch(input.deal_id, at);

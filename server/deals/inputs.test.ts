@@ -39,6 +39,9 @@ describe("deal tool inputs", () => {
     expect(problem("deal_save", { side: "landlord" })).toBe('deal_save was not run: side must be one of "buyer"|"seller"|"both".');
     expect(problem("deal_save", { address: "x", city: "Boulder" })).toBe('deal_save was not run: it does not take "city".');
     expect(problem("deal_save", { clear: ["address"] })).toMatch(/clear\.0/);
+    expect(problem("deal_deadline_save", { deal_id: ID, clear: ["label"] })).toMatch(/clear\.0/);
+    expect(problem("deal_deadline_save", { deal_id: ID, clear: ["due_time"] })).toBeNull();
+    expect(problem("deal_save", { notes_append: "x".repeat(2001) })).toMatch(/notes_append/);
     expect(problem("deal_activity_add", { deal_id: ID, summary: "one\ntwo" })).toMatch(/summary must be one line/);
     expect(problem("deal_activity_add", { deal_id: ID })).toBe("deal_activity_add was not run: summary is needed.");
     expect(problem("deal_get", {})).toBe("deal_get was not run: deal_id is needed.");
