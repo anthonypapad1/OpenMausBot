@@ -77,6 +77,23 @@ describe.skipIf(!CHROME)("rendering in a real Chrome", () => {
     expect(file.toString("latin1", 0, 5)).toBe("%PDF-");
   }, FIRST_LAUNCH_MS);
 
+  it("renders every shipped template in every size it offers, with every field filled", async () => {
+    const work = join(base, "every");
+    mkdirSync(work, { recursive: true });
+    writeFileSync(join(work, "photo.png"), solidPng(64, 64, [30, 90, 60]));
+    const deps = { attachments: join(base, "attachments"), vmGuestRoot: "/home/cua/workspace", timeZone: () => "America/Denver", chrome: async () => ({ path: CHROME! }) };
+    const folders = async () => ({ roots: [work], vmWorkspace: null });
+    const templates = loadTemplates();
+    for (const template of templates) {
+      const fields = Object.fromEntries(template.fields.map((field) => [field.name, field.kind === "color" ? "#23395b" : "x".repeat(Math.min(field.maxLength ?? 20, 20))]));
+      const images = { photos: Array.from({ length: template.photos.max }, () => "photo.png"), ...(template.logo ? { logo: "photo.png" } : {}), ...(template.headshot ? { headshot: "photo.png" } : {}) };
+      for (const format of template.formats) {
+        const answer = await runDesignRender({ template: template.id, format, fields, ...images }, folders, templates, deps);
+        expect(answer.status, `${template.id} ${format}: ${JSON.stringify(answer.body)}`).toBe(201);
+      }
+    }
+  }, FIRST_LAUNCH_MS * 4);
+
   it("prints a flyer on one US Letter page", async () => {
     const html = '<html><head></head><body style="margin:0;background:#123456">Flyer</body></html>';
     const { bytes } = await renderDesign({ html, assets: new Map(), width: 816, height: 1056, output: "pdf" }, { executablePath: CHROME! });
