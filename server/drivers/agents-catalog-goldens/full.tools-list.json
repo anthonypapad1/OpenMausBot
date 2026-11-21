@@ -2676,6 +2676,81 @@
           "summary"
         ]
       }
+    },
+    {
+      "name": "design_templates_list",
+      "description": "Corso's listing-marketing templates (Just Listed, Open House, Just Sold, flyers): each one's id, purpose, formats, fields and how many photos it takes. Read it before design_render.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "design_render",
+      "description": "Fill in one of Corso's marketing templates and save it as a PNG (social formats) or PDF (flyer) in marketing/ in your working folder, made on this computer at no cost. Returns the file's path and a small preview to check before sharing.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "template": {
+            "type": "string",
+            "description": "Its id, from design_templates_list."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "square",
+              "portrait",
+              "story",
+              "flyer"
+            ],
+            "description": "square 1080×1080, portrait 1080×1350, story 1080×1920, flyer US Letter; the template lists the ones it has."
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The template's fields by name, as plain text."
+          },
+          "photos": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "description": "A file in your working folder or one the person attached (a path), or an https image address."
+            },
+            "description": "In the order the template places them."
+          },
+          "logo": {
+            "type": "string",
+            "description": "A file in your working folder or one the person attached (a path), or an https image address."
+          },
+          "headshot": {
+            "type": "string",
+            "description": "A file in your working folder or one the person attached (a path), or an https image address."
+          },
+          "output": {
+            "type": "string",
+            "enum": [
+              "png",
+              "pdf"
+            ],
+            "description": "Default png, or pdf for a flyer."
+          }
+        },
+        "required": [
+          "template",
+          "format"
+        ]
+      }
     }
   ]
 }

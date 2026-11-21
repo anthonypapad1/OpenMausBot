@@ -2,6 +2,7 @@
 // catalog tool to exactly one entry here, so a new tool is placed on purpose.
 import { isToolGroup, type ToolGroup } from "../../shared/tool-groups.ts";
 import { DEAL_TOOL_NAMES } from "./agents-deal-tools.ts";
+import { DESIGN_TOOL_NAMES } from "./agents-design-tools.ts";
 import { HOSTING_TOOL_NAMES } from "./agents-hosting-tools.ts";
 import { IMAGE_TOOL_NAMES } from "./agents-image-tools.ts";
 import { MEETING_TOOL_NAMES } from "./agents-meeting-tools.ts";
@@ -14,7 +15,8 @@ export const TOOL_GROUP_MEMBERS: Readonly<Record<ToolGroup, { tools: ReadonlySet
   meetings: { tools: MEETING_TOOL_NAMES, servers: [] },
   data: { tools: new Set(), servers: ["data"] },
   pages: { tools: new Set(["show_html", ...PAGE_TOOL_NAMES, ...HOSTING_TOOL_NAMES, ...SHARE_TOOL_NAMES]), servers: [] },
-  images: { tools: IMAGE_TOOL_NAMES, servers: [] },
+  // Making pictures: the provider-made images, and listing marketing rendered here from Corso's templates.
+  images: { tools: new Set([...IMAGE_TOOL_NAMES, ...DESIGN_TOOL_NAMES]), servers: [] },
   email: { tools: new Set(), servers: ["email"] },
 };
 
