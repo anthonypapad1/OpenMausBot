@@ -175,6 +175,20 @@ describe("today on the deal list", () => {
     for (const item of [...view.needsYou, ...view.comingUp]) expect(item).toMatchObject({ dealId: deal.id, address: "1847 Larkspur Ln" });
   });
 
+  it("says which side and status each deadline's deal has, so the page can tell whose deadline it is", () => {
+    const store = open();
+    const listing = store.saveDeal({ address: "3310 Ridge View Dr", side: "seller", status: "pre_contract" });
+    const purchase = store.saveDeal({ address: "622 W Pine St", side: "buyer", status: "under_contract" });
+    store.saveDeadline({ deal_id: listing.id, label: "Listing photos", due_date: "2026-03-08" });
+    store.saveDeadline({ deal_id: listing.id, label: "Open house", due_date: "2026-03-10" });
+    store.saveDeadline({ deal_id: purchase.id, label: "Appraisal", due_date: "2026-03-11" });
+    const view = store.today(DENVER);
+    expect(view.needsYou).toMatchObject([{ type: "deadline", dealId: listing.id, side: "seller", dealStatus: "pre_contract", deadline: { status: "open" } }]);
+    expect(view.comingUp.map((item) => [item.deadline.label, item.side, item.dealStatus])).toEqual([
+      ["Open house", "seller", "pre_contract"], ["Appraisal", "buyer", "under_contract"],
+    ]);
+  });
+
   it("works the day out in the person's zone: late evening in Denver is still today there", () => {
     const store = open();
     const deal = store.saveDeal({ address: "622 W Pine St" });

@@ -46,7 +46,9 @@ where they belong instead of adding new places.
   pinned message) is fine: it opens a menu and is gone when there is nothing
   to show.
 - **No count badges and no "needs you" summaries** above the sidebar list or
-  in the header. A status mark on the row it belongs to is fine.
+  in the header. A status mark on the row it belongs to is fine. The Today
+  row is that row for the Today page: its count is the page's own "Needs you"
+  list, as the Inbox row's count is its inbox.
 - **Settings for one bot live in its bot panel.** App-wide settings live in
   Settings. Don't add a second home for the same setting.
 - **No new settings.** No new global settings, toggles or hidden flags. Make
@@ -116,6 +118,12 @@ and never add fonts.
 | Speaker names in transcripts (people and bots) | 13px | 600 | bot colour, else `ink-secondary` |
 | Meta, hints, group labels | 12 / 16px | 400 (group labels 500) | `ink-tertiary` |
 | Keycaps (`ShortcutHint`), tiny badges | 11px | 400 | `ink-secondary` or `ink-tertiary` |
+
+The Today page (`src/components/today/`) is the one exception to the table.
+It is the first screen a real estate agent sees each morning, and many aren't
+technical, so it reads larger: a 32px headline at 800, 20px section titles at
+700, 17px card titles at 700 and 15–16px body text. Nothing else borrows this
+scale.
 
 Rules:
 
