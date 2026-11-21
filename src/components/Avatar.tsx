@@ -15,8 +15,8 @@ import { CursorAvatar, type CursorAvatarHandle } from "./CursorAvatar";
 import { avatarCropRadius, botAvatarProfile, clampAvatarFocus, clampAvatarZoom, mascotFaceInk, type BotAvatarCrop, type MascotFaceColor } from "../../shared/bot-avatar";
 import { MASCOT_BODIES, botMascotBody } from "../../shared/mascot-bodies";
 import { isCarvedBody, type BotBodyId } from "../../shared/bot-body";
-import { useFestivalDress, wornBody } from "@/lib/festival-dress";
 import { t } from "@/lib/i18n";
+import { botInitials, botInitialsColor } from "@/lib/bot-initials";
 import { CarvedAvatar } from "./CarvedAvatar";
 import { steelBodyImage } from "@/lib/steel-body";
 
@@ -251,9 +251,8 @@ export function resolveBotAvatarOutcome(params: {
   return "flatImage";
 }
 
-export function BotAvatar({ bot, size = 44, label, readable = false, ...mascotProps }: BotAvatarProps) {
+export function BotAvatar({ bot, size = 44, label }: BotAvatarProps) {
   const profile = botAvatarProfile(bot);
-  const festival = useFestivalDress();
   const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => setImageFailed(false), [profile.avatarUrl]);
@@ -264,20 +263,7 @@ export function BotAvatar({ bot, size = 44, label, readable = false, ...mascotPr
     imageFailed,
   });
 
-  if (outcome !== "flatImage") {
-    return (
-      <MausAvatar
-        bodyId={wornBody(bot.mascotBody, bot.color, festival)}
-        {...mascotProps}
-        color={bot.color}
-        faceColor={bot.mascotFaceColor}
-        gradient={readable ? roomAvatarGradient(bot.color) : undefined}
-        size={size}
-        label={label ?? bot.name}
-        kind="bot"
-      />
-    );
-  }
+  if (outcome !== "flatImage") return <BotInitialsAvatar name={bot.name} color={bot.color} size={size} label={label} />;
 
   const radius = avatarCropRadius(profile.avatarCrop);
   const zoom = clampAvatarZoom(bot.avatarZoom ?? 1);
@@ -307,6 +293,18 @@ export function BotAvatar({ bot, size = 44, label, readable = false, ...mascotPr
         }}
       />
     </span>
+  );
+}
+
+/** A bot without a picture of its own: its initials on a soft tint of its colour. The initials are drawn from the
+ * attribute, so they never join the text of the row or button the avatar sits in; the label names the bot. */
+export function BotInitialsAvatar({ name, color, size, label }: { name?: string; color: MausColor; size: number; label?: string }) {
+  const tint = `var(--identity-${botInitialsColor(name, color)})`;
+  const initials = botInitials(name);
+  return (
+    <span {...avatarMarks("bot", "initials")} role="img" aria-label={label ?? name ?? t("avatar.altFallback")} data-bot-initials={initials}
+      className="flex shrink-0 select-none items-center justify-center rounded-full font-semibold leading-none after:content-[attr(data-bot-initials)]"
+      style={{ width: size, height: size, fontSize: Math.max(8, Math.round(size * 0.36)), color: tint, background: `color-mix(in srgb, ${tint} 16%, transparent)` }} />
   );
 }
 

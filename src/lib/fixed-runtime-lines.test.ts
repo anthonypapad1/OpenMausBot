@@ -95,8 +95,8 @@ describe("report receipts", () => {
   it.each([false, true])("keeps contact variants and English parity (later=%s)", (later) => {
     for (const contact of [undefined, "reply@example.test"]) {
       const make = later ? laterLine : sentLine;
-      expect(make("report-42", contact, "en")).toBe(`Sent to the MausBot team (report report-42)${later ? " after an earlier try did not go through" : ""}. Milind and Omkar get it by email${contact ? ` and will reply to ${contact}` : ""}.`);
-      expect(make("report-42", contact, "pt-br")).toContain("Enviado à equipe do MausBot (relatório report-42)");
+      expect(make("report-42", contact, "en")).toBe(`Sent to the Corso team (report report-42)${later ? " after an earlier try did not go through" : ""}.${contact ? ` We'll reply to ${contact}.` : ""}`);
+      expect(make("report-42", contact, "pt-br")).toContain("Enviado à equipe do Corso (relatório report-42)");
       if (contact) expect(make("report-42", contact, "pt-br")).toContain(contact);
     }
   });

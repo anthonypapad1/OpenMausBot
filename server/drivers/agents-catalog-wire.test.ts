@@ -40,6 +40,7 @@ function profiles(): Record<string, Profile> {
               OMB_VOICE_NOTES: flag(voice),
               OMB_CHIEF_OF_STAFF: flag(chief),
               OMB_COMPUTER_SELECTION: "1",
+              OMB_BUG_REPORTS: "1",
             },
           };
         }
@@ -68,6 +69,8 @@ function profiles(): Record<string, Profile> {
   all["default+hosting"] = { env: { ...all.default!.env, OMB_APP_HOSTING: "1" } };
   // A bot whose person turned groups off; the fullest profile has every group on.
   all["default+tools-off"] = { env: { ...all.default!.env, OMB_TOOLS_OFF: "pages,meetings" } };
+  // No @devs address on this server: report_bug could only fail, so it is not mounted.
+  all["default+no-bug-reports"] = { env: { ...all.default!.env, OMB_BUG_REPORTS: "0" } };
   return all;
 }
 
@@ -118,6 +121,7 @@ const BUDGET_BASELINE: Record<string, number> = {
   "skills+shared+voice+x+team+images+hosting": 71107,
   "default+hosting": 59808,
   "default+tools-off": 54421,
+  "default+no-bug-reports": 58181,
 };
 
 const RPC_PREFIX = '{"jsonrpc":"2.0","id":1,"result":';
@@ -277,6 +281,12 @@ describe("agents proxy tools/list golden", () => {
     }
   });
 
+  it("mounts report_bug only where a @devs report has somewhere to go, and takes nothing else away", () => {
+    const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
+    expect(names(wires.default!).filter((tool) => tool !== "report_bug")).toEqual(names(wires["default+no-bug-reports"]!));
+    for (const [name, profile] of Object.entries(PROFILES)) expect(names(wires[name]!).includes("report_bug"), name).toBe(profile.env.OMB_BUG_REPORTS === "1");
+  });
+
   it("mounts generate_image and edit_image only when an image provider is set up, and adds nothing else", () => {
     const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
     expect(names(wires["default+images"]!).filter((tool) => tool !== "generate_image" && tool !== "edit_image")).toEqual(names(wires.default!));
@@ -296,7 +306,7 @@ describe("agents proxy tools/list golden", () => {
 
   it("ignores the switches that once picked a catalog profile", () => {
     expect(wires["default+legacy-switches"]).toBe(wires.default);
-    const profile = catalogProfileFromEnv({ OMB_BOT_ID: "bot-golden", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_ROOM_TURN: "1", OMB_OWN_THREAD_CREATION: "1", OMB_EXTERNAL_RUNTIME: "1", OMB_ACTIVE_WAITS: "0" });
+    const profile = catalogProfileFromEnv({ OMB_BOT_ID: "bot-golden", OMB_CHIEF_OF_STAFF: "1", OMB_COMPUTER_SELECTION: "1", OMB_BUG_REPORTS: "1", OMB_ROOM_TURN: "1", OMB_OWN_THREAD_CREATION: "1", OMB_EXTERNAL_RUNTIME: "1", OMB_ACTIVE_WAITS: "0" });
     expect(JSON.stringify({ tools: availableTools(profile) })).toBe(wires.default);
     expect(profile).not.toHaveProperty("activeWaits");
     expect(profile).not.toHaveProperty("coordinating");

@@ -1,7 +1,7 @@
 import { t } from "./i18n";
 
 export interface FeatureFlagConfig {
-  features?: { skillAuthoring?: boolean; skillReview?: boolean; skillReviewSteps?: number; showToolCalls?: boolean; browser?: boolean; sharedComputers?: boolean; claudeUserMcp?: boolean; claudeUserSkills?: boolean; skillsLibrary?: boolean; shareLearnedSkills?: "off" | "ask" | "auto"; roomMemoryCapture?: boolean; savedSteps?: boolean; savedStepsHere?: boolean; usbPhoneTakeover?: boolean };
+  features?: { skillAuthoring?: boolean; skillReview?: boolean; skillReviewSteps?: number; showToolCalls?: boolean; browser?: boolean; sharedComputers?: boolean; claudeUserMcp?: boolean; claudeUserSkills?: boolean; skillsLibrary?: boolean; shareLearnedSkills?: "off" | "ask" | "auto"; roomMemoryCapture?: boolean; savedSteps?: boolean; savedStepsHere?: boolean; usbPhoneTakeover?: boolean; bugReports?: boolean };
   browserEngine?: { kind: "engine" | "unavailable"; reason?: string; installable?: boolean; installing?: boolean; installError?: string };
 }
 
@@ -62,6 +62,11 @@ export function showToolCallsEnabled(config: FeatureFlagConfig | null | undefine
 
 export function sharedComputersEnabled(config: FeatureFlagConfig | null | undefined): boolean {
   return config?.features?.sharedComputers === true;
+}
+
+/** @devs sends a bug report: off unless this server has somewhere to send it. */
+export function bugReportsEnabled(config: FeatureFlagConfig | null | undefined): boolean {
+  return config?.features?.bugReports === true;
 }
 
 export function claudeUserMcpEnabled(config: FeatureFlagConfig | null | undefined): boolean {

@@ -44,7 +44,7 @@ describe("Corso's identity is its mark, never its name", () => {
 });
 
 describe("what Corso offers to set up", () => {
-  const fresh = { aiReady: false, ownBots: 0, onCloud: false, team: false, remote: false };
+  const fresh = { aiReady: false, ownBots: 0, onCloud: false, team: false, remote: false, offersCloud: true };
 
   it("in Advanced mode, as on a new install before: an AI, bots, apps, the phone and the Cloud", () => {
     expect(setupSteps(fresh)).toEqual(["ai", "bots", "apps", "phone", "cloud"]);
@@ -60,6 +60,11 @@ describe("what Corso offers to set up", () => {
     expect(introChips({ ...fresh, aiReady: true, remote: true })).toEqual(["apps", "phone"]);
     expect(introChips({ ...fresh, aiReady: true, onCloud: true, importFound: false })).toEqual(["apps", "phone"]);
     expect(INTRO_CHIPS).toBe(3);
+  });
+
+  it("offers neither the phone nor the Cloud while the app doesn't offer Corso Cloud", () => {
+    expect(setupSteps({ ...fresh, offersCloud: false })).toEqual(["ai", "bots", "apps"]);
+    expect(introChips({ ...fresh, offersCloud: false })).toEqual(["ai", "apps"]);
   });
 
   it("never offers a bot (the sidebar's + adds one), nor nags a person who is set up or a Team Cloud member", () => {

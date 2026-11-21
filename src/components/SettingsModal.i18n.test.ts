@@ -17,6 +17,7 @@ beforeAll(() => {
 });
 
 // Analytics (mocked below) boots PostHog on import, which wants a real browser.
+vi.mock("../../electron/corso-cloud.mjs", () => ({ CORSO_CLOUD_OFFERED: true }));
 vi.mock("@/lib/interface-mode", () => ({ useAdvancedMode: () => true, setAdvancedMode: () => {} }));
 vi.mock("@/lib/analytics", () => ({
   analyticsEnabled: () => false,

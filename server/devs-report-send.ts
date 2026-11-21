@@ -9,7 +9,6 @@ import { DEVS_REPORT_LIMITS, withoutContact, type DevsReportPayload } from "./de
 
 export const BUG_REPORT_PATH = "/api/bug-reports";
 export const PRODUCTION_CLOUD_ORIGIN = "https://cloud.openmausbot.com";
-export const STAGING_CLOUD_ORIGIN = "https://omb-cloud-staging.fly.dev";
 const SEND_TIMEOUT_MS = 20_000;
 const ANSWER_MAX_BYTES = 16 * 1024;
 
@@ -21,18 +20,17 @@ export type SendOutcome =
   | { ok: false; retry: false; why: "refused"; detail: string };
 
 /** OMB_BUG_REPORT_URL (an https address, or http on this machine's loopback, for fixtures), else a Cloud home's own
- * Admin origin, else the staging or production Cloud. */
-export function bugReportEndpoint(env: NodeJS.ProcessEnv, cloudOrigin?: string | null): string {
+ * Admin origin; null when neither is set, so @devs is off and nothing is sent. */
+export function bugReportEndpoint(env: NodeJS.ProcessEnv, cloudOrigin?: string | null): string | null {
   const explicit = env.OMB_BUG_REPORT_URL?.trim();
   if (explicit) {
     try {
       const url = new URL(explicit);
       const loopback = url.protocol === "http:" && ["127.0.0.1", "[::1]", "localhost"].includes(url.hostname);
       if ((url.protocol === "https:" || loopback) && !url.username && !url.password) return url.href;
-    } catch { /* not an address: the default below */ }
+    } catch { /* not an address: the Cloud home's below */ }
   }
-  const origin = cloudOrigin ?? (env.OMB_CLOUD_STAGING === "1" ? STAGING_CLOUD_ORIGIN : PRODUCTION_CLOUD_ORIGIN);
-  return `${origin.replace(/\/+$/, "")}${BUG_REPORT_PATH}`;
+  return cloudOrigin ? `${cloudOrigin.replace(/\/+$/, "")}${BUG_REPORT_PATH}` : null;
 }
 
 async function boundedJson(response: Response): Promise<Record<string, unknown>> {

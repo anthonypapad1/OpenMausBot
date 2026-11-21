@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CORSO_CLOUD_OFFERED } from "../../../electron/corso-cloud.mjs";
 import { appVersion } from "@/lib/app-links";
 import { pageIsThisComputer } from "@/lib/companion-bridge";
 import { skillsLibraryEnabled } from "@/lib/feature-flags";
@@ -33,6 +34,7 @@ export function useSettingsContext(): SettingsContext {
     places: known > 1 || (!ogb?.environments && railShown(places)),
     plan: desktop ? Boolean(ogb?.cloudAccount || (ogb?.cloudPlan && cloud)) : cloud && !team && admin,
     organization: Boolean(ogb?.organization) && !client,
+    phone: CORSO_CLOUD_OFFERED,
     environments: Boolean(ogb?.environments),
     installations: workspacesAvailable(state.config),
     skills: skillsLibraryEnabled(state.config),

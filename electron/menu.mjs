@@ -75,7 +75,7 @@ const whereItLives = (environment) => (environment.kind === "local" ? environmen
  * @param {() => void} input.onConnect
  * @param {(id: string) => void} input.onForget
  * @param {() => void} input.onOpenSettings
- * @param {() => void} input.onOrganizationSignIn
+ * @param {(() => void) | undefined} input.onOrganizationSignIn
  * @param {{ origin: string, onBack: () => void } | null} [input.home] My Cloud once the person's bots moved there: the
  *   menu lists only the other saved servers, with Back to My Cloud, and is absent without any.
  * @param {(key: string, params?: Record<string, string | number>) => string} [input.t]
@@ -110,7 +110,7 @@ export function buildApplicationMenu({ environments, activeId, onSwitch, onAddFr
       })),
       ...(onAddCloud ? [{ id: "add-cloud", label: t("native.menu.addCloud"), click: () => onAddCloud() }] : []),
       { type: "separator" },
-      { id: "organization-sign-in", label: t("native.menu.orgSignIn"), click: onOrganizationSignIn },
+      ...(onOrganizationSignIn ? [{ id: "organization-sign-in", label: t("native.menu.orgSignIn"), click: onOrganizationSignIn }] : []),
       { label: t("native.menu.connect"), click: onConnect },
       { label: t("native.menu.addFromLink"), click: () => onAddFromClipboard() },
       {

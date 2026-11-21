@@ -78,8 +78,9 @@ describe("pinned circle frame", () => {
     }));
     const clipped = frame(markup);
     expect(clipped).toContain(`border-radius:${radius}`);
-    expect(clipped).not.toContain("rounded-full");
-    expect(markup).not.toContain("rounded-full");
+    // A bot with no picture shows its initials, which are round of their own; the frame never forces it.
+    if (crop !== "mascot") expect(clipped).not.toContain("rounded-full");
+    if (crop !== "mascot") expect(markup).not.toContain("rounded-full");
     expect(markup).not.toContain("Expand Atlas threads");
   });
 
