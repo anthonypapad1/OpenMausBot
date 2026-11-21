@@ -12,7 +12,7 @@ const DEAL_TOOLS = ["deals_list", "deal_get", "deal_save", "deal_deadline_save",
 const DEAL_ARGUMENTS = [
   "deal_id", "deadline_id", "document_id", "party_id", "address", "side", "price", "status", "contract_date", "closing_date",
   "transaction_url", "transaction_id", "notes", "clear", "label", "due_date", "due_time", "kind", "name", "required", "role",
-  "email", "phone", "summary",
+  "email", "phone", "summary", "notes_append",
 ];
 const DEAL_VALUES = [
   "buyer", "seller", "both", "pre_contract", "under_contract", "closed", "cancelled", "open", "all", "done", "waived",
@@ -122,9 +122,11 @@ describe("Corso's four Desks", () => {
     const compliance = readyBot("compliance-desk")!;
     const note = compliance.notes!["memory/required-docs.md"]!;
     const skill = compliance.skills!.find((text) => skillName(text) === "compliance-checklist")!;
-    const rows = [...note.matchAll(/^- (.+) · (required|optional) · (.+)$/gm)];
-    expect(rows.length).toBe(17);
-    for (const [, name, required, due] of rows) expect(skill).toContain(`| ${name} | ${required === "required" ? "yes" : "no"} | ${due} |`);
+    const column: Record<string, string> = { required: "yes", optional: "no", "required if built before 1978": "if built before 1978" };
+    const rows = [...note.matchAll(/^- (.+) · (required if built before 1978|required|optional) · (.+)$/gm)];
+    expect(rows.length).toBe(22);
+    for (const [, name, required, due] of rows) expect(skill).toContain(`| ${name} | ${column[required!]} | ${due} |`);
+    expect(note).toContain("Lead-based paint disclosure, signed by the buyer and every required licensee (§10.10.1) · required if built before 1978");
     expect(note).toMatch(/^---\ntitle: Required documents\n/);
   });
 });

@@ -13,7 +13,7 @@ When the person asks to change the checklist ("we also need a wire fraud advisor
 
 ### Colorado default (residential purchase)
 
-"Due" counts calendar days from the contract date (MEC). "-" means it has no fixed due date.
+"Due" counts calendar days from the contract date (MEC). "-" means it has no fixed due date. "If built before 1978" means required for a home built before 1978, and not needed otherwise: check the year built on the deal, and ask if you can't find it.
 
 **Both sides**
 
@@ -21,15 +21,19 @@ When the person asks to change the checklist ("we also need a wire fraud advisor
 | --- | --- | --- |
 | Purchase & sale contract (fully executed CREC Contract to Buy and Sell) | yes | day 0 |
 | Counterproposals & amendments | no | - |
+| Source of Water Addendum (§10.8) | yes | day 0 |
 | Earnest money receipt | yes | day 3 |
 | Title commitment | yes | day 10 |
 | HOA documents (if there is an association) | no | day 14 |
+| Closing instructions (§12.2) | yes | at closing |
 | Closing disclosure / settlement statement | yes | at closing |
 
 **Buyer side**
 
 | Document | Required | Due |
 | --- | --- | --- |
+| Brokerage disclosure to buyer (C.R.S. 12-10-408) | yes | day 0 |
+| Lead-based paint disclosure, signed by the buyer and every required licensee (§10.10.1) | if built before 1978 | day 7 |
 | Loan pre-approval letter or proof of funds | yes | day 5 |
 | Inspection report | yes | day 10 |
 | Inspection objection & resolution | no | day 14 |
@@ -41,8 +45,9 @@ When the person asks to change the checklist ("we also need a wire fraud advisor
 
 | Document | Required | Due |
 | --- | --- | --- |
+| Brokerage disclosure to seller (C.R.S. 12-10-408) | yes | day 0 |
 | Seller's property disclosure | yes | day 7 |
-| Lead-based paint disclosure (homes built before 1978) | no | day 7 |
+| Lead-based paint disclosure, signed by the seller and every required licensee (§10.10.1) | if built before 1978 | day 7 |
 | Square footage disclosure | no | - |
 | Payoff statement | yes | day 28 |
 | Deed | yes | day 29 |
@@ -52,7 +57,7 @@ A deal on both sides gets every row.
 ## Checking a deal
 
 1. `deals_list` (status `open`), then `deal_get` for each deal. Pick the rows that apply to its `side` (`buyer`, `seller` or `both`). A `pre_contract` deal has no contract date yet: check only what is already on it.
-2. Make sure each applicable document is on the deal. Add any that are not with `deal_document_save`: `name` as the checklist says it, `status` `missing`, and `required` true or false as the checklist says. To change one already there, pass its `document_id`.
+2. Make sure each applicable document is on the deal. Add any that are not with `deal_document_save`: `name` as the checklist says it, `status` `missing`, and `required` true or false as the checklist says ("if built before 1978" is true for a home built before 1978, false otherwise). To change one already there, pass its `document_id`.
 3. For each required document, compare its status with its due date:
    - `signed` or `received`: fine. A document that needs signatures and shows `received` but not `signed`: check it, and mark it `needs_signature` if signatures are missing.
    - `missing` or `needs_signature`, past due: **critical**, "Required document overdue: [name]".

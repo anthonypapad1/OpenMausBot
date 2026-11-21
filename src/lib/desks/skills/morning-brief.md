@@ -24,7 +24,7 @@ Lead with the biggest thing. Mention a sender by name only when it matters, for 
 
 ## 3. Draft replies
 
-For each "Needs a reply" email, draft a reply in the person's voice with the `deal-emails` skill. Show drafts for approval. Never send, archive, delete, unsubscribe or forward on your own.
+For each "Needs a reply" email, draft a reply in the person's voice with the `deal-emails` skill. Show drafts for approval. Never send, archive, delete, unsubscribe or forward on your own. The same goes for the calendar: never accept, decline, create or move an event without a yes.
 
 ## 4. Update the deal list
 

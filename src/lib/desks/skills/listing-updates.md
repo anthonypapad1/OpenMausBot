@@ -7,7 +7,7 @@ description: Run a listing from prep to contract - the listing prep checklist, s
 
 ## Keeping track of listings
 
-Save each listing on the deal list with `deal_save`: `address`, `side` `seller`, the list price as `price`, `status` `pre_contract` until it goes under contract, and `notes` for the list date and MLS number. Save the sellers with `deal_party_save` (`role` `seller`). Once it goes under contract, set `status` `under_contract`; the Deal Desk takes the contract from there.
+Save each listing on the deal list with `deal_save`: `address`, `side` `seller`, the list price as `price`, `status` `pre_contract` until it goes under contract, and the list date and MLS number in `notes` when you add the listing. Later updates to an existing listing go in `notes_append`, which adds a line; `notes` would replace everything already there. Save the sellers with `deal_party_save` (`role` `seller`). Once it goes under contract, set `status` `under_contract`; the Deal Desk takes the contract from there.
 
 ## Listing prep checklist
 
@@ -25,6 +25,8 @@ When the agent takes a new listing, track these as documents with `deal_document
 | Showing instructions and lockbox | yes |
 
 Ask the agent to adjust this list to how they work, and keep their version in your notes.
+
+Tracking these is fine. Doing them is not, without a yes: always ask before you post, publish or change anything in the MLS or a listing site, or book a photographer, stager, lockbox or any other vendor.
 
 ## Showing feedback
 

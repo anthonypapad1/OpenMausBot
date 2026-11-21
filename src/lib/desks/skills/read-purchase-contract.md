@@ -28,34 +28,46 @@ Missing a deadline can cost the agent the deal. Be thorough, and never guess.
 
 ### Every deadline in §3 (Dates, Deadlines and Applicability)
 
-The §3 table lists each deadline with a reference to its section. Item and section numbers change between form versions (the ones below follow current CBS1 forms), so match on the label, not the number. Save each row that has a date. A row marked "N/A", deleted, or left blank does not apply: skip it and mention that you did.
+Section and item numbers below are for the CBS1 (Contract to Buy and Sell Real Estate, Residential) mandatory from January 1, 2026. If the form you are reading is a different version, match each deadline by its label, not its number.
+
+The §3 table lists each deadline with a reference to its section. Save each row that has a date. A row marked "N/A", deleted, or left blank does not apply: skip it and mention that you did.
 
 | Label on the form | `kind` to save |
 | --- | --- |
-| Earnest money deadline (§4.3) | `earnest_money` |
-| Record title deadline, record title objection deadline, off-record title deadline, off-record title objection deadline, title resolution deadline (§8) | `title` |
-| Third party right to purchase/approve deadline (§8.7) | `title` |
-| Association documents deadline, association documents termination deadline (§7) | `association` |
-| Seller's property disclosure deadline, lead-based paint disclosure deadline (§10) | `disclosure` |
-| New loan application, new loan terms, new loan availability, buyer's credit information, disapproval of buyer's credit, existing loan, loan transfer approval, seller or private financing deadlines (§5) | `loan` |
-| Appraisal deadline, appraisal objection deadline, appraisal resolution deadline (§6) | `appraisal` |
-| New ILC or new survey deadline, survey objection deadline, survey resolution deadline (§9) | `survey` |
-| Inspection objection deadline (§10.3) | `inspection_objection` |
-| Inspection resolution deadline (§10.3) | `inspection_resolution` |
-| Inspection termination deadline, water rights / mineral rights examination deadlines | `inspection` |
-| Property insurance termination deadline (§10.5) | `insurance` |
-| Due diligence documents delivery, objection and resolution deadlines, conditional sale deadline (§10.6, §10.7) | `due_diligence` |
-| Closing date (§12) | `closing` |
-| Possession date and time (§17) | `possession` |
+| Time of Day Deadline (§3 item 1) | not saved on its own: see "Times" below |
+| Alternative Earnest Money Deadline (§4.3) | `earnest_money` |
+| Record Title Deadline, Record Title Objection Deadline, Off-Record Title Deadline, Off-Record Title Objection Deadline, Title Resolution Deadline (§8) | `title` |
+| Third Party Right to Purchase/Approve Deadline (§8.6) | `title` |
+| Association Documents Deadline, Association Documents Termination Deadline (§7) | `association` |
+| Seller's Property Disclosure Deadline, Lead-Based Paint Disclosure Deadline (§10) | `disclosure` |
+| Lead-Based Paint Termination Deadline (§3 item 38, §10.10) | `disclosure` |
+| New Loan Application, New Loan Terms, New Loan Availability, Buyer's Credit Information, Disapproval of Buyer's Credit Information, Existing Loan Deadline, Existing Loan Termination Deadline, Loan Transfer Approval, Seller or Private Financing deadlines (§5) | `loan` |
+| Appraisal Deadline, Appraisal Objection Deadline, Appraisal Resolution Deadline (§6) | `appraisal` |
+| New ILC or New Survey Deadline, New ILC or New Survey Objection Deadline, New ILC or New Survey Resolution Deadline (§9) | `survey` |
+| Inspection Objection Deadline (§10.3) | `inspection_objection` |
+| Inspection Resolution Deadline (§10.3) | `inspection_resolution` |
+| Inspection Termination Deadline (§10.3) | `inspection` |
+| Water Rights Examination Deadline (§2.7), Mineral Rights Examination Deadline (§8) | `inspection` |
+| Property Insurance Termination Deadline (§10.5) | `insurance` |
+| Due Diligence Documents Delivery, Objection and Resolution Deadlines, Conditional Sale Deadline (§10.6, §10.7) | `due_diligence` |
+| Closing Date (§12) | `closing` |
+| Possession Date and Possession Time (§17) | `possession` |
+| Acceptance Deadline Date and Acceptance Deadline Time (§27) | `other` |
 | Anything else with a date | `other` |
 
 Rules for dates:
 
 - Write dates as YYYY-MM-DD.
 - Some deadlines are written as a number of days after MEC ("MEC + 10"). Work out the calendar date, and say you calculated it.
-- Read §3 for the weekend and holiday rule. If it says a deadline that falls on a Saturday, Sunday or legal holiday moves to the next business day, apply that and say so.
-- Keep the time if the contract gives one. Otherwise the form's default applies (check the definitions in the version you are reading; current CBS forms end a deadline at 11:59 p.m. Mountain Time).
+- Weekends and holidays (§3.3.3): the form has a box saying whether a deadline that falls on a Saturday, Sunday or federal or Colorado state holiday is extended to the next business day. Apply what the checked box says, and say so. If neither box is checked, deadlines are **not** extended: keep the date as written, and mention that the box was left blank.
 - If a date is unclear or unreadable, don't guess. Leave it out, and list it under "Please check" in your summary.
+
+Times:
+
+- Read the Time of Day Deadline (§3 item 1) first. Per §3.3.1, a time written there is when every Objection, Resolution, Examination and Termination deadline expires. Save that time as `due_time` (24-hour HH:MM) on each of those deadlines.
+- Only if the Time of Day Deadline is blank do those deadlines expire at 11:59 p.m. Mountain Time. Save `due_time` 23:59 then.
+- Any other deadline that the contract gives its own time (Possession Time, Acceptance Deadline Time): save that time as its `due_time`.
+- If an amendment removes a time, empty it with `clear` `due_time` on `deal_deadline_save`.
 
 ### Parties and contacts
 
@@ -67,7 +79,7 @@ Use the deal-list tools in this order. Look for the deal with `deals_list` first
 
 Only the fields you give change; a blank field leaves what's there. To empty a deal field on purpose, name it in `clear`.
 
-1. `deal_save`: `address`, `side` (`buyer`, `seller` or `both`), `price` (whole dollars), `status` (`under_contract` once every party has signed, `pre_contract` if not), `contract_date` (MEC), `closing_date`, `transaction_url` and `transaction_id` if it came from CTM, and short `notes` (earnest money amount and holder, loan type, anything unusual). Leave `deal_id` out only when adding a new deal.
+1. `deal_save`: `address`, `side` (`buyer`, `seller` or `both`), `price` (whole dollars), `status` (`under_contract` once every party has signed, `pre_contract` if not), `contract_date` (MEC), `closing_date`, `transaction_url` and `transaction_id` if it came from CTM, and a short note (earnest money amount and holder, loan type, anything unusual). Leave `deal_id` out only when adding a new deal. For a new deal, put the note in `notes`. For a deal that already exists, use `notes_append` instead: it adds a line, while `notes` replaces every note already there.
 2. `deal_party_save` for each person: `role` (`buyer`, `seller`, `lender`, `title`, `listing_agent`, `buyer_agent` or `other`), `name`, `email` and `phone`. To fix someone already on the deal, pass their `party_id` from `deal_get`.
 3. `deal_deadline_save` for each deadline: `label` (the form's words), `due_date`, `due_time` (HH:MM, 24-hour) if the contract gives one, `status` `open`, and the `kind` from the table above. On an amend/extend, pass the existing `deadline_id` from `deal_get` rather than adding a second one. A deadline the parties struck out becomes `waived`.
 4. `deal_document_save` for the contract itself: `name`, `status` `signed` if every party signed or `needs_signature` if not, and `required` true. Add each counterproposal or amendment you read the same way.
