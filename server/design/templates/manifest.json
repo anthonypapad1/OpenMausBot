@@ -1,0 +1,428 @@
+{
+  "templates": [
+    {
+      "id": "sample-card",
+      "name": "Sample card",
+      "purpose": "A plain square card with one photo, a headline and the address. It exists to exercise the template contract, not to post.",
+      "formats": [
+        "square"
+      ],
+      "photos": {
+        "min": 1,
+        "max": 1
+      },
+      "fields": [
+        {
+          "name": "headline",
+          "required": true,
+          "description": "A few words across the top, such as Just Listed.",
+          "maxLength": 60
+        },
+        {
+          "name": "address",
+          "required": true,
+          "description": "The property's street address.",
+          "maxLength": 120
+        }
+      ]
+    },
+    {
+      "id": "just-listed",
+      "name": "Just Listed",
+      "purpose": "A new listing for the feed or stories: full photo, price, address and facts, with the agent and brokerage along the bottom.",
+      "formats": [
+        "square",
+        "portrait",
+        "story"
+      ],
+      "photos": {
+        "min": 1,
+        "max": 1
+      },
+      "logo": "optional",
+      "headshot": "optional",
+      "fields": [
+        {
+          "name": "headline",
+          "required": false,
+          "description": "The words in the top corner.",
+          "maxLength": 24,
+          "default": "Just Listed"
+        },
+        {
+          "name": "price",
+          "required": true,
+          "description": "The list price, such as $1,185,000.",
+          "maxLength": 16
+        },
+        {
+          "name": "address",
+          "required": true,
+          "description": "The street address, such as 512 Pine Avenue.",
+          "maxLength": 60
+        },
+        {
+          "name": "city_line",
+          "required": false,
+          "description": "City, state and ZIP, such as Boulder, CO 80302.",
+          "maxLength": 50
+        },
+        {
+          "name": "beds",
+          "required": false,
+          "description": "Bedrooms, as a number.",
+          "maxLength": 4
+        },
+        {
+          "name": "baths",
+          "required": false,
+          "description": "Bathrooms, as a number such as 2.5.",
+          "maxLength": 5
+        },
+        {
+          "name": "sqft",
+          "required": false,
+          "description": "Finished square feet, with a comma, such as 2,640. Use the square footage disclosure's number.",
+          "maxLength": 8
+        },
+        {
+          "name": "agent_name",
+          "required": true,
+          "description": "The agent's name as it should appear.",
+          "maxLength": 60
+        },
+        {
+          "name": "agent_phone",
+          "required": false,
+          "description": "The agent's phone number.",
+          "maxLength": 30
+        },
+        {
+          "name": "brokerage",
+          "required": true,
+          "description": "The brokerage firm's name. Colorado requires it on every ad.",
+          "maxLength": 60
+        },
+        {
+          "name": "brand_color",
+          "required": false,
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "kind": "color"
+        },
+        {
+          "name": "accent_color",
+          "required": false,
+          "description": "A second brand colour for the thin accent lines, as a hex code. Empty keeps gold.",
+          "kind": "color"
+        }
+      ]
+    },
+    {
+      "id": "open-house",
+      "name": "Open House",
+      "purpose": "An open house: photo on top, the day and time large below, then the address and facts, and the agent.",
+      "formats": [
+        "square",
+        "portrait",
+        "story"
+      ],
+      "photos": {
+        "min": 1,
+        "max": 1
+      },
+      "logo": "optional",
+      "headshot": "optional",
+      "fields": [
+        {
+          "name": "headline",
+          "required": false,
+          "description": "The small words above the date.",
+          "maxLength": 24,
+          "default": "Open House"
+        },
+        {
+          "name": "date",
+          "required": true,
+          "description": "The day, such as Saturday, May 16.",
+          "maxLength": 28
+        },
+        {
+          "name": "time",
+          "required": true,
+          "description": "The hours, such as 11 am – 1 pm.",
+          "maxLength": 24
+        },
+        {
+          "name": "address",
+          "required": true,
+          "description": "The street address, such as 512 Pine Avenue.",
+          "maxLength": 60
+        },
+        {
+          "name": "city_line",
+          "required": false,
+          "description": "City, state and ZIP, such as Boulder, CO 80302.",
+          "maxLength": 50
+        },
+        {
+          "name": "price",
+          "required": false,
+          "description": "The list price, such as $1,185,000.",
+          "maxLength": 16
+        },
+        {
+          "name": "beds",
+          "required": false,
+          "description": "Bedrooms, as a number.",
+          "maxLength": 4
+        },
+        {
+          "name": "baths",
+          "required": false,
+          "description": "Bathrooms, as a number such as 2.5.",
+          "maxLength": 5
+        },
+        {
+          "name": "sqft",
+          "required": false,
+          "description": "Finished square feet, with a comma, such as 2,640. Use the square footage disclosure's number.",
+          "maxLength": 8
+        },
+        {
+          "name": "agent_name",
+          "required": true,
+          "description": "The agent's name as it should appear.",
+          "maxLength": 60
+        },
+        {
+          "name": "agent_phone",
+          "required": false,
+          "description": "The agent's phone number.",
+          "maxLength": 30
+        },
+        {
+          "name": "brokerage",
+          "required": true,
+          "description": "The brokerage firm's name. Colorado requires it on every ad.",
+          "maxLength": 60
+        },
+        {
+          "name": "brand_color",
+          "required": false,
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "kind": "color"
+        },
+        {
+          "name": "accent_color",
+          "required": false,
+          "description": "A second brand colour for the thin accent lines, as a hex code. Empty keeps gold.",
+          "kind": "color"
+        }
+      ]
+    },
+    {
+      "id": "just-sold",
+      "name": "Just Sold",
+      "purpose": "A closed sale: the photo darkened behind a large Sold, the address, and who the agent represented.",
+      "formats": [
+        "square",
+        "portrait",
+        "story"
+      ],
+      "photos": {
+        "min": 1,
+        "max": 1
+      },
+      "logo": "optional",
+      "headshot": "optional",
+      "fields": [
+        {
+          "name": "headline",
+          "required": false,
+          "description": "The large word in the middle.",
+          "maxLength": 12,
+          "default": "Sold"
+        },
+        {
+          "name": "address",
+          "required": true,
+          "description": "The street address, such as 512 Pine Avenue.",
+          "maxLength": 60
+        },
+        {
+          "name": "city_line",
+          "required": false,
+          "description": "City, state and ZIP, such as Boulder, CO 80302.",
+          "maxLength": 50
+        },
+        {
+          "name": "represented",
+          "required": false,
+          "description": "Who the agent represented, such as Represented the sellers. Say Represented the buyer when that is true.",
+          "maxLength": 40
+        },
+        {
+          "name": "agent_name",
+          "required": true,
+          "description": "The agent's name as it should appear.",
+          "maxLength": 60
+        },
+        {
+          "name": "agent_phone",
+          "required": false,
+          "description": "The agent's phone number.",
+          "maxLength": 30
+        },
+        {
+          "name": "brokerage",
+          "required": true,
+          "description": "The brokerage firm's name. Colorado requires it on every ad.",
+          "maxLength": 60
+        },
+        {
+          "name": "brand_color",
+          "required": false,
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "kind": "color"
+        },
+        {
+          "name": "accent_color",
+          "required": false,
+          "description": "A second brand colour for the thin accent lines, as a hex code. Empty keeps gold.",
+          "kind": "color"
+        }
+      ]
+    },
+    {
+      "id": "listing-flyer",
+      "name": "Listing flyer",
+      "purpose": "A one-page print flyer: a large photo and up to two more, price, address, facts, a short description, up to five highlights, and the agent with Equal Housing Opportunity.",
+      "formats": [
+        "flyer"
+      ],
+      "photos": {
+        "min": 1,
+        "max": 3
+      },
+      "logo": "optional",
+      "headshot": "optional",
+      "fields": [
+        {
+          "name": "headline",
+          "required": false,
+          "description": "The words at the top left.",
+          "maxLength": 24,
+          "default": "Just Listed"
+        },
+        {
+          "name": "price",
+          "required": true,
+          "description": "The list price, such as $1,185,000.",
+          "maxLength": 16
+        },
+        {
+          "name": "address",
+          "required": true,
+          "description": "The street address, such as 512 Pine Avenue.",
+          "maxLength": 60
+        },
+        {
+          "name": "city_line",
+          "required": false,
+          "description": "City, state and ZIP, such as Boulder, CO 80302.",
+          "maxLength": 50
+        },
+        {
+          "name": "beds",
+          "required": false,
+          "description": "Bedrooms, as a number.",
+          "maxLength": 4
+        },
+        {
+          "name": "baths",
+          "required": false,
+          "description": "Bathrooms, as a number such as 2.5.",
+          "maxLength": 5
+        },
+        {
+          "name": "sqft",
+          "required": false,
+          "description": "Finished square feet, with a comma, such as 2,640. Use the square footage disclosure's number.",
+          "maxLength": 8
+        },
+        {
+          "name": "description",
+          "required": false,
+          "description": "Two or three sentences about the home, about 50 words at most.",
+          "maxLength": 300
+        },
+        {
+          "name": "highlight1",
+          "required": false,
+          "description": "One highlight, under ten words.",
+          "maxLength": 48
+        },
+        {
+          "name": "highlight2",
+          "required": false,
+          "description": "One highlight, under ten words.",
+          "maxLength": 48
+        },
+        {
+          "name": "highlight3",
+          "required": false,
+          "description": "One highlight, under ten words.",
+          "maxLength": 48
+        },
+        {
+          "name": "highlight4",
+          "required": false,
+          "description": "One highlight, under ten words.",
+          "maxLength": 48
+        },
+        {
+          "name": "highlight5",
+          "required": false,
+          "description": "One highlight, under ten words.",
+          "maxLength": 48
+        },
+        {
+          "name": "agent_name",
+          "required": true,
+          "description": "The agent's name as it should appear.",
+          "maxLength": 60
+        },
+        {
+          "name": "agent_phone",
+          "required": false,
+          "description": "The agent's phone number.",
+          "maxLength": 30
+        },
+        {
+          "name": "agent_email",
+          "required": false,
+          "description": "The agent's email address.",
+          "maxLength": 60
+        },
+        {
+          "name": "brokerage",
+          "required": true,
+          "description": "The brokerage firm's name. Colorado requires it on every ad.",
+          "maxLength": 60
+        },
+        {
+          "name": "brand_color",
+          "required": false,
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "kind": "color"
+        },
+        {
+          "name": "accent_color",
+          "required": false,
+          "description": "A second brand colour for the thin accent lines, as a hex code. Empty keeps gold.",
+          "kind": "color"
+        }
+      ]
+    }
+  ]
+}

@@ -113,7 +113,7 @@ function isCredentialKey(key: string): boolean {
   return /password/i.test(key) || CREDENTIAL_KEY.test(key.replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/[\s-]+/g, "_"));
 }
 
-function credentialKeys(value: unknown, path = "", inApps = false): string[] {
+export function credentialKeys(value: unknown, path = "", inApps = false): string[] {
   if (Array.isArray(value)) return value.flatMap((item, index) => credentialKeys(item, `${path}[${index}]`, inApps));
   if (!isRecord(value)) return [];
   return Object.entries(value).flatMap(([key, child]) => {
@@ -139,7 +139,7 @@ function dropTrailingCommas(text: string): string {
   return out;
 }
 
-function looseJson(text: string): unknown {
+export function looseJson(text: string): unknown {
   for (const attempt of [text, dropTrailingCommas(text)]) {
     try {
       return JSON.parse(attempt) as unknown;
@@ -151,7 +151,7 @@ function looseJson(text: string): unknown {
 }
 
 /** Every top-level {…} in a chat reply, by brace matching that respects JSON strings. */
-function bracedObjects(text: string): string[] {
+export function bracedObjects(text: string): string[] {
   const found: string[] = [];
   let unbalanced = 0;
   for (let at = text.indexOf("{"); at >= 0 && unbalanced < MAX_UNBALANCED;) {
@@ -208,7 +208,7 @@ function readApp(app: unknown): GrokApp[] {
 }
 
 /** The current shape, and the fields the earlier openmaus.grok/1 prompt asked for. */
-function readBot(bot: Record<string, unknown>): GrokBot {
+export function readBot(bot: Record<string, unknown>): GrokBot {
   return {
     name: oneLine(first(bot.name)),
     title: oneLine(first(bot.title)),
@@ -239,7 +239,7 @@ function readBot(bot: Record<string, unknown>): GrokBot {
   };
 }
 
-function redactStrings<T>(value: T): T {
+export function redactStrings<T>(value: T): T {
   if (typeof value === "string") return redactSecretsInText(value) as T;
   if (Array.isArray(value)) return value.map((item: unknown) => redactStrings(item)) as T;
   if (isRecord(value)) return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, redactStrings(child)])) as T;
@@ -415,32 +415,34 @@ const dedupe = (lines: string[], seen: Set<string>) => lines.filter((line) => {
   return true;
 });
 
-function memoryNotes(bot: GrokBot): { count: number; text: string | null } {
+function memoryNotes(bot: GrokBot, from: string): { count: number; text: string | null } {
   const seen = new Set<string>();
   const facts = dedupe(bot.memories.map((line) => line.replace(/\s*\n\s*/g, " ")), seen);
   const about = dedupe(bot.userFacts.map((line) => line.replace(/\s*\n\s*/g, " ")), seen);
   const count = facts.length + about.length;
   if (!count) return { count, text: null };
   const part = (heading: string, items: string[]) => (items.length ? `## ${heading}\n\n${items.map((item) => `- ${item}`).join("\n")}\n\n` : "");
-  return { count, text: `# Notes from Grok Bot\n\n${part("What I remember", facts)}${part("About the person", about)}`.trimEnd() + "\n" };
+  return { count, text: `# Notes from ${from}\n\n${part("What I remember", facts)}${part("About the person", about)}`.trimEnd() + "\n" };
 }
 
-function eventNotes(name: string, routines: readonly GrokRoutine[]): string {
+function eventNotes(name: string, routines: readonly GrokRoutine[], from: string): string {
   const sections = routines.flatMap((routine) => [
     `## ${routine.name || "routine"}`, "",
     `- Trigger: ${routine.trigger || "unknown"}`,
     `- Details: ${routine.details || routine.when || "n/a"}`, "",
     routine.instruction, "",
   ]);
-  return [`# ${name}: Grok Bot routines that run on an event`, "",
+  return [`# ${name}: ${from} routines that run on an event`, "",
     "These start on something happening instead of a schedule, so they were not turned into routines. Set up each one again here.", "",
     ...sections].join("\n");
 }
 
 /** One Grok Bot as one bot in an openmaus.package v2 file, and how much of it comes over. `takenServers` holds server names
- * already here: one of those is skipped, never overwritten or shared. */
-export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenServers?: ReadonlySet<string> } = {}): GrokMovePlan {
+ * already here: one of those is skipped, never overwritten or shared. `from` names the app it comes from, Grok Bot unless
+ * said (a custom GPT in another AI's notes). */
+export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenServers?: ReadonlySet<string>; from?: string } = {}): GrokMovePlan {
   const timeZone = options.timeZone?.trim() || "UTC";
+  const from = options.from?.trim() || "Grok Bot";
   const name = clip(bot.name || "Grok Bot", 100);
   const agentKey = slug(name, 60) || "grok-bot";
   const soul = fitBytes(bot.instructions.trim(), BOT_PROFILE_LIMITS.soul);
@@ -488,11 +490,11 @@ export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenSe
     });
   }
 
-  const memory = memoryNotes(bot);
+  const memory = memoryNotes(bot, from);
   const seed: Record<string, string> = {};
   if (memory.text && utf8Bytes(memory.text) <= SEED_FILE_MAX_BYTES) seed["MEMORY.md"] = memory.text;
   if (unscheduled.length) {
-    const notes = eventNotes(name, unscheduled);
+    const notes = eventNotes(name, unscheduled, from);
     if (utf8Bytes(notes) <= SEED_FILE_MAX_BYTES) seed[GROK_NOTES_FILE] = notes;
   }
 
@@ -509,13 +511,13 @@ export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenSe
     connections.push({
       key: uniqueSlug(proposed, proposed, connectionKeys, 28),
       label,
-      reason: clip(`${name} used ${label} in Grok Bot.`, 240),
+      reason: clip(`${name} used ${label} in ${from}.`, 240),
       mcp: { transport: app.transport === "sse" || /\/sse\/?$/.test(new URL(address).pathname) ? "sse" : "http", url: address, valueNames: app.headerNames.filter((header) => VALID_HEADER.test(header)).slice(0, 32) },
     });
   }
 
   const description = bot.description.trim();
-  const summary = clip(description || bot.title || `${name}, brought over from Grok Bot.`, 2_000);
+  const summary = clip(description || bot.title || `${name}, brought over from ${from}.`, 2_000);
   const hash = shortHash(`${name}\n${soul}`);
   const packageId = `${agentKey}-${hash.toString(16).padStart(8, "0").slice(0, 6)}`;
   const draft: PackageDocument = {
@@ -528,7 +530,7 @@ export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenSe
       tagline: clip(oneLine(summary), 160),
       summary,
       category: "Imported",
-      author: { name: "Grok Bot" },
+      author: { name: from },
       license: "See source",
       outcomes: [clip(`${name} runs in Corso with your own engine and apps.`, 240)],
       setupMinutes: 5,
@@ -562,4 +564,14 @@ export function grokMovePlan(bot: GrokBot, options: { timeZone?: string; takenSe
     memories: seed["MEMORY.md"] ? memory.count : 0,
     apps,
   };
+}
+
+/** A schedule another AI described for one of the person's own routines (pasted notes): its cron in its zone, else none. */
+export function notesRoutineSchedule(routine: { cron?: string; when?: string; timeZone?: string }, timeZone: string): PackageRoutineSchedule | null {
+  return routineSchedule({ name: "", instruction: "", trigger: "", cron: routine.cron ?? "", when: routine.when ?? "", timeZone: routine.timeZone ?? "", paused: false, skills: [], details: "" }, timeZone);
+}
+
+/** One of the person's own skills as a SKILL.md for a bot already here, under a name not in `taken`; null when it can't be one. */
+export function notesSkillTemplate(skill: GrokSkill, taken: Set<string>): { name: string; description: string; instructions: string } | null {
+  return skillEntry(skill, uniqueSlug(skill.name, "skill", taken));
 }

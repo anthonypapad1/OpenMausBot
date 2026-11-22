@@ -15,6 +15,7 @@ import { hintSeen, type WelcomeViewer } from "@/lib/onboarding";
 import type { LocaleKey } from "@/locales";
 import type { Routine } from "@/lib/routines";
 import { useShowThreads } from "@/lib/thread-preferences";
+import { isHomeView } from "@/lib/today";
 import { openBot, useStore } from "@/state/store";
 
 const TITLE: Record<CloudSetupStep, LocaleKey> = {
@@ -143,7 +144,7 @@ export function CloudSetup({ viewer, welcomeShown = false }: { viewer: WelcomeVi
     if (welcoming) endWelcomeHere();
     remember(CLOUD_SETUP_HIDDEN);
   };
-  const asking = state.activeView === "chat" && cloudIntentShown(cloudIntentDue({ ...facts, reopened: false }), intent);
+  const asking = isHomeView(state.activeView) && cloudIntentShown(cloudIntentDue({ ...facts, reopened: false }), intent);
   const askAgain = () => withViewTransition(() => { reopenCloudIntent(true); dispatch({ type: "showChat" }); });
   const jobBot = intent.sent?.botId;
   const openJobChat = () => {

@@ -86,6 +86,14 @@ describe("the fence around a read-and-draft run", () => {
     expect(gate.refusesRoute(bot, "main-chat", "POST", "/api/internal/memory")).toBe(false);
   });
 
+  it("lets it read the deal list, and refuses every deal write", () => {
+    const { gate } = fence();
+    for (const tool of ["deals_list", "deal_get"]) expect(gate.refusesRoute(bot, "run-thread", "POST", `/api/internal/deals/${tool}`), tool).toBe(false);
+    for (const tool of ["deal_save", "deal_deadline_save", "deal_document_save", "deal_party_save", "deal_activity_add"]) {
+      expect(gate.refusesRoute(bot, "run-thread", "POST", `/api/internal/deals/${tool}`), tool).toBe(true);
+    }
+  });
+
   it("counts an allowed reply draft, so the same thread is never drafted twice", () => {
     const { gate, drafted } = fence();
     expect(gate.refusesConnectorCall(bot, "run-thread", call("GMAIL_CREATE_EMAIL_DRAFT", { thread_id: "t-ada", recipient_email: "ada@x.test" }))).toBe(false);
