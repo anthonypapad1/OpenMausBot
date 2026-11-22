@@ -70,6 +70,13 @@ Corso won't update itself during the beta. When Anthony sends a new version:
 
 Your deals, bots and settings stay where they are.
 
+The first time a new version opens, macOS may ask: *"Corso wants to use your
+confidential information stored in 'Corso Safe Storage' in your keychain."*
+Enter your Mac password and click **Always Allow**. Each beta build is signed
+differently, so the Mac asks once per new version. Corso waits on its loading
+screen until you answer, so if it seems stuck on "Opening your workspace…", look
+for that window behind it.
+
 If you'd given Corso **Accessibility** or **Screen Recording** and a bot can no
 longer use your Mac after the update, open **System Settings > Privacy &
 Security**, find that permission, select Corso, click the **–** button to remove
