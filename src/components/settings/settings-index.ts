@@ -28,6 +28,8 @@ export interface SettingsContext {
   /** Plan & billing can be read here: the desktop's plan bridge, or a personal Cloud's owner in a browser */
   plan: boolean;
   organization: boolean;
+  /** this app offers phone pairing (Phone & devices) */
+  phone: boolean;
   environments: boolean;
   installations: boolean;
   skills: boolean;
@@ -55,7 +57,7 @@ export const ADVANCED_PAGES: readonly SettingsPageId[] = ["bots", "desktops", "d
 
 export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "overview", owner: "place", labelKey: "settings.page.overview", synonyms: ["overview", "place", "status", "version", "domain", "address", "sidebar"], when: () => true },
-  { id: "phone", owner: "place", labelKey: "settings.section.phoneDevices", icon: Smartphone, when: notClient,
+  { id: "phone", owner: "place", labelKey: "settings.section.phoneDevices", icon: Smartphone, when: (ctx) => ctx.phone && notClient(ctx),
     synonyms: ["phone", "pair", "pairing", "qr", "code", "iphone", "android", "mobile", "tablet", "device", "devices", "wifi", "wi-fi", "anywhere", "relay", "remote", "companion", "tailscale", "connect your phone", "get the phone app", "pair a device", "this server", "remote access"] },
   { id: "ai", owner: "place", labelKey: "settings.group.ai", icon: Sparkles, when: adminPage,
     synonyms: ["ai", "models", "model providers", "providers", "engines", "api keys", "keys", "key", "claude", "codex", "openai", "anthropic", "ollama", "lm studio", "local model"] },
@@ -145,7 +147,7 @@ export function resolveSettingsTarget(requested: AppSettingsSection, ctx: Settin
 /** A context with every page showing (Advanced mode), for tests and previews to narrow down. */
 export const fullContext = (over: Partial<SettingsContext> = {}): SettingsContext => ({
   desktop: true, here: true, home: true, cloud: false, team: false, client: false, admin: true, places: false, plan: true,
-  organization: false, environments: true, installations: false, skills: false, advanced: true, ...over,
+  organization: false, phone: true, environments: true, installations: false, skills: false, advanced: true, ...over,
 });
 
 /** One row, section or page search can open. `label` beats `labelKey` where the name is not a string of the app's. */

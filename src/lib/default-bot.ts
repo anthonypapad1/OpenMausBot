@@ -91,13 +91,15 @@ export type SetupStep = "ai" | "bots" | "apps" | "phone" | "cloud";
 
 /** What Corso's intro offers to set up in Advanced mode, each optional: only what is still to do, and on a place with
  * bots of the person's own only an AI, which nothing works without. On a Team Cloud the team's admins set those up. */
-export function setupSteps(input: { aiReady: boolean; ownBots: number; onCloud: boolean; team: boolean; remote: boolean }): SetupStep[] {
+/** `offersCloud`: this app offers Corso Cloud and phone pairing; without it neither step is offered. */
+export function setupSteps(input: { aiReady: boolean; ownBots: number; onCloud: boolean; team: boolean; remote: boolean; offersCloud: boolean }): SetupStep[] {
   if (input.team) return [];
   const fresh = input.ownBots === 0;
   return [
     ...(input.aiReady ? [] : ["ai" as const]),
-    ...(fresh ? ["bots" as const, "apps" as const, "phone" as const] : []),
-    ...(fresh && !input.onCloud && !input.remote ? ["cloud" as const] : []),
+    ...(fresh ? ["bots" as const, "apps" as const] : []),
+    ...(fresh && input.offersCloud ? ["phone" as const] : []),
+    ...(fresh && input.offersCloud && !input.onCloud && !input.remote ? ["cloud" as const] : []),
   ];
 }
 
@@ -109,6 +111,8 @@ export interface IntroFacts {
   onCloud: boolean;
   team: boolean;
   remote: boolean;
+  /** This app offers Corso Cloud and phone pairing; without it neither chip is offered. */
+  offersCloud: boolean;
   /** Known to have a connected app or a paired phone; unknown counts as not yet. */
   appsConnected?: boolean;
   phonePaired?: boolean;
@@ -128,8 +132,8 @@ export function introChips(input: IntroFacts): IntroChip[] {
     ...(input.aiReady ? [] : ["ai" as const]),
     ...(fresh && !input.appsConnected ? ["apps" as const] : []),
     ...(fresh && input.importFound ? ["import" as const] : []),
-    ...(fresh && !input.phonePaired ? ["phone" as const] : []),
-    ...(fresh && !input.onCloud && !input.remote ? ["cloud" as const] : []),
+    ...(fresh && input.offersCloud && !input.phonePaired ? ["phone" as const] : []),
+    ...(fresh && input.offersCloud && !input.onCloud && !input.remote ? ["cloud" as const] : []),
   ];
 }
 

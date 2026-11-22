@@ -1,9 +1,16 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { accentInk, applyBrand, bootstrapBrand, brand, brandVars, DEFAULT_BRAND, iconType, luminance, PRODUCT_NAME, productName } from "./brand";
+import { accentInk, applyBrand, bootstrapBrand, brand, brandVars, DEFAULT_BRAND, iconType, luminance, offersHidden, PRODUCT_NAME, productName } from "./brand";
 
 describe("brand", () => {
+  it("hides every offer while Corso Cloud isn't offered, branded or not", () => {
+    expect(offersHidden()).toBe(true);
+    applyBrand({ brand: { name: "Acme" }, source: "file", file: "brand.json" });
+    expect(offersHidden()).toBe(true);
+    applyBrand({ brand: DEFAULT_BRAND, source: "default", file: "" });
+  });
+
   it("derives readable ink for light and dark accents", () => {
     expect(accentInk("#1D4ED8")).toBe("#ffffff");
     expect(accentInk("#C2510A")).toBe("#ffffff");

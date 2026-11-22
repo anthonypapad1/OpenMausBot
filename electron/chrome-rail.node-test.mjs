@@ -6,6 +6,7 @@ import vm from "node:vm";
 
 import { CHROME_RAIL_PATH, CHROME_RAIL_WIDTH, RAIL_OFFER_GRACE_MS, createChromeRail } from "./chrome-rail.mjs";
 import { TRAFFIC_LIGHTS } from "./window-chrome.mjs";
+import { CORSO_CLOUD_OFFERED } from "./corso-cloud.mjs";
 
 const RAIL = "http://127.0.0.1:8799/rail";
 
@@ -263,7 +264,7 @@ test("main's own wiring: the choice is this desktop's, and the pages hear the ra
   assert.ok(start >= 0 && end > start, "main makes the window's rail");
   const { made, createView } = viewMaker();
   const kept = { hidden: false }, signals = [], handlers = new Map();
-  const context = vm.createContext({ createChromeRail, CHROME_RAIL_PATH, WebContentsView: function WebContentsView(options) { return createView(options); },
+  const context = vm.createContext({ createChromeRail, CHROME_RAIL_PATH, CORSO_CLOUD_OFFERED, WebContentsView: function WebContentsView(options) { return createView(options); },
     path: { join: (...parts) => parts.join("/") }, __dirname: "/app", slog: () => {}, desktopCompanionRendererArguments: () => [],
     app: { isPackaged: true, getVersion: () => "0.1.133" }, desktopRemoteAccess: null, rendererOrigin: () => "http://127.0.0.1:8799", serverReady: true,
     railList: () => [{ id: "local" }, { id: "home" }], desktopPrefs: { railHidden: () => kept.hidden, setRailHidden: (hidden) => { kept.hidden = hidden; } },

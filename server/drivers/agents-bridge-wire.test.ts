@@ -54,6 +54,7 @@ function profiles(): Record<string, Record<string, string>> {
             OMB_VOICE_NOTES: flag(voice),
             OMB_CHIEF_OF_STAFF: flag(chief),
             OMB_COMPUTER_SELECTION: "1",
+            OMB_BUG_REPORTS: "1",
           };
         }
       }
@@ -73,6 +74,7 @@ function profiles(): Record<string, Record<string, string>> {
   all["skills+shared+voice+x+team+images+hosting"] = { ...all["skills+shared+voice+x+team+images"]!, OMB_APP_HOSTING: "1" };
   all["default+hosting"] = { ...all.default!, OMB_APP_HOSTING: "1" };
   all["default+tools-off"] = { ...all.default!, OMB_TOOLS_OFF: "pages,meetings" };
+  all["default+no-bug-reports"] = { ...all.default!, OMB_BUG_REPORTS: "0" };
   return all;
 }
 
@@ -87,37 +89,38 @@ const FULL = "skills+shared+voice+x+team+images+hosting";
  * either: lock a saving in by lowering the number. A Chief's list is longer
  * than another bot's only by the Chief-only names in find_tool's description. */
 const BUDGET_BASELINE: Record<string, number> = {
-  "default": 18091,
+  "default": 18129,
   "voice": 18910,
-  "shared": 18131,
+  "shared": 18169,
   "shared+voice": 18950,
-  "skills": 18118,
+  "skills": 18156,
   "skills+voice": 18937,
-  "skills+shared": 18158,
+  "skills+shared": 18196,
   "skills+shared+voice": 18977,
-  "non-chief": 17974,
+  "non-chief": 18012,
   "voice+non-chief": 18793,
-  "shared+non-chief": 18014,
+  "shared+non-chief": 18052,
   "shared+voice+non-chief": 18833,
-  "skills+non-chief": 18001,
+  "skills+non-chief": 18039,
   "skills+voice+non-chief": 18820,
-  "skills+shared+non-chief": 18041,
+  "skills+shared+non-chief": 18079,
   "skills+shared+voice+non-chief": 18860,
   "skills+shared+voice+cloud-home": 18993,
   "skills+shared+voice+non-chief+cloud-home": 18876,
   "skills+shared+voice+x": 19038,
   "skills+shared+voice+x+team": 19038,
-  "default+legacy-switches": 18091,
-  "default+mausbot": 18143,
+  "default+legacy-switches": 18129,
+  "default+mausbot": 18181,
   "skills+shared+voice+mausbot": 19029,
-  "default+no-computer-pick": 16891,
-  "default+room": 16820,
-  "non-chief+room": 16703,
-  "skills+shared+voice+x+team+images": 19028,
-  "default+images": 18119,
+  "default+no-computer-pick": 16929,
+  "default+room": 16858,
+  "non-chief+room": 16741,
+  "skills+shared+voice+x+team+images": 19066,
+  "default+images": 18157,
   "skills+shared+voice+x+team+images+hosting": 20268,
   "default+hosting": 19331,
-  "default+tools-off": 16434,
+  "default+tools-off": 16472,
+  "default+no-bug-reports": 17970,
 };
 
 type RpcAnswer = { id: number; result?: { tools?: unknown[]; content?: Array<{ text: string }>; isError?: boolean }; error?: { code: number; message: string } };

@@ -735,13 +735,14 @@ const bridge = {
     repair: () => ipcRenderer.invoke("home:repair"),
     updating: onHomePage && reloadedForUpdate(),
   },
-  updatesConsent: {
+  // The product-updates question records the answer with the Cloud account service, so it goes with the Cloud bridges.
+  updatesConsent: process.argv.includes("--omb-company-desktop=1") ? {
     state: () => ipcRenderer.invoke("updates-consent:state"),
     choose: choice => ipcRenderer.invoke("updates-consent:choose", {
       status: String(choice?.status),
       ...(typeof choice?.email === "string" ? { email: choice.email } : {}),
     }),
-  },
+  } : undefined,
   desktopProfile: {
     systemName: () => ipcRenderer.invoke("desktop-profile:system-name"),
   },

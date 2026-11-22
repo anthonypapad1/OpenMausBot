@@ -1,8 +1,7 @@
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { MausAvatar } from "@/components/Avatar";
+import { CorsoMark } from "@/components/CorsoMark";
 import { cn } from "@/lib/cn";
-import type { MausState } from "@/lib/mascot";
 import { reducedMotion } from "@/lib/onboarding";
 
 const PAD = 8;
@@ -45,7 +44,6 @@ interface Action {
 export function Spotlight({
   anchor,
   placement,
-  mascot = "curious",
   children,
   progress,
   primary,
@@ -54,7 +52,6 @@ export function Spotlight({
 }: {
   anchor: string | null;
   placement: "above" | "below" | "right";
-  mascot?: MausState;
   children: ReactNode;
   progress?: string;
   primary?: Action;
@@ -197,12 +194,7 @@ export function Spotlight({
           )}
         >
           <div className="shrink-0 drop-shadow-[0_6px_14px_rgba(0,0,0,0.35)]">
-            <MausAvatar
-              color="green"
-              state={mascot}
-              size={38}
-              trackPointer={false}
-            />
+            <CorsoMark size={38} />
           </div>
           <div
             key={anchor ?? "centre"}

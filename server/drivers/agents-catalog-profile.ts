@@ -37,6 +37,8 @@ export interface CatalogProfile {
   meetings?: boolean;
   /** The plan's included app hosting reaches this server: publish_app is mounted. */
   appHosting?: boolean;
+  /** This server has somewhere to send a @devs report: report_bug is mounted. */
+  bugReports?: boolean;
   /** The tool groups this bot's person turned off: none of their tools is mounted. */
   toolsOff?: readonly ToolGroup[];
 }
@@ -61,6 +63,7 @@ export function catalogProfileFromEnv(env: NodeJS.ProcessEnv): CatalogProfile {
     imageGeneration: env.OMB_IMAGE_GENERATION === "1",
     meetings: env.OMB_MEETINGS === "1",
     appHosting: env.OMB_APP_HOSTING === "1",
+    bugReports: env.OMB_BUG_REPORTS === "1",
     toolsOff: toolsOffFromEnv(env.OMB_TOOLS_OFF),
   };
 }

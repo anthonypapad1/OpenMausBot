@@ -5,7 +5,7 @@ import { announcementHistory, announcementsUnread, markAnnouncementsRead, useAnn
 import { announcementConditions, announcementFeedUpdatedAt, announcementPlan, announcementPlatform, announcementSurface, cardsForPerson, providersRestricted,
   SPONSOR_CARDS_FOR_TEAM_MEMBERS, useAnnouncementCards } from "@/lib/announcements";
 import { appVersion } from "@/lib/app-links";
-import { brandStatus } from "@/lib/brand";
+import { brandStatus, offersHidden } from "@/lib/brand";
 import { cloudPlanView } from "@/lib/cloud-plan";
 import { activeLocale } from "@/lib/i18n";
 import { modelgoOfferable } from "@/lib/modelgo-offer";
@@ -74,7 +74,7 @@ export function useAnnouncements(now: () => number = Date.now): Announcements {
   const cloudHome = Boolean(state.config?.cloudHome || viewer?.cloudHome);
   const sponsors = SPONSOR_CARDS_FOR_TEAM_MEMBERS || !team || viewer?.canSave === true;
   const facts: HistoryFacts = {
-    branded, organization, remote, team, canSave, sponsors,
+    branded: offersHidden(), organization, remote, team, canSave, sponsors,
     cloudSale: Boolean(bridge && desktop), cloudCards: Boolean(bridge || (!remote && cloudHome && window.ogb?.cloudPlan)),
     modelgo: modelgoOfferable(state.config?.managedPolicy),
   };
