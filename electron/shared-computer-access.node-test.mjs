@@ -533,10 +533,10 @@ test("a protected directory spelled in another case is still refused", async t =
   grant.protectedPaths = [path.join(dir, "Corso")];
   folder.write = true;
   await assert.rejects(run({ action: "read_file", path: "Corso/credentials.bin" }), /Desktop credentials/);
-  await assert.rejects(run({ action: "read_file", path: "openmausbot/credentials.bin" }), /Desktop credentials/);
-  await assert.rejects(run({ action: "read_file", path: "OPENMAUSBOT/credentials.bin" }), /Desktop credentials/);
-  await assert.rejects(run({ action: "list_files", path: "openmausbot" }), /Desktop credentials/);
-  await assert.rejects(run({ action: "write_file", path: "openmausbot/computer-sharing.json", content: "{}" }), /sharing settings/);
+  await assert.rejects(run({ action: "read_file", path: "corso/credentials.bin" }), /Desktop credentials/);
+  await assert.rejects(run({ action: "read_file", path: "CORSO/credentials.bin" }), /Desktop credentials/);
+  await assert.rejects(run({ action: "list_files", path: "corso" }), /Desktop credentials/);
+  await assert.rejects(run({ action: "write_file", path: "corso/computer-sharing.json", content: "{}" }), /sharing settings/);
 });
 
 test("a protected directory spelled in another Unicode normalization is still refused", async t => {
@@ -677,7 +677,7 @@ test("with the whole home folder lent, keys, a browser profile and this app's da
     await put("Documents/plan.txt", "an ordinary file");
     const stub = stubWorkspace();
     stub.state.work.push(...secrets.map(relative => ({ action: "read_file", path: relative })),
-      { action: "read_file", path: "Library/Application Support/OpenMausBot/computer-sharing.json" },
+      { action: "read_file", path: "Library/Application Support/Corso/computer-sharing.json" },
       { action: "read_file", path: "Documents/plan.txt" }, { action: "list_files" });
     // Wired as main wires it: the grants file under the app's own profile, and this app's data folder in protectedPaths.
     sharing = createComputerSharing({

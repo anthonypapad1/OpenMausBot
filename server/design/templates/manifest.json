@@ -24,7 +24,8 @@
           "description": "The property's street address.",
           "maxLength": 120
         }
-      ]
+      ],
+      "internal": true
     },
     {
       "id": "just-listed",
@@ -149,7 +150,7 @@
         {
           "name": "time",
           "required": true,
-          "description": "The hours, such as 11 am – 1 pm.",
+          "description": "The hours, such as 11 am \u2013 1 pm.",
           "maxLength": 24
         },
         {

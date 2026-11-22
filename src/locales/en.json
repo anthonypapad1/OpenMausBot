@@ -6056,7 +6056,7 @@
   "connectors.tab.connected": "Connected",
   "connectors.searchPlaceholder": "Search apps",
   "connectors.notConfigured": "Connected apps are temporarily unavailable. Retry after restarting the host, or configure the connection service there.",
-  "connectors.setupNeeded": "Connected apps are not set up yet. To connect Gmail, Slack and more, add a project key in Settings → AI → Other services, under Self-host connected apps.",
+  "connectors.setupNeeded": "One-click app connections aren't set up yet. Your bots can still use Gmail, Google Calendar and other sites in their own browser: ask one to open the site and sign in there once. Or add a project key in Settings → AI → Other services, under Self-host connected apps.",
   "connectors.setupNeededRemote": "Connected apps are not set up on the host yet. Add a project key under Self-host connected apps in the host's settings.",
   "connectors.openSettings": "Open settings",
   "connectors.featuredBefore": "Showing featured apps.",

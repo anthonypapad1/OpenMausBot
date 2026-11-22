@@ -1874,6 +1874,15 @@ describe("the Teams What's new", () => {
     expect(launchNotice()).not.toBe(TEAMS_NOTICE);
   });
 
+  it("never where offers are hidden: no GitHub star, Product Hunt or What's new card, launch after launch", async () => {
+    returning(); desk.saved = null; storage.delete(STAR_NOTICE); storage.delete(PRODUCT_HUNT_NOTICE); storage.delete(WHATS_NEW_NOTICE);
+    f.offersHidden = true;
+    await launch();
+    const seen = [launchNotice()];
+    for (let i = 0; i < 4; i++) { await relaunch(); seen.push(launchNotice()); }
+    for (const hidden of [STAR_NOTICE, PRODUCT_HUNT_NOTICE, WHATS_NEW_NOTICE, TEAMS_NOTICE]) expect(seen).not.toContain(hidden);
+  });
+
   it("a Cloud plan of one's own on this desktop: Start a team opens the app's own Add a Cloud; a desktop already in a team is only told", async () => {
     account = paid();
     expect(await launch()).toContain(TITLE);

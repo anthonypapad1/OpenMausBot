@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 
-import { designFileName, freePath, localDate, slug } from "./output.ts";
+import { claimPath, designFileName, localDate, slug } from "./output.ts";
 
 describe("design file names", () => {
   it("read date, address, template and format", () => {
@@ -26,7 +26,13 @@ describe("design file names", () => {
 
   it("never replace an earlier render", () => {
     const taken = new Set([join("/w", "a.png"), join("/w", "a-2.png")]);
-    expect(freePath("/w", "a.png", (path) => taken.has(path))).toBe(join("/w", "a-3.png"));
-    expect(freePath("/w", "b.png", (path) => taken.has(path))).toBe(join("/w", "b.png"));
+    const create = (path: string) => {
+      if (taken.has(path)) throw Object.assign(new Error("taken"), { code: "EEXIST" });
+      taken.add(path);
+    };
+    expect(claimPath("/w", "a.png", create)).toBe(join("/w", "a-3.png"));
+    expect(claimPath("/w", "a.png", create), "the name just claimed is now taken too").toBe(join("/w", "a-4.png"));
+    expect(claimPath("/w", "b.png", create)).toBe(join("/w", "b.png"));
+    expect(() => claimPath("/w", "c.png", () => { throw Object.assign(new Error("denied"), { code: "EACCES" }); })).toThrow("denied");
   });
 });

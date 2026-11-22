@@ -79,7 +79,7 @@ describe("Corso's five Desks", () => {
   });
 
   it("use only the deal-list tools' own argument names and values", () => {
-    const allowed = new Set([...DEAL_TOOLS, ...DEAL_ARGUMENTS, ...DEAL_VALUES, ...MORE_KINDS, ...DESIGN_WORDS, "request_sign_in"]);
+    const allowed = new Set([...DEAL_TOOLS, ...DEAL_ARGUMENTS, ...DEAL_VALUES, ...MORE_KINDS, ...DESIGN_WORDS, "request_sign_in", "fill_login"]);
     for (const kind of MORE_KINDS) expect(kind).toMatch(/^[a-z][a-z0-9_]{0,39}$/);
     for (const bot of DESK_BOTS) {
       for (const [, word] of everything(bot).matchAll(/`([a-z_]+)`/g)) expect(allowed.has(word!), `${bot.id} uses \`${word}\``).toBe(true);

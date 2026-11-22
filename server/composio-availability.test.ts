@@ -38,6 +38,10 @@ describe("connectorSetup", () => {
   });
 
   it("reports the managed service as unavailable only on a host it comes with (the installed desktop app, a Cloud home)", () => {
-    expect(connectorSetup(cfg(), true)).toBe("service-unavailable");
+    expect(connectorSetup(cfg(), true, true)).toBe("service-unavailable");
+  });
+
+  it("asks for a key, not an outage, on a desktop that ships no managed service (Corso, until it runs its own broker)", () => {
+    expect(connectorSetup(cfg(), true, false)).toBe("needs-setup");
   });
 });

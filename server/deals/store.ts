@@ -164,6 +164,13 @@ export function localDay(at: number, timeZone: string): string {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+/** The wall-clock time `at` reads in `timeZone`, as 24-hour HH:MM, the form a deadline's due_time is kept in. */
+export function localClock(at: number, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(at);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((entry) => entry.type === type)?.value ?? "00";
+  return `${part("hour")}:${part("minute")}`;
+}
+
 const dayNumber = (day: string): number => {
   const [year, month, date] = day.split("-").map(Number) as [number, number, number];
   return Date.UTC(year, month - 1, date) / 86_400_000;
@@ -386,7 +393,7 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
 
   /** What needs the person on `at`'s day in `timeZone`, what falls due in the week after, and the latest activity. */
   function today(timeZone: string, at = now()): DealTodayView {
-    const day = localDay(at, timeZone);
+    const day = localDay(at, timeZone), clock = localClock(at, timeZone);
     const weekOut = addDays(day, COMING_UP_DAYS);
     const due = all(
       `SELECT dl.*, d.address, d.side AS deal_side, d.status AS deal_status FROM deal_deadlines dl JOIN deals d ON d.id = dl.deal_id
@@ -398,7 +405,9 @@ export function openDealStore(dataDir: string, options: { now?: () => number } =
     for (const row of due) {
       const deadline = deadlineOf(row);
       const item = { dealId: deadline.dealId, address: str(row.address), side: str(row.deal_side) as DealSide, dealStatus: str(row.deal_status) as DealStatus, deadline };
-      if (deadline.dueDate <= day) needsYou.push({ type: "deadline", ...item, overdue: deadline.dueDate < day });
+      // Past due: an earlier day, or today once its time (when it has one) has gone by.
+      const overdue = deadline.dueDate < day || (deadline.dueDate === day && deadline.dueTime !== null && deadline.dueTime <= clock);
+      if (deadline.dueDate <= day) needsYou.push({ type: "deadline", ...item, overdue });
       else comingUp.push({ ...item, daysAway: dayNumber(deadline.dueDate) - dayNumber(day) });
     }
     const unsigned = all(

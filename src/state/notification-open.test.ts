@@ -257,9 +257,14 @@ describe("launching the app on a bot", () => {
     await launch();
   }
 
-  it("opens its main thread while threads are hidden, leaving the reply the bot was left on unread", async () => {
+  it("lands on Today, then opens the bot on its main thread while threads are hidden, leaving the reply it was left on unread", async () => {
     await relaunch(false);
     expect(state.selectedId).toBe("scout");
+    expect(state.activeView, "Today is the landing view, so the launch switches no thread").toBe("today");
+    expect(sent().some((request) => request.startsWith("/api/bots/scout/tasks/"))).toBe(false);
+    flushSync(() => openBot(dispatch, scoutNow(), false));
+    await settle();
+    expect(state.activeView).toBe("chat");
     const switches = sent().filter((request) => request.startsWith("/api/bots/scout/tasks/"));
     expect(switches).toHaveLength(1);
     expect(switches[0]).toMatch(/^\/api\/bots\/scout\/tasks\/main-chat\b/);

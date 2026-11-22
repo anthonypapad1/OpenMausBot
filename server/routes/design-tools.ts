@@ -10,7 +10,7 @@ import { z } from "zod";
 
 import { writeFileAtomic } from "../atomic.ts";
 import { fontAssets } from "../design/fonts.ts";
-import { designFileName, freePath, localDate, MARKETING_FOLDER } from "../design/output.ts";
+import { claimPath, designFileName, localDate, MARKETING_FOLDER } from "../design/output.ts";
 import { renderDesign, type RenderAsset, type Rendered, type RenderRequest, type RendererOptions } from "../design/render.ts";
 import { IMAGES_TOTAL_MAX_BYTES, readSourceImage, SourceRefusal, type SourceRoots } from "../design/sources.ts";
 import {
@@ -61,7 +61,7 @@ const refuse = (status: number, error: string): Answer => ({ status, body: { err
 
 /** What a bot sees of the templates: enough to choose one and fill it in. */
 export function templateListing(templates: readonly DesignTemplate[]) {
-  return templates.map((template) => ({
+  return templates.filter((template) => !template.internal).map((template) => ({
     id: template.id,
     name: template.name,
     purpose: template.purpose,
@@ -144,7 +144,7 @@ export async function runDesignRender(raw: unknown, folders: BotFolders, templat
   const folder = join(workFolder, MARKETING_FOLDER);
   await mkdir(folder, { recursive: true });
   const name = designFileName({ date: localDate((deps.now ?? (() => new Date()))(), deps.timeZone()), address: values.values.address, template: template.id, format, output });
-  const path = freePath(folder, name);
+  const path = claimPath(folder, name);
   writeFileAtomic(path, rendered.bytes);
   const shownPath = vmWorkspace ? posix.join(deps.vmGuestRoot, ...relative(vmWorkspace, path).split(sep)) : path;
   const summary = {

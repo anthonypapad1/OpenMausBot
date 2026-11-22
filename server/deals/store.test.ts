@@ -169,10 +169,22 @@ describe("today on the deal list", () => {
     expect(view.today).toBe("2026-03-08");
     expect(view.timeZone).toBe(DENVER);
     expect(view.needsYou.map((item) => (item.type === "deadline" ? `${item.deadline.label}${item.overdue ? " (overdue)" : ""}` : `doc ${item.document.name}`))).toEqual([
-      "Overdue (overdue)", "Today, morning", "Today, timed", "Today, untimed", "doc Disclosure",
+      "Overdue (overdue)", "Today, morning (overdue)", "Today, timed", "Today, untimed", "doc Disclosure",
     ]);
     expect(view.comingUp.map((item) => [item.deadline.label, item.daysAway])).toEqual([["Tomorrow", 1], ["A week out", 7]]);
     for (const item of [...view.needsYou, ...view.comingUp]) expect(item).toMatchObject({ dealId: deal.id, address: "1847 Larkspur Ln" });
+  });
+
+  it("counts a deadline overdue once its time today has gone by, and an untimed one only from tomorrow", () => {
+    const store = open();
+    const deal = store.saveDeal({ address: "1248 Magnolia Blvd" });
+    store.saveDeadline({ deal_id: deal.id, label: "Objection", due_date: "2026-03-08", due_time: "17:00" });
+    store.saveDeadline({ deal_id: deal.id, label: "Untimed", due_date: "2026-03-08" });
+    const overdueAt = (iso: string) => store.today(DENVER, Date.parse(iso)).needsYou.map((item) => item.type === "deadline" && [item.deadline.label, item.overdue]);
+    // Denver is on MDT (UTC-6) from 2 AM on March 8, 2026.
+    expect(overdueAt("2026-03-08T22:59:00Z")).toEqual([["Objection", false], ["Untimed", false]]);
+    expect(overdueAt("2026-03-08T23:00:00Z")).toEqual([["Objection", true], ["Untimed", false]]);
+    expect(overdueAt("2026-03-09T05:59:00Z")).toEqual([["Objection", true], ["Untimed", false]]);
   });
 
   it("says which side and status each deadline's deal has, so the page can tell whose deadline it is", () => {
