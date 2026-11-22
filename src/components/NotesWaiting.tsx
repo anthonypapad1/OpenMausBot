@@ -12,16 +12,19 @@ import {
 } from "@/lib/assistant-notes";
 import { myDefaultBot, useViewerEmail } from "@/lib/default-bot";
 import { t } from "@/lib/i18n";
-import { useStore } from "@/state/store";
+import { useStore } from "@/state/store"; import { useStoreRef } from "@/state/store-ref";
 
 export type NotesSay = (line: string, state: "working" | "done" | "failed") => void;
 
 /** Takes a pasted or dropped block. A chat passes no `say`: the card above its message box says how it goes. A screen
  * of its own (the bring step) passes `say` to hear "bringing in…", then the outcome. */
 export function useNotesIntake() {
-  const { state, dispatch } = useStore();
-  const firstBotId = myDefaultBot(state.bots, useViewerEmail())?.id ?? null;
+  // Read when a block comes, not on every render: the message box holds this and must not draw again for each store change.
+  const store = useStoreRef();
+  const viewerEmail = useViewerEmail();
   return useCallback((text: string, say?: NotesSay, via: NotesVia = "paste", chatBot?: string | null) => {
+    const state = store.state();
+    const firstBotId = myDefaultBot(state.bots, viewerEmail)?.id ?? null;
     // the chat it was pasted or dropped into; a group's or none is the first bot's
     const here = (chatBot && state.bots.some((bot) => bot.id === chatBot) ? chatBot : null) ?? firstBotId;
     if (isNotesPrompt(text)) {
@@ -31,7 +34,7 @@ export function useNotesIntake() {
     }
     if (say) say(t("composer.notes.working"), "working");
     else noteArrival(via, here);
-    void importNotes(text, { bots: state.bots, aboutMe: state.config?.profile?.aboutMe ?? "", team: Boolean(state.config?.team), firstBotId, dispatch })
+    void importNotes(text, { bots: state.bots, aboutMe: state.config?.profile?.aboutMe ?? "", team: Boolean(state.config?.team), firstBotId, dispatch: store.dispatch })
       .then((outcome) => {
         const line = notesOutcomeLine(outcome);
         const failed = outcome.failed.length > 0 || Boolean(outcome.lost?.length);
@@ -39,7 +42,7 @@ export function useNotesIntake() {
         else if (failed) arrivalFailed(line);
         else arrivalDone(line);
       }, (cause: unknown) => (say ? say(notesErrorLine(cause), "failed") : arrivalFailed(notesErrorLine(cause))));
-  }, [state.bots, state.config?.profile?.aboutMe, state.config?.team, firstBotId, dispatch]);
+  }, [store, viewerEmail]);
 }
 
 /** A chat's paste: notes another AI wrote for Corso come in, wherever they are pasted, instead of being sent. True when

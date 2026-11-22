@@ -60,7 +60,7 @@ export function BringStatus({ line, working = false }: { line: string | null; wo
   if (!line && !working) return null;
   return (
     <p role="status" aria-live="polite" data-bring-status={working ? "working" : "done"}
-      className="pointer-events-none fixed inset-x-0 bottom-4 z-10 mx-auto flex w-fit max-w-[min(520px,calc(100%-32px))] items-center gap-2 rounded-xl bg-ink/[0.05] px-3 py-1.5 text-[12px] leading-4 text-ink-secondary">
+      className="pointer-events-none fixed left-[var(--rail-beside,0px)] right-0 bottom-4 z-10 mx-auto flex w-fit max-w-[min(520px,calc(100%-32px))] items-center gap-2 rounded-xl bg-ink/[0.05] px-3 py-1.5 text-[12px] leading-4 text-ink-secondary">
       {working && <span aria-hidden="true" className="inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-ink/60 motion-reduce:animate-none" />}
       <span className="text-pretty">{working ? t("bring.working") : line}</span>
     </p>
