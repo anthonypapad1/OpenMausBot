@@ -11,7 +11,7 @@ import { createMausBotNotificationRoutes, type LiveNotificationsDeps } from "./m
 import { PASS } from "./table.ts";
 import { createXResearchInternalRoutes, type XResearchDeps } from "./x-research.ts";
 
-export function createInternalToolRoutes(deps: { helpers: HelperToolDeps; xResearch: XResearchDeps; notifications: LiveNotificationsDeps; engineLimits: EngineLimitsDeps; appPublisher: AppPublisher; deals: { store: DealStore; botName(botId: string): string } }) {
+export function createInternalToolRoutes(deps: { helpers: HelperToolDeps; xResearch: XResearchDeps; notifications: LiveNotificationsDeps; engineLimits: EngineLimitsDeps; appPublisher: AppPublisher; deals: { store: DealStore; botName(botId: string): string; timeZone(): string } }) {
   const routes = [createXResearchInternalRoutes(deps.xResearch), createHelperToolRoutes(deps.helpers), createMausBotNotificationRoutes(deps.notifications), createEngineLimitsRoutes(deps.engineLimits), createAppHostingInternalRoutes(deps.appPublisher), createDealToolRoutes(deps.deals)];
   return async (ctx: HelperToolContext & { threadId: string }): Promise<typeof PASS | void> => {
     for (const route of routes) if (await route(ctx) !== PASS) return;

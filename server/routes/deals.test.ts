@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { openDealStore, type DealStore } from "../deals/store.ts";
 import type { RequestAuth } from "../request-auth.ts";
 import { callRoute } from "./call-route.ts";
-import { createDealRoutes, createDealToolRoutes } from "./deals.ts";
+import { createDealRoutes, createDealToolRoutes, dayInWords } from "./deals.ts";
 import { PASS } from "./table.ts";
 
 const owner: RequestAuth = { kind: "loopback", scopes: ["admin", "client"] };
@@ -13,8 +13,8 @@ const NOON_MARCH_8_DENVER = Date.parse("2026-03-08T19:00:00Z");
 let store: DealStore;
 afterEach(() => store?.close());
 
-async function tool(name: string, body: unknown, botId = "bot-deal") {
-  const routes = createDealToolRoutes({ store, botName: (id) => (id === "bot-deal" ? "Deal Desk" : id) });
+async function tool(name: string, body: unknown, botId = "bot-deal", at = NOON_MARCH_8_DENVER, timeZone = "America/Denver") {
+  const routes = createDealToolRoutes({ store, botName: (id) => (id === "bot-deal" ? "Deal Desk" : id), timeZone: () => timeZone, now: () => at });
   let reply: { status: number; body: Record<string, unknown> } | null = null;
   const out = await routes({
     method: "POST", path: `/api/internal/deals/${name}`, res: {} as ServerResponse, botId, readBody: async () => body,
@@ -41,6 +41,35 @@ describe("the deal tools' internal calls", () => {
     expect(JSON.parse(String((await tool("deals_list", {})).reply!.body.text)).deals).toHaveLength(1);
   });
 
+  it("say every date's weekday and distance from the person's today, so a bot never works one out", async () => {
+    store = openDealStore(":memory:", { now: () => NOON_MARCH_8_DENVER });
+    const deal = JSON.parse(String((await tool("deal_save", { address: "1248 Magnolia Blvd", contract_date: "2026-03-07", closing_date: "2026-04-03" })).reply!.body.text));
+    expect(deal).toMatchObject({ today: "Sunday, March 8, 2026", contractWhen: "Saturday, March 7, 2026 (yesterday)", closingWhen: "Friday, April 3, 2026 (in 26 days)" });
+    const due = JSON.parse(String((await tool("deal_deadline_save", { deal_id: deal.id, label: "Inspection objection", due_date: "2026-03-09" })).reply!.body.text));
+    expect(due.dueWhen).toBe("Monday, March 9, 2026 (tomorrow)");
+    const list = JSON.parse(String((await tool("deals_list", {})).reply!.body.text));
+    expect(list.today).toBe("Sunday, March 8, 2026");
+    expect(JSON.stringify(list)).toContain("Monday, March 9, 2026 (tomorrow)");
+    const read = JSON.parse(String((await tool("deal_get", { deal_id: deal.id })).reply!.body.text));
+    expect(read.deal.closingWhen).toBe("Friday, April 3, 2026 (in 26 days)");
+    expect(read.deadlines[0]).toMatchObject({ dueDate: "2026-03-09", dueWhen: "Monday, March 9, 2026 (tomorrow)" });
+    // 05:30 UTC on the 9th is still the 8th in Denver, but already the 9th in UTC.
+    const late = Date.parse("2026-03-09T05:30:00Z");
+    expect(JSON.parse(String((await tool("deal_get", { deal_id: deal.id }, "bot-deal", late)).reply!.body.text)).deadlines[0].dueWhen).toBe("Monday, March 9, 2026 (tomorrow)");
+    expect(JSON.parse(String((await tool("deal_get", { deal_id: deal.id }, "bot-deal", late, "UTC")).reply!.body.text)).deadlines[0].dueWhen).toBe("Monday, March 9, 2026 (today)");
+  });
+
+  it("names weekdays right across months, leap days and the years either side", () => {
+    store = openDealStore(":memory:");
+    expect(dayInWords("2026-11-23", "2026-11-22")).toBe("Monday, November 23, 2026 (tomorrow)");
+    expect(dayInWords("2026-12-18", "2026-11-22")).toBe("Friday, December 18, 2026 (in 26 days)");
+    expect(dayInWords("2028-02-29", "2028-02-27")).toBe("Tuesday, February 29, 2028 (in 2 days)");
+    expect(dayInWords("2027-01-01", "2026-12-31")).toBe("Friday, January 1, 2027 (tomorrow)");
+    expect(dayInWords("2026-11-19", "2026-11-22")).toBe("Thursday, November 19, 2026 (3 days ago)");
+    expect(dayInWords("2026-02-30", "2026-02-01")).toBeNull();
+    expect(dayInWords("soon", "2026-02-01")).toBeNull();
+  });
+
   it("answer a refused input or a missing deal with an error the bot can act on, and change nothing", async () => {
     store = openDealStore(":memory:");
     expect((await tool("deal_save", { address: "x", side: "landlord" })).reply).toEqual({ status: 400, body: { error: 'deal_save was not run: side must be one of "buyer"|"seller"|"both".' } });
@@ -52,7 +81,7 @@ describe("the deal tools' internal calls", () => {
 
   it("pass on any other internal path or method", async () => {
     store = openDealStore(":memory:");
-    const routes = createDealToolRoutes({ store, botName: () => "" });
+    const routes = createDealToolRoutes({ store, botName: () => "", timeZone: () => "UTC" });
     const call = (method: string, path: string) => routes({ method, path, res: {} as ServerResponse, json: () => {}, botId: "b", readBody: async () => ({}) });
     expect(await call("GET", "/api/internal/deals/deals_list")).toBe(PASS);
     expect(await call("POST", "/api/internal/deals/deal_delete")).toBe(PASS);

@@ -23,12 +23,12 @@ const clear = (fields: readonly string[]) => ({ type: "array", items: { type: "s
 export const DEAL_TOOL_DEFINITIONS = [
   {
     name: "deals_list",
-    description: "The shared deal list every bot works from: each deal with its next open deadline.",
+    description: "The shared deal list every bot works from: each deal with its next open deadline. Every date comes with its weekday and distance from today (dueWhen, closingWhen); repeat those, never work out a weekday yourself.",
     inputSchema: { type: "object", additionalProperties: false, properties: { status: { type: "string", enum: DEAL_LIST_FILTERS, description: "Default open." } } },
   },
   {
     name: "deal_get",
-    description: "One deal with its parties, deadlines, documents and recent activity.",
+    description: "One deal with its parties, deadlines, documents and recent activity, each date with its weekday (dueWhen, closingWhen).",
     inputSchema: { type: "object", additionalProperties: false, properties: { deal_id: dealId }, required: ["deal_id"] },
   },
   {

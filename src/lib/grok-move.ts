@@ -87,6 +87,8 @@ export interface GrokPreviewFacts {
   bots: readonly Pick<Bot, "name" | "installedPackage">[];
   servers: ReadonlySet<string>;
   timeZone: string;
+  /** The app the Bots come from, when it isn't Grok Bot. */
+  from?: string;
 }
 
 /** The whole plan, nothing written. A Bot already moved or that can't be read is named, and costs the others nothing. */
@@ -97,7 +99,7 @@ export function previewGrokMove(bots: readonly GrokBot[], facts: GrokPreviewFact
   const preview: GrokPreview = { plans: [], moved: [], unreadable: [] };
   for (const bot of bots) {
     try {
-      const plan = grokMovePlan(bot, { timeZone: facts.timeZone, takenServers: servers });
+      const plan = grokMovePlan(bot, { timeZone: facts.timeZone, takenServers: servers, ...(facts.from ? { from: facts.from } : {}) });
       if (installed.has(plan.packageId)) {
         preview.moved.push(plan.name);
         continue;

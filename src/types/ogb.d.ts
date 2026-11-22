@@ -377,6 +377,9 @@ const __APP_VERSION__: string;
       permRequestMic(): Promise<boolean>;
       /** Opens System Settings on a privacy pane: mic|screen|speech|accessibility. */
       permOpenSettings(pane: "mic" | "screen" | "speech" | "accessibility"): Promise<void>;
+      /** Accessibility and Screen Recording: reading never prompts, `request` asks for one (macOS's own prompt the first
+       * time, its System Settings pane after that). Absent in older builds of the shell. */
+      macPermissions?: import("../lib/mac-permissions").MacPermissionsBridge;
       /** Relaunch the local desktop app through its normal shutdown cleanup. */
       relaunch?(): Promise<boolean>;
       /** Copies an engine install command and opens a blank terminal. False

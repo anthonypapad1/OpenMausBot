@@ -11,9 +11,9 @@ export const SIMPLE_CONTROL = "size-7 rounded-full bg-ink/[0.05] ring-[0.5px] ri
 
 const ROOM_FILL = { fill: "var(--color-accent)", ink: "var(--color-accent-ink)" };
 
-/** The round call, Send and Stop button: the bot's own button, or the accent in a room. */
-export function slotColors(color: Bot["color"] | undefined, room: boolean): { fill: string; ink: string; button: BotButton } {
-  if (room) {
+/** The round call, Send and Stop button: the bot's own button, or the accent in a room or a one-accent skin (`plain`). */
+export function slotColors(color: Bot["color"] | undefined, plain: boolean): { fill: string; ink: string; button: BotButton } {
+  if (plain) {
     return { ...ROOM_FILL, button: { className: "hover:brightness-110 disabled:opacity-40", style: { backgroundColor: ROOM_FILL.fill, color: ROOM_FILL.ink } } };
   }
   const own = color ?? "green";
