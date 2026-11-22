@@ -2,7 +2,7 @@
 // packaged app ships no node_modules. Entry points keep their exact relative
 // paths under dist-server, where the server locates each proxy by path.
 import { build } from "esbuild";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { serverLocalePlugin } from "./server-locale-plugin.mjs";
@@ -153,6 +153,16 @@ copyFileSync(join(root, "scripts", "desktop-server-entry.mjs"), join(root, "dist
 const catalogSnapshot = join(root, "dist-server", "model-catalog", "models-dev.snapshot.json");
 mkdirSync(dirname(catalogSnapshot), { recursive: true });
 copyFileSync(join(server, "model-catalog", "models-dev.snapshot.json"), catalogSnapshot);
+
+// The marketing templates (server/design/templates.ts) and the UI fonts they may use (server/design/fonts.ts, whose
+// BUNDLED_FONTS this list follows) are read from disk under design/ beside the bundled server.
+cpSync(join(server, "design", "templates"), join(root, "dist-server", "design", "templates"), { recursive: true });
+mkdirSync(join(root, "dist-server", "design", "fonts"), { recursive: true });
+for (const [pkg, file] of [
+  ["inter", "inter-latin-wght-normal.woff2"], ["inter", "inter-latin-wght-italic.woff2"],
+  ["geist", "geist-latin-wght-normal.woff2"], ["geist", "geist-latin-wght-italic.woff2"],
+  ["geist-mono", "geist-mono-latin-wght-normal.woff2"],
+]) copyFileSync(join(root, "node_modules", "@fontsource-variable", pkg, "files", file), join(root, "dist-server", "design", "fonts", file));
 
 // Pi loads this through its own jiti and supplies TypeBox. Inline our local
 // policy module so the extension also works without the source checkout;

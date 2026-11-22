@@ -21,6 +21,9 @@ import { viewerClosedRelease } from "@/components/computer-takeover";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatView } from "@/components/ChatView";
 import { GroupView } from "@/components/GroupView";
+import { TodayView } from "@/components/today/TodayView";
+import { isHomeView } from "@/lib/today";
+import { useDealsTodayLoader } from "@/state/deals-today";
 import { ForkPanel } from "@/components/ForkPanel";
 import { SIDEBAR_AND_PANEL_FIT, SIDEBAR_INLINE, TWO_SIDE_PANELS_FIT, useMediaQuery } from "@/lib/use-media-query";
 import { preloadConnectedApps } from "@/lib/connected-apps";
@@ -78,6 +81,7 @@ import { useBotListDrawer } from "@/hooks/use-bot-list-drawer";
 import { useRememberedSidePanel } from "@/hooks/use-remembered-side-panel";
 import { useDesktopNotificationOpens, useExternalChatLinks } from "@/hooks/use-external-chat-links"; import { useNewBotFromOtherPlace } from "@/lib/places-together";
 import { useUsageSnapshot } from "@/hooks/use-usage-snapshot";
+import { useNotesFromDownloads, useNotesReminder } from "@/components/NotesWaiting";
 import { useReadShownChatOnFocus } from "@/hooks/use-read-shown-chat";
 import { usePresence } from "@/hooks/use-presence";
 import { ChatNotice } from "@/components/ChatErrorBanner";
@@ -97,6 +101,7 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
   useTeamPeopleLoader(state.config, needsYou);
   useInboxLoader(`${inboxVersion(state.bots) ?? ""}|${needsYou}`);
   useEffect(() => { refreshPublishedApps(); }, []);
+  useDealsTodayLoader(state.connected && state.hydrated === true, state.activeView === "today");
   const inboxReady = useInboxReady();
   const inboxShown = useInboxPanel().open && inboxReady;
   // A Switch AI pick lands once its stopped turn's chat is idle, wherever the person is by then.
@@ -147,6 +152,8 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
     dispatch(phonePairingSettingsAction());
   }, [dispatch]);
   useConnectLink(dispatch, Boolean(state.config?.team));
+  useNotesReminder();
+  useNotesFromDownloads();
   useExternalChatLinks(state, dispatch); useDesktopNotificationOpens(state, dispatch); useNewBotFromOtherPlace(state.hydrated === true, useCallback(() => dispatch({ type: "newBot" }), [dispatch]));
   usePresence(state, dispatch); useTeamPresence(state);
   usePageLanguage(effectiveLanguage(useLanguageChoice(), state.config?.language), true);
@@ -192,12 +199,12 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
   const cloudJobWaiting = Boolean(viewer?.cloudHome && viewer.canSave && cloudIntent.pending);
   const welcome = useCloudWelcome();
   const welcomeOnScreen = cloudWelcomeVisible({ viewer, connected: state.connected, enginesKnown: state.instances.length > 0, onboarding: state.config?.onboarding }, welcome)
-    && state.activeView === "chat" && !(!remoteClient && localVmWorkspaceBotId);
+    && isHomeView(state.activeView) && !(!remoteClient && localVmWorkspaceBotId);
   const firstRun = cloudFirstRun({ welcome: welcomeOnScreen, intent: cloudAsk, signIn: cloudSignIn || cloudJobWaiting });
   const team = state.config?.team ?? null;
   const invited = invitedToTeam(viewer);
   const teamWelcomeRecord = useTeamWelcomeRecord(team && invited ? team.id : null);
-  const teamWelcomeOn = teamWelcomeDue({ team, invited, record: teamWelcomeRecord }) && state.activeView === "chat";
+  const teamWelcomeOn = teamWelcomeDue({ team, invited, record: teamWelcomeRecord }) && isHomeView(state.activeView);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -416,6 +423,8 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
         <CloudEngineSignIn />
       ) : chiefStep ? (
         <EmptyChatShell />
+      ) : state.activeView === "today" && state.hydrated === true && (bot || group || !noEngines) ? (
+        <TodayView />
       ) : group ? (
         <GroupView key={group.id} group={group} />
       ) : bot ? (

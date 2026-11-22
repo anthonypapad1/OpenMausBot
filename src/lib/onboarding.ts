@@ -96,20 +96,26 @@ export function hintSeenPatch(
 }
 
 
-export type BeatId = "meet" | "chief";
+export type BeatId = "welcome" | "ai" | "bring" | "about" | "voice" | "firstJob" | "permissions" | "chief";
 
 /** Every screen the first run can show, in the order it shows them. */
-export const BEAT_ORDER: readonly BeatId[] = ["meet", "chief"];
+export const BEAT_ORDER: readonly BeatId[] = ["welcome", "ai", "bring", "about", "voice", "firstJob", "permissions", "chief"];
 
-/** Two screens, then the chat: meeting the app (and connecting an AI when none works), then the Chief of Staff. A hosted
- * place's admin only meets the app: their team's bots and Chief are already set up. */
-export function beatsFor(options: { hosted?: boolean }): BeatId[] {
-  return options.hosted ? ["meet"] : ["meet", "chief"];
+/** Corso's questions about the person's business (corso-intake.ts), between bringing in what they use and the Chief. */
+export const INTAKE_BEATS: readonly BeatId[] = ["about", "voice", "firstJob"];
+
+/** The hello, an AI, what this computer's other AI apps hold and the prompt for AIs online (`bring`: only in the
+ * desktop app on its own computer), Corso's questions, this Mac's permissions (`permissions`: while one a bot needs is
+ * still off), then the Chief of Staff. A hosted place's admin only meets the app and its AI: their team's bots, Chief
+ * and answers are already set up. */
+export function beatsFor(options: { hosted?: boolean; bring?: boolean; permissions?: boolean }): BeatId[] {
+  if (options.hosted) return ["welcome", "ai"];
+  return BEAT_ORDER.filter((beat) => (beat !== "bring" || options.bring === true) && (beat !== "permissions" || options.permissions === true));
 }
 
 /** Where a reloaded first run opens: the saved screen while it is offered, else the first. */
 export function resumeBeat(beats: readonly BeatId[], saved: BeatId | undefined): BeatId {
-  return saved && beats.includes(saved) ? saved : beats[0] ?? "meet";
+  return saved && beats.includes(saved) ? saved : beats[0] ?? "welcome";
 }
 
 export function onboardingCloudOffered(record: OnboardingStatus | undefined): boolean {

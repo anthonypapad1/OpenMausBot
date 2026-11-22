@@ -3183,7 +3183,7 @@ describe("notifications feed", () => {
   });
 
   it("unpinned, switching chats closes it; pinned, it stays open (email 1a1a4fb0)", () => {
-    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), selectedId: "bot-1" };
+    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), activeView: "chat" as const, selectedId: "bot-1" };
     const switches = [
       { type: "select", id: "other-bot" } as const,
       { type: "switchTask", botId: "other-bot", threadId: "other-thread" } as const,
@@ -3198,7 +3198,7 @@ describe("notifications feed", () => {
   });
 
   it("unpinned, a new thread in the room on screen closes it; a background room leaves it", () => {
-    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), selectedId: "room-1",
+    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), activeView: "chat" as const, selectedId: "room-1",
       groups: [{ id: "room-1", threadId: "room-t" }] as AppState["groups"] };
     const action = { type: "newGroupTask", groupId: "room-1" } as const;
     expect(reducer(open, action).notificationsOpen).toBe(false);
@@ -3214,14 +3214,14 @@ describe("notifications feed", () => {
   });
 
   it("re-selecting a thread the bot is already switching to leaves the tray as it is", () => {
-    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), selectedId: "bot-1",
+    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), activeView: "chat" as const, selectedId: "bot-1",
       bots: [{ id: "bot-1", threadId: "t-1", switchingTo: "t-2" }] as AppState["bots"] };
     expect(reducer(open, { type: "switchTask", botId: "bot-1", threadId: "t-2" }).notificationsOpen).toBe(true);
     expect(reducer(open, { type: "switchTask", botId: "bot-1", threadId: "t-3" }).notificationsOpen).toBe(false);
   });
 
   it("re-selecting the open chat or its open thread leaves the tray as it is", () => {
-    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), selectedId: "bot-1",
+    const open = { ...reducer(initialState, { type: "toggleNotifications", open: true }), activeView: "chat" as const, selectedId: "bot-1",
       bots: [{ id: "bot-1", threadId: "t-1" }] as AppState["bots"], groups: [{ id: "room-1", threadId: "room-t" }] as AppState["groups"] };
     expect(reducer(open, { type: "select", id: "bot-1" }).notificationsOpen).toBe(true);
     expect(reducer(open, { type: "switchTask", botId: "bot-1", threadId: "t-1" }).notificationsOpen).toBe(true);

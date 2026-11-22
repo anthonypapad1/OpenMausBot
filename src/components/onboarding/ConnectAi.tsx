@@ -17,7 +17,7 @@ import type { WelcomeAiNow } from "./welcome-ai";
 
 /** A local-model setup and a step finished in Terminal keep their own words; every other sign-in says the same plain line
  * instead of the setup's technical one. */
-function setupFor(instance: InstanceInfo) {
+export function setupFor(instance: InstanceInfo) {
   if (instance.access === "custom") return { intent: "inject" as const };
   return signInFollows(instance)
     ? { intent: "cloud" as const, description: t("onboarding.engines.signInHint", { name: engineDisplayName(instance) }) }

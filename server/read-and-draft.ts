@@ -1,8 +1,8 @@
 // Security invariant: a read-and-draft routine run is unattended and its prompt carries untrusted mail and invite text
 // beside the person's private data, so it gets no way to act outside or to persist anything. Everything is allow-only:
 // - the engine runs at Ask, and the server answers every request in the run itself: each is refused, never a card;
-// - of Corso's own routes it may reach only conversation reads, the paging of its own long results, the engine's
-//   hooks and the connected-apps relay;
+// - of Corso's own routes it may reach only conversation reads, the deal list's two reads, the paging of its own long
+//   results, the engine's hooks and the connected-apps relay;
 // - through the relay it may only read Gmail and Google Calendar, and write a draft replying in one of the threads its
 //   checks handed it, to that thread's sender, once;
 // - what those reads return reaches it only as records;
@@ -39,6 +39,8 @@ const ROUTES: ReadonlySet<string> = new Set([
   "POST /api/internal/tool-result",
   "POST /api/internal/hook",
   "POST /api/internal/connectors/mcp",
+  "POST /api/internal/deals/deals_list",
+  "POST /api/internal/deals/deal_get",
 ]);
 
 /** Composio's meta tools that only describe tools; connecting an account waits for a person, so it is not here. */

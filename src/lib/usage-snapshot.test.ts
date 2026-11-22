@@ -8,6 +8,8 @@ import {
 import {
   buildUsageSnapshot, cloudPlanFromAccount, cloudPlanFromSnapshot, type SnapshotState, type UsageInput, type UsageSources,
 } from "./usage-snapshot";
+// Corso sends analytics only with its own key (src/lib/analytics.ts); these tests pin what a keyed build sends.
+vi.stubEnv("VITE_CORSO_POSTHOG_KEY", "phc_test");
 
 const HOSTILE = "sk-ant-api03-HOSTILE-0123456789";
 const DAY = Date.parse("2026-10-15T09:00:00.000Z");
