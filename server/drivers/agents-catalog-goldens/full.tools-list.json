@@ -2385,7 +2385,7 @@
     },
     {
       "name": "deals_list",
-      "description": "The shared deal list every bot works from: each deal with its next open deadline.",
+      "description": "The shared deal list every bot works from: each deal with its next open deadline. Every date comes with its weekday and distance from today (dueWhen, closingWhen); repeat those, never work out a weekday yourself.",
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
@@ -2413,7 +2413,7 @@
     },
     {
       "name": "deal_get",
-      "description": "One deal with its parties, deadlines, documents and recent activity.",
+      "description": "One deal with its parties, deadlines, documents and recent activity, each date with its weekday (dueWhen, closingWhen).",
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
