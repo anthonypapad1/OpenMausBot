@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { connectAiStep } from "./connect-ai-events";
 import { loadWaitingFor } from "./app-load";
 import { signInGateShown } from "./sign-in-gate";
+// Corso sends analytics only with its own key (src/lib/analytics.ts); these tests pin what a keyed build sends.
+vi.stubEnv("VITE_CORSO_POSTHOG_KEY", "phc_test");
 
 const ph = vi.hoisted(() => ({
   captured: [] as Array<{ event: string; props: unknown }>,
