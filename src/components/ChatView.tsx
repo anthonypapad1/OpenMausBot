@@ -71,6 +71,7 @@ import { askText, runSkill, runSteps, runSummary, showRun, skillPrompt } from "@
 import { useShowRunCard } from "@/lib/run-card-preferences";
 import { useColorUserBubbles } from "@/lib/user-bubble-preference";
 import { userBubbleStyle } from "@/lib/user-bubble-tone";
+import { useOneAccent } from "@/lib/skins";
 import { ToolActivity } from "./ToolActivity";
 import { DataResultChip } from "./DataResultChip"; import { PublishedPageCard } from "./PublishedPageCard"; import { TemplateChatCard } from "./TemplateCard"; import { PublishedSiteCards } from "./published-apps/PublishedSiteCards";
 import { ThreadRefText } from "./ThreadRefs"; import { WatchScreenButton } from "./WatchScreenButton";
@@ -865,8 +866,9 @@ export const ChatView = memo(function ChatView({ bot: profile, inForkPanel = fal
   branch.current = messages;
   const onBranch = useCallback((messageId: string) => branch.current.some((m) => m.id === messageId), []);
   const colorMine = useColorUserBubbles();
-  // Simple mode draws your bubble in one flat tone of the bot's colour.
-  const bubbleStyle = useMemo(() => (colorMine ? userBubbleStyle(bot.color, { flat: !advanced }) : undefined), [colorMine, bot.color, advanced]);
+  const oneAccent = useOneAccent();
+  // Simple mode draws your bubble in one flat tone of the bot's colour, or of the skin's accent in a one-accent skin.
+  const bubbleStyle = useMemo(() => (colorMine ? userBubbleStyle(bot.color, { flat: !advanced, palette: oneAccent }) : undefined), [colorMine, bot.color, advanced, oneAccent]);
   const hasMore = Boolean(bot.hasMore);
   const reactor = useReactor();
   const speakerViewer = reactor !== "user" ? reactor : null;

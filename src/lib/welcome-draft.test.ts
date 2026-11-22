@@ -49,7 +49,7 @@ describe("the welcome draft", () => {
   it("works on without browser storage", () => {
     vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); }, removeItem: () => { throw new Error("blocked"); } });
     expect(readWelcomeDraft()).toBeNull();
-    expect(() => saveWelcomeDraft({ beat: "meet" })).not.toThrow();
+    expect(() => saveWelcomeDraft({ beat: "welcome" })).not.toThrow();
     expect(() => clearWelcomeDraft()).not.toThrow();
   });
 });

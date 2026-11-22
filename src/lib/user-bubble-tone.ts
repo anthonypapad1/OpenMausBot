@@ -187,7 +187,11 @@ function darkInkTone(palette: string): UserBubbleTone {
 }
 
 export function userBubbleTone(color: MausColor): UserBubbleTone {
-  const palette = MAUS_COLORS[color];
+  return userBubbleToneOf(MAUS_COLORS[color]);
+}
+
+/** The bubble tone of any colour, for a skin that fills the bubble with its accent rather than the bot's colour. */
+export function userBubbleToneOf(palette: string): UserBubbleTone {
   const { h } = toOklch(palette);
   return h >= YELLOW_HUES.from && h <= YELLOW_HUES.to ? darkInkTone(palette) : whiteInkTone(palette);
 }
@@ -204,9 +208,10 @@ export function quoteSurface(inset: string, background: string): string {
   return mixSrgb(inset, background, 0.7);
 }
 
-/** `flat`: Simple mode's one even fill, the tone's background with no gradient over it. */
-export function userBubbleStyle(color: MausColor, { flat = false }: { flat?: boolean } = {}): CSSProperties {
-  const tone = userBubbleTone(color);
+/** `flat`: Simple mode's one even fill, the tone's background with no gradient over it. `palette`: a colour that stands in
+ * for the bot's, a one-accent skin's accent (ONE_ACCENT_SKINS in src/lib/skins.ts). */
+export function userBubbleStyle(color: MausColor, { flat = false, palette }: { flat?: boolean; palette?: string } = {}): CSSProperties {
+  const tone = palette ? userBubbleToneOf(palette) : userBubbleTone(color);
   return {
     backgroundColor: tone.background,
     backgroundImage: flat ? "none" : tone.gradient,

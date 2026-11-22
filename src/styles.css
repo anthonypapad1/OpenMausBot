@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/figtree";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
 
@@ -124,7 +125,6 @@
      300ms UI ceiling. */
   --animate-rise: rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.2s ease-out both;
-  --animate-meet-caret: meet-caret 1s linear infinite;
   /* onboarding: a spotlight card or a first-sight hint scaling in from its
      anchor. Never from zero; nothing appears from nothing. */
   --animate-spot-in: spot-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1114,6 +1114,127 @@
   --identity-chrome: #B3BAC4;
 }
 
+/* ── Corso ──────────────────────────────────────────────────────────────────
+   The Corso look ("Alpine"): fresh snow, evergreen and aspen gold. White ground, one evergreen accent, gold kept for
+   what needs the person (the warning token). Figtree, and rounder corners than the other skins.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-skin="corso"] {
+  --code-color-scheme: light;
+  --color-app: #ffffff;
+  --color-panel: #f2f5f3;
+  --color-frame: var(--color-panel);
+  --color-raised: #e6ece8;
+  --color-raised-hover: #dde9e2;
+  --color-composer: #ffffff;
+  --color-composer-ring: #dfe5e1;
+  --color-card: #f4f7f5;
+  --color-menu: #ffffff;
+  --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  --color-menu-active: var(--color-raised);
+  --color-inset: #eef2ef;
+  --color-control: #d3ddd7;
+  --color-hairline: #c9d3cd;
+
+  --color-ink: #16211c;
+  --color-ink-secondary: #46524b;
+  --color-ink-tertiary: #55615a;
+
+  --color-accent: #1e5b45;
+  --color-accent-border: #2a7257;
+  --color-accent-text: #1e5b45;
+  --color-focus: #1e5b45;
+  --color-accent-ink: #ffffff;
+  --color-bubble-user: #e9efeb;
+  --color-bubble-user-ink: #16211c;
+
+  --color-success: #2f6f4c;
+  --color-danger: #b3362f;
+  --color-danger-ink: #ffffff;
+  --color-success-ink: #ffffff;
+  --color-warning: #7a5a0e;
+  --color-scrollbar: #c3ccc6;
+  --color-maus-line: #4a5650;
+
+  --font-sans: "Figtree Variable", "Figtree", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-xs: 3px; --radius-sm: 6px; --radius-md: 8px;
+  --radius-2xl: 22px; --radius-3xl: 28px; --radius-4xl: 32px;
+  --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --identity-green: #00884e;
+  --identity-blue: #2573e4;
+  --identity-red: #d63f47;
+  --identity-orange: #b65f15;
+  --identity-purple: #8057C8;
+  --identity-cyan: #0b819b;
+  --identity-pink: #d3397d;
+  --identity-yellow: #93721b;
+  --identity-teal: #018577;
+  --identity-coral: #db3a20;
+  --identity-silver: #707782;
+  --identity-chrome: #6b778a;
+}
+
+/* Corso Night: the same look after dark, on deep spruce rather than black. */
+[data-skin="corso-night"] {
+  --code-color-scheme: dark;
+  --color-app: #101714;
+  --color-panel: #0c1210;
+  --color-frame: var(--color-panel);
+  --color-raised: #1f2a25;
+  --color-raised-hover: #26332d;
+  --color-composer: #1a2420;
+  --color-composer-ring: transparent;
+  --color-card: #18211d;
+  --color-menu: #1a2420;
+  --color-menu-hover: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  --color-menu-active: var(--color-raised);
+  --color-inset: #0b100e;
+  --color-control: #2f3d36;
+  --color-hairline: #33413a;
+
+  --color-ink: #ecf1ee;
+  --color-ink-secondary: #b1bdb6;
+  --color-ink-tertiary: #9eaaa3;
+
+  --color-accent: #2a7257;
+  --color-accent-border: #4fa583;
+  --color-accent-text: #7fcaa8;
+  --color-focus: #7fcaa8;
+  --color-accent-ink: #ffffff;
+  --color-bubble-user: #24302a;
+  --color-bubble-user-ink: #ecf1ee;
+
+  --color-success: #6fc394;
+  --color-danger: #ef8a80;
+  --color-danger-ink: #22100d;
+  --color-success-ink: #0b1a12;
+  --color-warning: #e9b23a;
+  --color-scrollbar: #3a4842;
+  --color-maus-line: #b1bdb6;
+
+  --font-sans: "Figtree Variable", "Figtree", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-xs: 3px; --radius-sm: 6px; --radius-md: 8px;
+  --radius-2xl: 22px; --radius-3xl: 28px; --radius-4xl: 32px;
+  --color-edge: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --identity-green: #009957;
+  --identity-blue: #377FE6;
+  --identity-red: #da4e54;
+  --identity-orange: #E78531;
+  --identity-purple: #8f6ccf;
+  --identity-cyan: #0EA5C6;
+  --identity-pink: #D84F8B;
+  --identity-yellow: #D8A729;
+  --identity-teal: #01A492;
+  --identity-coral: #E5634E;
+  --identity-silver: #A8ADB4;
+  --identity-chrome: #B3BAC4;
+}
+
 /* Every popover and menu in the menu tone, flat in Midnight and on a soft lift in Daylight. A popover's rim is its
    border, never a ring, so clearing box-shadow leaves the rim. */
 .popover-surface {
@@ -1169,6 +1290,21 @@
   background-color: var(--color-raised-hover);
   color: var(--color-ink-secondary);
   opacity: 1;
+}
+/* The one-accent skins wear their accent where every other skin wears the bot's colour. Their accents sit in
+   ONE_ACCENT_SKINS in src/lib/skins.ts, which makes the same swap for the person's bubble and the composer's round
+   button: change them together. Stops at a nested skin so the picker's previews keep their own look. */
+@scope ([data-skin="corso"], [data-skin="corso-night"]) to ([data-skin]) {
+  .bot-button:enabled {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+  .bot-button:enabled:hover {
+    background-color: color-mix(in srgb, #000000 12%, var(--color-accent));
+  }
+  .bot-button:enabled:active {
+    background-color: color-mix(in srgb, #000000 22%, var(--color-accent));
+  }
 }
 
 /* Shiki emits both palettes so cached blocks follow the nearest skin without
@@ -2042,6 +2178,11 @@ body {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+/* A first-run step's title takes focus from code so a screen reader reads the new step (FunnelSteps); it is never
+   tabbed to, so it draws no ring. */
+.welcome-screen h1[tabindex="-1"]:focus-visible {
+  outline: none;
+}
 /* Settings: nav items, identity rows, search results and whole-row buttons (link, fold and card rows) take an inset
    ring, so it is never clipped by the card or drawn into the nav's edge. */
 [data-settings-look] :is([data-settings-page], [data-settings-hit], [data-settings-key-result], [data-settings-rows] > button, [data-settings-rows] > * > button[aria-expanded], [data-settings-fold] > button, [data-settings-rows] > button[data-pair-with-cloud]):focus-visible {
@@ -2209,11 +2350,6 @@ body {
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-/* The first screen's demo caret: on for the first half of each second, off for the rest. */
-@keyframes meet-caret {
-  0%, 45% { opacity: 1; }
-  55%, 100% { opacity: 0; }
 }
 @keyframes rise {
   from { transform: translateY(10px); opacity: 0; }
@@ -3430,11 +3566,11 @@ button:disabled.bg-danger {
   outline-offset: -1.5px;
 }
 :root,
-:is([data-skin="midnight"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="dusk"], [data-skin="halloween"], [data-skin="diwali"], [data-skin="aurora"]) {
+:is([data-skin="midnight"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="dusk"], [data-skin="halloween"], [data-skin="diwali"], [data-skin="aurora"], [data-skin="corso-night"]) {
   --radius-menu: 12px;
   --menu-shadow: 0 14px 32px -10px rgb(0 0 0 / 0.7), 0 2px 8px rgb(0 0 0 / 0.35);
 }
-:is([data-skin="atelier"], [data-skin="lagoon"], [data-skin="linen"], [data-skin="meadow"], [data-skin="pop"]) {
+:is([data-skin="atelier"], [data-skin="lagoon"], [data-skin="linen"], [data-skin="meadow"], [data-skin="pop"], [data-skin="corso"]) {
   --menu-shadow: 0 8px 24px -6px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.04);
 }
 :is([data-skin="daylight"]) {
