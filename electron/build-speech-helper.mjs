@@ -8,6 +8,7 @@ const electronDir = path.dirname(fileURLToPath(import.meta.url));
 const projectDir = path.dirname(electronDir);
 const resourcesDir = path.join(electronDir, "resources");
 
+// electron-builder.yml (mac.extraResources and the files exclusions) copies this bundle by name.
 export const speechHelperBundle = path.join(resourcesDir, "Corso Speech.app");
 export const speechHelperBinary = path.join(speechHelperBundle, "Contents", "MacOS", "speech-helper");
 
@@ -34,6 +35,9 @@ export function buildSpeechHelper() {
   if (!archs.includes("arm64") || !archs.includes("x86_64")) {
     throw new Error(`speech helper is not universal: ${archs.trim()}`);
   }
+  // codesign rejects Finder metadata ("resource fork, Finder information, or similar detritus"), which a checkout
+  // in an iCloud-synced folder such as ~/Documents picks up on the new bundle directory.
+  execFileSync("xattr", ["-cr", speechHelperBundle], { stdio: "inherit", timeout: 30_000 });
   // Ad-hoc signed for dev with the release's audio entitlement; electron-builder replaces it when signing.
   execFileSync(
     "codesign",

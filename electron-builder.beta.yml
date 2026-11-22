@@ -1,0 +1,20 @@
+# Unsigned beta build for hand-delivered testers: `pnpm package:mac:beta`.
+# Everything comes from electron-builder.yml; this only swaps the parts that
+# need an Apple Developer ID. Once there's a certificate in the keychain,
+# `pnpm package:mac` (electron-builder.yml alone) makes the signed build.
+extends: ./electron-builder.yml
+
+# No update feed: Squirrel.Mac only installs an update whose signature matches
+# the running app, which an ad-hoc signature never does. Without publish the
+# package carries no app-update.yml, and electron/updater.mjs then leaves the
+# updater off instead of downloading releases it can't install.
+publish: null
+
+mac:
+  # Ad-hoc signature: Apple silicon refuses to run unsigned code. Hardened
+  # runtime stays on; build/entitlements.mac.plist already carries the
+  # disable-library-validation entitlement ad-hoc signing needs.
+  identity: "-"
+
+dmg:
+  sign: false

@@ -190,7 +190,10 @@ export function attachUpdaterWindow(mainWindow) {
 
 /** `signals` (quietSignals): what tells a quiet moment; without them a downloaded update installs only on Restart or quit. */
 export function startUpdater(signals = null) {
-  if (!app.isPackaged) {
+  // A package built with no publish target (electron-builder.beta.yml, `pnpm package:mac:beta`) carries no app-update.yml:
+  // an ad-hoc signed beta can't install an update over itself, so it never looks for one.
+  const noFeed = process.resourcesPath && !existsSync(join(process.resourcesPath, "app-update.yml"));
+  if (!app.isPackaged || noFeed) {
     updaterCoordinator = null;
     setState({ status: "idle" });
     return;
