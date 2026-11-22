@@ -22,7 +22,7 @@ const dm: Group = { ...room, id: "dm", threadId: "dm-1", name: "Scout ⇄ Ada", 
 vi.mock("@/state/store", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/state/store")>();
   return { ...original, useStore: () => ({
-    state: { ...original.initialState, bots: [scout, ada], groups: [room, dm], selectedId: fixture.selectedId },
+    state: { ...original.initialState, activeView: "chat", bots: [scout, ada], groups: [room, dm], selectedId: fixture.selectedId },
     dispatch: fixture.dispatch,
   }) };
 });
@@ -131,7 +131,7 @@ describe("ThreadLink", () => {
 });
 
 describe("openChatLink", () => {
-  const state = async () => ({ ...(await import("@/state/store")).initialState, bots: [scout, ada], groups: [room, dm], selectedId: "ada" });
+  const state = async () => ({ ...(await import("@/state/store")).initialState, activeView: "chat" as const, bots: [scout, ada], groups: [room, dm], selectedId: "ada" });
   const actions = (dispatch: ReturnType<typeof vi.fn>) => dispatch.mock.calls.map(([action]) => action);
 
   it("opens the chat a copied link names, and nothing else", async () => {

@@ -12,7 +12,7 @@ let options = { enabled: true, inspector: true };
 
 /** The app's wiring: the real reducer, and the panels App draws from its open flags. */
 function Shell() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, { ...initialState, activeView: "chat" as const });
   send = dispatch;
   useRememberedSidePanel(state, dispatch, options);
   return h("div", null,
