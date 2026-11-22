@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { t } from "@/lib/i18n";
 import { importOutcome, localSetupImport, setupImportApi, skillsSummary, toolsSummary, type SetupImportClient } from "@/lib/setup-import";
 import { useStore } from "@/state/store";
-import { detectionCount, detectionSources, type SetupDetection, type SetupImportResult, type SetupSource } from "../../shared/setup-import";
+import { detectionSources, type SetupDetection, type SetupImportResult, type SetupSource } from "../../shared/setup-import";
 import { GrokBotMark } from "./GrokBotMark";
 import { GrokMoveDialog } from "./lazy-screens";
 import { ClaudeMark, CodexMark, CursorMark, PresetProviderMark } from "./ProviderIcons";
@@ -124,7 +124,7 @@ export function AiAppsImportView({ local, detection, chosen, status, result, onC
         </div>
       </div>
     );
-  } else if (!detection || detectionCount(detection) === 0) {
+  } else if (!detection || detection.skills.length + detection.tools.length === 0) {
     body = <p className="text-[13px] text-ink-secondary">{detection === null ? t("onboarding.import.error") : t("settings.import.appsNothing")}</p>;
   } else {
     body = (

@@ -1,7 +1,7 @@
 {
   "default": {
-    "bytes": 58764,
-    "sha256": "68caaad643ae281f9bb8a453a33ea2d69d9ba30a21a6ae6d69a292357f33e673",
+    "bytes": 65042,
+    "sha256": "291a502d0187275079b2e2e2d916c901a3e00b1e7e4aa6a8032ee51734d5d58f",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -54,12 +54,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "voice": {
-    "bytes": 59545,
-    "sha256": "6cafdc9bc2f63da4ea55631bd496f1df3a63ad8ba4e4a9eda0667197ef4d5b4d",
+    "bytes": 65823,
+    "sha256": "123596416b4119f136c2656a46114415b23cec4a5aa5a0b4e0f154065a2f124e",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -113,12 +122,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "shared": {
-    "bytes": 61029,
-    "sha256": "ce0754fe0ab40cd84215c2f5e292f690812355cbd357d5a2bc4686eb02f3eda0",
+    "bytes": 67307,
+    "sha256": "8129535b5e4a59d14c5b226fc21ef4e98405d9bab60906ec2bb999a858bfbc18",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -173,12 +191,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "shared+voice": {
-    "bytes": 61810,
-    "sha256": "6e04ad6f4a84ed803f55cfea6c20d4406bdc412ebf06f73f8656317cec8e24c8",
+    "bytes": 68088,
+    "sha256": "8c8a1279060033055fc77e4ecb1e2bb5a6cb8770188e1c27afc59dd91d96bbc8",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -234,12 +261,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills": {
-    "bytes": 61085,
-    "sha256": "a51aa268719d5b2958fd81c2860e4f22b7b481ee3e6ca33ca1ca90e0840a683e",
+    "bytes": 67363,
+    "sha256": "6ec61cf7186f4a51e6d026d7e401208ee197fe4cf842cc5cf9ae314890547a08",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -294,12 +330,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+voice": {
-    "bytes": 61866,
-    "sha256": "b4b5a0ffebe59c91fe148b822e3ce0aab3ad91072fe0409c72e978f75175951d",
+    "bytes": 68144,
+    "sha256": "002ba678cd80ab4b36fed9b81d5403e50089797c87f20263bc1dc32635f99950",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -355,12 +400,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared": {
-    "bytes": 63350,
-    "sha256": "d0d0cc98bfc573c430795f6285b20526b843ed05e23abecdc28d45e72f636cdb",
+    "bytes": 69628,
+    "sha256": "d34adc820528d5d480d450de8ae8bda699cf42e51fcbf1fd5a51491042a2103e",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -417,12 +471,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice": {
-    "bytes": 64131,
-    "sha256": "d997dedfbc10df5cf999c7d0ae52f24faa7a7135cef8c2d78fc7d58c23119827",
+    "bytes": 70409,
+    "sha256": "2517d587a9eaf3af11b2790a6155461129026b55dd693d79426d9b8e4eff3cea",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -480,12 +543,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "non-chief": {
-    "bytes": 50216,
-    "sha256": "12455b1b239c88cbc07d0d963918b04f122744814ff9a6fbdf529f9ded09d044",
+    "bytes": 56494,
+    "sha256": "ef2799b55fb6b1f4ce3f2f566673e4a6d952a382858f7fefb28cf71351417d64",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -531,12 +603,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "voice+non-chief": {
-    "bytes": 50997,
-    "sha256": "92d55e17ce4faba064dd4f5ca0a9a7f75d70fe38df2c1a4bfc4cfe762bb157aa",
+    "bytes": 57275,
+    "sha256": "9b4eb86e0db982ded272fc4ea75c932ac6c17f4882ee82ec8ef7bd0eefed1d24",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -583,12 +664,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "shared+non-chief": {
-    "bytes": 52481,
-    "sha256": "a65f5345db1a152913709b2846b996ff6813da0b7914dd1c308800e34fe2b0bd",
+    "bytes": 58759,
+    "sha256": "e965b3eefd1f6fecce5ff2a79ad850d043ff73f14623170f14b28f0b4961d1f2",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -636,12 +726,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "shared+voice+non-chief": {
-    "bytes": 53262,
-    "sha256": "32c18234ace09685549f1a31467cd44342b8f7ccd46a3a21627059b20492ec87",
+    "bytes": 59540,
+    "sha256": "f3a2d65aa1bca2b19cf684c5986ea5dbb03f723818bcf5ad2c91c337c2dd6c29",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -690,12 +789,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+non-chief": {
-    "bytes": 52537,
-    "sha256": "c3b0626accb8a6c3f7c8045bc009153cd5b85b546f10142901718c09a68067a9",
+    "bytes": 58815,
+    "sha256": "e4605d6faa78f88892297c9707d000d539a18d36c5bbf231e29bc1374136c8d6",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -743,12 +851,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+voice+non-chief": {
-    "bytes": 53318,
-    "sha256": "d210dca8b8c88a04cd819fab1d9c929e5635fdd652ed83ef3a6f472ccec026d0",
+    "bytes": 59596,
+    "sha256": "d2a18186667e17a73916bb01b61f603854fbdc4b5a18b241a6cad6942a86c72d",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -797,12 +914,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+non-chief": {
-    "bytes": 54802,
-    "sha256": "be06b5df2dc19353b9fd61de06f70d8b56225eef1cac0bcbab94c78ea9e04e8c",
+    "bytes": 61080,
+    "sha256": "e1ff8a8883284a17279849f84b460186b971ad396e1ad03ecd7cda10e1828895",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -852,12 +978,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+non-chief": {
-    "bytes": 55583,
-    "sha256": "ce20f6b3734ad92044db686fd373edf42ac6acae0e0fca8e46b443a9d47c0e13",
+    "bytes": 61861,
+    "sha256": "fc2392dbcfc2c75a86d4a9c1fb1ccff8ac35a09e413a731750f40064115f7382",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -908,12 +1043,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+cloud-home": {
-    "bytes": 63897,
-    "sha256": "0ddc4569d8fa86dfb9be4da3ee0a5ffb858a05dc89b4ed9a2aaa09a963c888fd",
+    "bytes": 70175,
+    "sha256": "57973b7a972388b0f7f032deec7e6251aedf50c7aaf87559d0a864d85153cd02",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -971,12 +1115,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+non-chief+cloud-home": {
-    "bytes": 55349,
-    "sha256": "ae4eb3174ec94e219f10f3bf40ff1fd9be91ddb90b45ddf0c6fbd4063d625fb9",
+    "bytes": 61627,
+    "sha256": "98024ed78261da42fb2f7cb0b17c9b72e4cdea59b0d8086dfbe4e50ccc4b4373",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1027,12 +1180,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+x": {
-    "bytes": 67970,
-    "sha256": "cce7d4ffef76932129c2eb62d9819206657fc2a540e0ff4c458fa7c94edb2532",
+    "bytes": 74248,
+    "sha256": "5886e8d7a830a54fbff4b146a9ccc96a895237671637687106b38af0cfdd40bb",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1094,12 +1256,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+x+team": {
-    "bytes": 67970,
-    "sha256": "cce7d4ffef76932129c2eb62d9819206657fc2a540e0ff4c458fa7c94edb2532",
+    "bytes": 74248,
+    "sha256": "5886e8d7a830a54fbff4b146a9ccc96a895237671637687106b38af0cfdd40bb",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1161,12 +1332,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+x+team+images": {
-    "bytes": 69917,
-    "sha256": "8fbc8b134ac393972e75932f1d81cca067a849a7ac47d7a8d50ed0e8311061c0",
+    "bytes": 76195,
+    "sha256": "1123fd710fdec4827759cda1e911ac05d436b55f853f0965d8f73f7062c738a8",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1230,70 +1410,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+legacy-switches": {
-    "bytes": 58764,
-    "sha256": "68caaad643ae281f9bb8a453a33ea2d69d9ba30a21a6ae6d69a292357f33e673",
-    "tools": [
-      "tool_result_read",
-      "list_room_targets",
-      "coordinate_bots",
-      "assignment_status",
-      "list_bots",
-      "usage_limits",
-      "list_rooms",
-      "select_computer",
-      "list_threads",
-      "close_thread",
-      "rename_thread",
-      "start_thread",
-      "burst",
-      "list_models",
-      "vm_exec",
-      "attach_file",
-      "show_widget",
-      "show_html",
-      "publish_page",
-      "unpublish_page",
-      "post_to_room",
-      "post_to_thread",
-      "create_bot",
-      "list_team_setup",
-      "list_team_library",
-      "propose_team_setup",
-      "propose_bot_deletion",
-      "manage_room",
-      "request_credential",
-      "request_sign_in",
-      "fill_login",
-      "decide",
-      "extract",
-      "message_person",
-      "report_bug",
-      "share",
-      "memory_update",
-      "retry_thread",
-      "memory_log",
-      "session_search",
-      "trigger_info",
-      "trigger",
-      "delete_trigger",
-      "wait_until",
-      "list_waits",
-      "cancel_wait",
-      "check_back",
-      "propose_profile",
-      "propose_model",
-      "propose_team_memory",
-      "mcp_server",
-      "app_settings"
-    ]
-  },
-  "default+mausbot": {
-    "bytes": 59415,
-    "sha256": "4e4dc597e82e4c1921869c75c4f1c882e923761a4c299401485b10ef3417a112",
+    "bytes": 65042,
+    "sha256": "291a502d0187275079b2e2e2d916c901a3e00b1e7e4aa6a8032ee51734d5d58f",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1347,13 +1478,89 @@
       "propose_team_memory",
       "mcp_server",
       "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
+    ]
+  },
+  "default+mausbot": {
+    "bytes": 65693,
+    "sha256": "7301dbdff8080056ac079d5180e2f98fa1db434be5e2db747c6936a26d92a92c",
+    "tools": [
+      "tool_result_read",
+      "list_room_targets",
+      "coordinate_bots",
+      "assignment_status",
+      "list_bots",
+      "usage_limits",
+      "list_rooms",
+      "select_computer",
+      "list_threads",
+      "close_thread",
+      "rename_thread",
+      "start_thread",
+      "burst",
+      "list_models",
+      "vm_exec",
+      "attach_file",
+      "show_widget",
+      "show_html",
+      "publish_page",
+      "unpublish_page",
+      "post_to_room",
+      "post_to_thread",
+      "create_bot",
+      "list_team_setup",
+      "list_team_library",
+      "propose_team_setup",
+      "propose_bot_deletion",
+      "manage_room",
+      "request_credential",
+      "request_sign_in",
+      "fill_login",
+      "decide",
+      "extract",
+      "message_person",
+      "report_bug",
+      "share",
+      "memory_update",
+      "retry_thread",
+      "memory_log",
+      "session_search",
+      "trigger_info",
+      "trigger",
+      "delete_trigger",
+      "wait_until",
+      "list_waits",
+      "cancel_wait",
+      "check_back",
+      "propose_profile",
+      "propose_model",
+      "propose_team_memory",
+      "mcp_server",
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render",
       "list_unread_notifications",
       "mark_notifications_read"
     ]
   },
   "skills+shared+voice+mausbot": {
-    "bytes": 64782,
-    "sha256": "741db2e865e46e2d051b9a6943b6bf0d1b115a8d60c19a957ed556fe3bdf6981",
+    "bytes": 71060,
+    "sha256": "46d94ca6d6594ac128ed6f3499980c52e3df8dfdfe02316e99cdd88dab45ef33",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1412,13 +1619,22 @@
       "skill_manage",
       "mcp_server",
       "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render",
       "list_unread_notifications",
       "mark_notifications_read"
     ]
   },
   "default+no-computer-pick": {
-    "bytes": 57564,
-    "sha256": "32fb1298b1b15d58a559654bb8efa58ef280632f14d932ac03cc0298fadedc1e",
+    "bytes": 63842,
+    "sha256": "d5a0ac8204839f3442cdb772c83a997afd4017edb95e6e4a2db3fac899a80952",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1470,12 +1686,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+room": {
-    "bytes": 54124,
-    "sha256": "d27b36e9be4945a68b153114bd24503aa727af5b76dc8fc839006c8c005dbf93",
+    "bytes": 60402,
+    "sha256": "1bfcb1d0d848ba3b82cd8bf53ebb02802cbdeabbb3f7f598fda167c577db7acb",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1521,12 +1746,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "non-chief+room": {
-    "bytes": 45576,
-    "sha256": "a11435149b3449752598a0babdba5d794da6146c90f2b4914a02a62cd03c90c4",
+    "bytes": 51854,
+    "sha256": "7b0a9f4df533d7327c9f350930d8a70bc0d193d2f38557c4f8f46d8f7e597524",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1565,12 +1799,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+images": {
-    "bytes": 60711,
-    "sha256": "9a88249bd6a2e7832c7da5eec97edd795dc5de31254a2602fa61fe9b5e30aa8f",
+    "bytes": 66989,
+    "sha256": "e3d05853c9ec59b829842a6af8e7963cc736f096bc66fec21e782b6e30cf12b8",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1625,12 +1868,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "skills+shared+voice+x+team+images+hosting": {
-    "bytes": 71780,
-    "sha256": "b8f04670946c5a49967f608b7935e1e1b4e72762b9e21087b26a970b44d94601",
+    "bytes": 78058,
+    "sha256": "923bbc58288f5f1ddd97f22a06f19d8da44fe88d40909c3bda32bbce346d9dde",
     "tools": [
       "tool_result_read",
       "list_shared_computers",
@@ -1696,12 +1948,21 @@
       "skills_list",
       "skill_manage",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+hosting": {
-    "bytes": 60627,
-    "sha256": "f60c94bb7c833b76f104b447fe98cb64891364a075b68880f5172aabc59b451c",
+    "bytes": 66905,
+    "sha256": "dec6e526fd28e8d353527de13c38f782817b7d0817f41fc6a1de3fe58de88ff5",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1756,12 +2017,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+tools-off": {
-    "bytes": 54446,
-    "sha256": "df4c4b8af32e04ba2d91d3000185c52ec3545b6c7e16cffb698b8bcb9257ee9d",
+    "bytes": 60724,
+    "sha256": "3b69eed91c6d5f3e8e990055bc615f76225d915acb39744665c64e8d97cf28fc",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1810,12 +2080,21 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   },
   "default+no-bug-reports": {
-    "bytes": 58181,
-    "sha256": "169e054eb3a7876a31a4a6dd34209a0675829eeaca93cedfeff107590aeac06a",
+    "bytes": 64459,
+    "sha256": "e8e794b552b1f636282ff0ccf19ff24b06857a59de81ee195d8c0046ecbb69b1",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1867,7 +2146,16 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
+      "design_templates_list",
+      "design_render"
     ]
   }
 }

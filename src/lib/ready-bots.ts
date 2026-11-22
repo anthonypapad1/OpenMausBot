@@ -1,11 +1,14 @@
 import type { BotRoutineTemplate, NewBotDefaults } from "../../shared/new-bot-defaults";
 import type { MascotBodyId } from "../../shared/mascot-bodies";
 import type { MausColor } from "../../shared/wire";
+import { parseSkillMd } from "../../shared/skill-md";
 import { t, tFromServer } from "@/lib/i18n";
+import { DESK_BOTS } from "@/lib/desks/desks";
+import { paused, WEEKDAYS } from "@/lib/ready-bot-routines";
 
-export type ReadyBotCategory = "everyday" | "work" | "writing" | "design" | "sales" | "personal";
+export type ReadyBotCategory = "realestate" | "everyday" | "work" | "writing" | "design" | "sales" | "personal";
 
-export const READY_BOT_CATEGORIES: readonly ReadyBotCategory[] = ["everyday", "work", "writing", "design", "sales", "personal"];
+export const READY_BOT_CATEGORIES: readonly ReadyBotCategory[] = ["realestate", "everyday", "work", "writing", "design", "sales", "personal"];
 
 export interface ReadyBot {
   id: string;
@@ -19,15 +22,13 @@ export interface ReadyBot {
   /** Connected apps the bot works best with; suggested, never connected for the person. */
   apps: string[];
   notes?: Record<string, string>;
+  /** Each skill's whole SKILL.md, added to the bot switched on. */
+  skills?: string[];
   routines?: BotRoutineTemplate[];
 }
 
-const WEEKDAYS = [1, 2, 3, 4, 5];
-
-const paused = (name: string, prompt: string, time: string, weekdays: number[]): BotRoutineTemplate =>
-  ({ name, prompt, schedule: { type: "daily", time, weekdays }, enabled: false, overlap: "skip" });
-
 export const READY_BOTS: ReadyBot[] = [
+  ...DESK_BOTS,
   {
     id: "assistant",
     category: "everyday",
@@ -344,6 +345,12 @@ export function readyBotTemplate(defaults: NewBotDefaults, bot: ReadyBot): NewBo
   for (const [path, text] of Object.entries(bot.notes ?? {})) {
     const own = template.memory[path]?.trimEnd();
     template.memory[path] = own ? `${own}\n${text}` : text;
+  }
+  for (const text of bot.skills ?? []) {
+    const parsed = parseSkillMd(text);
+    if ("error" in parsed) throw new Error(`${bot.name}: ${parsed.error}`);
+    if (template.skills.some((skill) => skill.name === parsed.name)) continue;
+    template.skills.push({ name: parsed.name, description: parsed.description, source: `corso:${parsed.name}`, text, enabled: true, warnings: [] });
   }
   template.routines = [...template.routines, ...(bot.routines ?? []).map((routine) => ({ ...routine, ...(bot.id === "social" ? { name: t("readyBots.routine.socialWeekly") } : {}), enabled: false }))];
   return template;

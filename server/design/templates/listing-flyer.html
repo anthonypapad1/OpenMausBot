@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --brand: #1f3d2b; --brand: {{brand_color}}; --accent: #c9a24b; --accent: {{accent_color}}; }
+  @page { size: Letter; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 8.5in; height: 11in; }
+  body { font-family: "Inter", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #1d2320; background: #fff; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 8.5in; height: 11in; display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 0.38in 0.5in 0.3in; }
+  .kicker { font-size: 13pt; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--brand); display: flex; align-items: center; gap: 10px; }
+  .kicker::before { content: ""; width: 34px; height: 3px; background: var(--accent); }
+  .top-brokerage { font-size: 10pt; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #5b6560; }
+  .logo { height: 0.5in; max-width: 1.9in; object-fit: contain; }
+  .hero { flex: 1 1 auto; min-height: 4.1in; margin: 0 0.5in; overflow: hidden; }
+  .hero img, .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumbs { display: flex; gap: 0.14in; margin: 0.14in 0.5in 0; height: 1.4in; }
+  .thumbs div { flex: 1; overflow: hidden; }
+  .body { display: flex; gap: 0.4in; padding: 0.28in 0.5in 0.3in; flex: 0 0 auto; max-height: 3.1in; overflow: hidden; }
+  .left { flex: 1.2; min-width: 0; }
+  .price { font-size: 30pt; font-weight: 700; letter-spacing: -.01em; color: var(--brand); line-height: 1; }
+  .address { margin-top: 6px; font-family: "Iowan Old Style", "Palatino", Georgia, serif; font-size: 19pt; line-height: 1.15; }
+  .city { font-size: 11pt; color: #5b6560; margin-top: 2px; }
+  .facts { margin-top: 10px; font-size: 11.5pt; font-weight: 600; }
+  .facts span + span::before { content: "·"; margin: 0 9px; color: var(--accent); }
+  .desc { margin-top: 10px; font-size: 10pt; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; color: #39413d; }
+  .right { flex: 1; min-width: 0; }
+  .right h3 { font-size: 9.5pt; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--brand); margin-bottom: 8px; }
+  .right ul { list-style: none; }
+  .right li { font-size: 11pt; line-height: 1.35; padding: 6px 0 6px 18px; position: relative; border-bottom: 1px solid #e6e9e7; }
+  .right li::before { content: ""; position: absolute; left: 0; top: 13px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+  .agent { display: flex; align-items: center; gap: 14px; padding: 0.22in 0.5in; background: var(--brand); color: #fff; }
+  .headshot { width: 0.78in; height: 0.78in; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+  .who { flex: 1; font-size: 10.5pt; line-height: 1.35; }
+  .name { font-size: 14pt; font-weight: 700; }
+  .brokerage { text-align: right; font-size: 9.5pt; line-height: 1.4; }
+  .brokerage strong { display: block; font-size: 11pt; letter-spacing: .1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div class="kicker">{{headline}}</div>
+    <div class="top-brokerage">{{brokerage}}</div>
+  </div>
+  <div class="hero"><img src="{{photo1}}" alt=""></div>
+  <div class="thumbs" data-if="photo2">
+    <div><img src="{{photo2}}" alt=""></div>
+    <div data-if="photo3"><img src="{{photo3}}" alt=""></div>
+  </div>
+  <div class="body">
+    <div class="left">
+      <div class="price">{{price}}</div>
+      <div class="address">{{address}}</div>
+      <div class="city" data-if="city_line">{{city_line}}</div>
+      <div class="facts">
+        <span data-if="beds">{{beds}} bed</span>
+        <span data-if="baths">{{baths}} bath</span>
+        <span data-if="sqft">{{sqft}} sq ft</span>
+      </div>
+      <p class="desc" data-if="description">{{description}}</p>
+    </div>
+    <div class="right" data-if="highlight1">
+      <h3>Highlights</h3>
+      <ul>
+        <li>{{highlight1}}</li>
+        <li data-if="highlight2">{{highlight2}}</li>
+        <li data-if="highlight3">{{highlight3}}</li>
+        <li data-if="highlight4">{{highlight4}}</li>
+        <li data-if="highlight5">{{highlight5}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="agent">
+    <img class="headshot" data-if="headshot" src="{{headshot}}" alt="">
+    <div class="who">
+      <div class="name">{{agent_name}}</div>
+      <div data-if="agent_phone">{{agent_phone}}</div>
+      <div data-if="agent_email">{{agent_email}}</div>
+    </div>
+    <img class="logo" data-if="logo" src="{{logo}}" alt="">
+    <div class="brokerage"><strong>{{brokerage}}</strong>Equal Housing Opportunity</div>
+  </div>
+</div>
+</body>
+</html>

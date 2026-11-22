@@ -8,7 +8,8 @@ export function toolsOffPart(bot: { toolsOff?: readonly string[] } | null | unde
   return { id: "tools-off", label: "Tools turned off", text };
 }
 
-/** The groups this workspace has, the ones its bots' Settings offer to turn off. */
-export function availableToolGroups(has: { meetings: boolean; data: boolean; images: boolean; email: boolean }): ToolGroup[] {
-  return TOOL_GROUPS.filter((group) => group === "pages" || has[group]);
+/** The groups this workspace has, the ones its bots' Settings offer to turn off. Pages, and Images, whose marketing
+ * designs (design_render) need no image provider, are always there. */
+export function availableToolGroups(has: { meetings: boolean; data: boolean; email: boolean }): ToolGroup[] {
+  return TOOL_GROUPS.filter((group) => group === "pages" || group === "images" || has[group]);
 }

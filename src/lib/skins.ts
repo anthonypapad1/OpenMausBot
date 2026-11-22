@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { SKIN_IDS } from "../../shared/app-settings";
 import { paintAuroraField } from "./aurora-field";
 import { hasPriorRun } from "./prior-run";
@@ -21,16 +22,24 @@ export const SKINS: readonly Skin[] = [
   { id: "linen", name: "Linen", tagline: "Clean daylight with a restrained navy accent." },
   { id: "dusk", name: "Dusk", tagline: "Muted plum after dark, calm and low-key." },
   { id: "daylight", name: "Daylight", tagline: "Midnight in reverse. Near-white, ink-black bubbles." },
-  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green. The Corso look." },
+  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green." },
   { id: "pop", name: "Pop", tagline: "Cream paper, thick ink outlines, hard shadows. Chunky and cheerful." },
   { id: "halloween", name: "Halloween", tagline: "Plum after dark, lit in pumpkin orange. Bats optional." },
   { id: "diwali", name: "Diwali", tagline: "Indigo night, lit in marigold and diya gold. Fireworks optional." },
   { id: "aurora", name: "Aurora", tagline: "Near-black, crossed by a band of green light. Glass on top." },
+  { id: "corso", name: "Corso", tagline: "Fresh snow, evergreen and aspen gold. The Corso look." },
+  { id: "corso-night", name: "Corso Night", tagline: "Corso after dark, on deep spruce." },
 ];
 
 /** "system" follows the OS between the light and dark skins below; anything else pins one skin. */
 export type SkinChoice = SkinId | "system";
-export const THEME_SKINS = { light: "daylight", dark: "midnight" } as const satisfies Record<"light" | "dark", SkinId>;
+export const THEME_SKINS = { light: "corso", dark: "corso-night" } as const satisfies Record<"light" | "dark", SkinId>;
+
+/** Skins that wear one accent everywhere. In them the person's coloured bubble and the composer's round Call, Send and
+ * Stop button take this colour instead of the bot's, so a blue bot doesn't paint a Corso window blue; the bot keeps its
+ * colour on its own mark. Each value is that skin's `--color-accent` in src/styles.css, where the `.bot-button` rule
+ * for the same skins makes the same swap: change them together. */
+export const ONE_ACCENT_SKINS: Partial<Record<SkinId, string>> = { corso: "#1e5b45", "corso-night": "#2a7257" };
 
 export const DEFAULT_SKIN_CHOICE: SkinChoice = "system";
 export const PRIOR_INSTALL_SKIN: SkinId = "midnight";
@@ -91,6 +100,16 @@ export function subscribeSkin(listener: () => void): () => void {
   return () => {
     listeners.delete(listener);
   };
+}
+
+function paintedSkin(): string | undefined {
+  return typeof document === "undefined" ? undefined : document.documentElement?.dataset.skin;
+}
+
+/** The accent a one-accent skin on the window wears in place of a bot's colour, or undefined in any other skin. */
+export function useOneAccent(): string | undefined {
+  const skin = useSyncExternalStore(subscribeSkin, paintedSkin, paintedSkin);
+  return isSkinId(skin) ? ONE_ACCENT_SKINS[skin] : undefined;
 }
 
 function paintSkin(id: SkinId): void {
