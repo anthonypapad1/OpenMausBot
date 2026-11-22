@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --brand: #1f3d2b; --brand: {{brand_color}}; --accent: #c9a24b; --accent: {{accent_color}}; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; }
+  body { font-family: "Inter", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #fff; background: var(--brand); overflow: hidden; }
+  .card { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; }
+  .photo { position: relative; flex: 1; overflow: hidden; }
+  .photo img.main { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 48%, rgba(0,0,0,.72) 100%); }
+  .tag { position: absolute; z-index: 2; top: 56px; left: 56px; display: inline-flex; align-items: center; gap: 14px; font-size: 26px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+  .tag::before { content: ""; width: 44px; height: 3px; background: var(--accent); }
+  .logo { position: absolute; z-index: 2; top: 44px; right: 56px; height: 64px; max-width: 260px; object-fit: contain; }
+  .info { position: absolute; z-index: 2; left: 56px; right: 56px; bottom: 48px; }
+  .price { font-size: 92px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+  .address { margin-top: 18px; font-family: "Iowan Old Style", "Palatino", Georgia, serif; font-size: 46px; line-height: 1.1; }
+  .city { margin-top: 6px; font-size: 26px; opacity: .85; }
+  .facts { margin-top: 22px; display: flex; gap: 0; font-size: 28px; font-weight: 600; }
+  .facts span + span::before { content: "·"; margin: 0 18px; color: var(--accent); }
+  .agent { display: flex; align-items: center; gap: 22px; padding: 26px 56px; background: var(--brand); }
+  .headshot { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); }
+  .who { flex: 1; min-width: 0; }
+  .name { font-size: 30px; font-weight: 700; }
+  .contact { margin-top: 4px; font-size: 22px; opacity: .85; }
+  .brokerage { font-size: 20px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-align: right; max-width: 380px; opacity: .9; }
+
+  html.format-story .tag { top: 120px; }
+  html.format-story .logo { top: 108px; }
+  html.format-story .info { bottom: 90px; }
+  html.format-story .price { font-size: 112px; }
+  html.format-story .address { font-size: 56px; }
+  html.format-story .agent { padding: 40px 56px 120px; }
+  html.format-portrait .info { bottom: 56px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="photo">
+    <img class="main" src="{{photo1}}" alt="">
+    <div class="tag">{{headline}}</div>
+    <img class="logo" data-if="logo" src="{{logo}}" alt="">
+    <div class="info">
+      <div class="price">{{price}}</div>
+      <div class="address">{{address}}</div>
+      <div class="city" data-if="city_line">{{city_line}}</div>
+      <div class="facts">
+        <span data-if="beds">{{beds}} bed</span>
+        <span data-if="baths">{{baths}} bath</span>
+        <span data-if="sqft">{{sqft}} sq ft</span>
+      </div>
+    </div>
+  </div>
+  <div class="agent">
+    <img class="headshot" data-if="headshot" src="{{headshot}}" alt="">
+    <div class="who">
+      <div class="name">{{agent_name}}</div>
+      <div class="contact" data-if="agent_phone">{{agent_phone}}</div>
+    </div>
+    <div class="brokerage">{{brokerage}}</div>
+  </div>
+</div>
+</body>
+</html>

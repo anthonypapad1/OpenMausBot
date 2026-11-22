@@ -17,6 +17,7 @@ export const READ_ONLY_AGENT_TOOL_NAMES: ReadonlySet<string> = new Set([
   "usage_limits",
   "deals_list",
   "deal_get",
+  "design_templates_list",
 ]);
 
 export const READ_ONLY_ANNOTATIONS = Object.freeze({
