@@ -26,6 +26,8 @@ export interface SetupFs {
   realpath(path: string): string | null;
   /** A regular file of at most `max` bytes; `follow: false` refuses a symlink, `oneLink` a file with other hard links. */
   read(path: string, max: number, follow?: boolean, oneLink?: boolean): Buffer | null;
+  /** When the path last changed, never following a link and never opening it (history and session folders included). */
+  mtime(path: string): number | null;
 }
 
 export interface SetupMachine {
@@ -57,6 +59,9 @@ const nodeFs: SetupFs = {
   },
   realpath: (path) => {
     try { return realpathSync(path); } catch { return null; }
+  },
+  mtime: (path) => {
+    try { return lstatSync(path).mtimeMs; } catch { return null; }
   },
   read: (path, max, follow = true, oneLink = false) => {
     let fd: number | null = null;
@@ -177,7 +182,7 @@ const samePath = (a: string, b: string) => relative(a, b) === "";
 
 /** Where `path` really is, each link followed one at a time while it stays in the home folder and out of the folders
  * macOS guards; null when a link leads anywhere else, or nothing is there. Nothing outside is ever looked at. */
-function locate(machine: SetupMachine, places: Pick<Places, "homes" | "darwin">, path: string): { path: string; info: Stats } | null {
+export function locate(machine: SetupMachine, places: Pick<Places, "homes" | "darwin">, path: string): { path: string; info: Stats } | null {
   let current = resolve(path);
   for (let hops = 0; hops <= MAX_LINK_HOPS; hops++) {
     const home = places.homes.find((candidate) => within(candidate, current));
@@ -294,7 +299,7 @@ function textFile(name: string): boolean {
 }
 
 const decoder = new TextDecoder("utf-8", { fatal: true });
-function utf8(bytes: Buffer): string | null {
+export function utf8(bytes: Buffer): string | null {
   try {
     const text = decoder.decode(bytes);
     return text.includes("\u0000") ? null : text;
@@ -391,13 +396,16 @@ export function claudeCodeSkillInputs(machine: SetupMachine = thisMachine()): Im
 
 /** One copy for every bot, made once however many bots there are or will be. One the scan flags comes in switched off:
  * a person switches it on for a bot after reading it, as with any other import. */
-function importSkills(machine: SetupMachine): NonNullable<SetupImportResult["skills"]> {
+const fromSources = <Item extends { source: SetupSource }>(items: Item[], sources?: readonly SetupSource[]) =>
+  (sources ? items.filter((item) => sources.includes(item.source)) : items);
+
+function importSkills(machine: SetupMachine, sources?: readonly SetupSource[]): NonNullable<SetupImportResult["skills"]> {
   const index = readImportedSkills();
   const budget = { bytes: 0 };
   const result: NonNullable<SetupImportResult["skills"]> = { added: [], present: [], skipped: [], filesLeftOut: 0, review: [] };
   const skip = (name: string, reason: SkillSkip) => result.skipped.push({ name, reason });
   const inputs: ImportedSkillInput[] = [];
-  for (const skill of findSkills(machine)) {
+  for (const skill of fromSources(findSkills(machine), sources)) {
     const held = index[skill.name];
     if (alreadyHere(skill, held)) {
       result.present.push(skill.name);
@@ -622,7 +630,7 @@ function foundTool(source: SetupSource, rawName: string, raw: Record<string, unk
 
 /** Every server the tools list, normalised and switched off by Paste config's parser, sorted into new, already here,
  * named like a different one here, and refused by the organization; a server two tools list is kept once. */
-function findTools(machine: SetupMachine, current: Record<string, unknown>, host: Pick<SetupHost, "mcpPolicyRefusal" | "claudeUserMcp">) {
+function findTools(machine: SetupMachine, current: Record<string, unknown>, host: Pick<SetupHost, "mcpPolicyRefusal" | "claudeUserMcp">, sources?: readonly SetupSource[]) {
   const existing = Object.entries(current).flatMap(([name, raw]) => {
     const parsed = parseStoredMcpServer(name, raw);
     return parsed.ok ? [identity(parsed.server)] : [];
@@ -637,7 +645,7 @@ function findTools(machine: SetupMachine, current: Record<string, unknown>, host
   const refused: FoundTool[] = [];
   const inPlace = host.claudeUserMcp?.() === true;
   for (const tool of setupPaths(machine).tools) {
-    if (inPlace && tool.source === "claudeCode") continue;
+    if ((inPlace && tool.source === "claudeCode") || (sources && !sources.includes(tool.source))) continue;
     const entries = toolEntries(machine, tool);
     for (const [rawName, raw] of Object.entries(entries ?? {})) {
       if (!isRecord(raw)) continue;
@@ -654,16 +662,16 @@ function findTools(machine: SetupMachine, current: Record<string, unknown>, host
   return { fresh, present, conflicts, refused };
 }
 
-function importTools(machine: SetupMachine, host: SetupHost): NonNullable<SetupImportResult["tools"]> {
+function importTools(machine: SetupMachine, host: SetupHost, sources?: readonly SetupSource[]): NonNullable<SetupImportResult["tools"]> {
   const skipped = (tools: FoundTool[], reason: ToolSkip) => tools.map((tool) => ({ name: tool.name, reason }));
   // Single-flight with the MCP servers routes: a read of the list must not interleave with another save.
   if (host.mcpConfigBusy.get()) {
-    return { added: [], present: [], skipped: skipped(findTools(machine, host.mcpServers(), host).fresh, "busy") };
+    return { added: [], present: [], skipped: skipped(findTools(machine, host.mcpServers(), host, sources).fresh, "busy") };
   }
   host.mcpConfigBusy.set(true);
   try {
     const current = host.mcpServers();
-    const { fresh, present, conflicts, refused } = findTools(machine, current, host);
+    const { fresh, present, conflicts, refused } = findTools(machine, current, host, sources);
     const room = mcpSharedServerRoom(current);
     const adding = fresh.slice(0, room);
     let saved = true;
@@ -709,14 +717,14 @@ export function applySetupImport(machine: SetupMachine, host: SetupHost, request
   };
   const skills = (): NonNullable<SetupImportResult["skills"]> => {
     try {
-      return importSkills(machine);
+      return importSkills(machine, request.sources);
     } catch {
       return { added: [], present: [], skipped: failed(() => findSkills(machine).map((skill) => skill.name), "failed"), filesLeftOut: 0, review: [] };
     }
   };
   const tools = (): NonNullable<SetupImportResult["tools"]> => {
     try {
-      return importTools(machine, host);
+      return importTools(machine, host, request.sources);
     } catch {
       return { added: [], present: [], skipped: failed(() => findTools(machine, host.mcpServers(), host).fresh.map((tool) => tool.name), "failed") };
     }

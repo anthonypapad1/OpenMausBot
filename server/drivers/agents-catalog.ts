@@ -17,6 +17,7 @@ import { IMAGE_TOOL_DEFINITIONS, IMAGE_TOOL_NAMES } from "./agents-image-tools.t
 import { HOSTING_TOOL_DEFINITIONS, HOSTING_TOOL_NAMES } from "./agents-hosting-tools.ts";
 import { MEETING_TOOL_DEFINITIONS, MEETING_TOOL_NAMES } from "./agents-meeting-tools.ts";
 import { MAUSBOT_TOOL_DEFINITIONS } from "./agents-mausbot-tools.ts";
+import { DEAL_TOOL_DEFINITIONS } from "./agents-deal-tools.ts";
 import { DESIGN_TOOL_DEFINITIONS } from "./agents-design-tools.ts";
 import { PERSON_TOOL_DEFINITIONS } from "./agents-person-tools.ts";
 import { RESEARCH_TOOL_DEFINITIONS, RESEARCH_TOOL_NAMES, X_TOOL_NAMES } from "./agents-research-tools.ts";
@@ -796,6 +797,7 @@ const TOOL_DEFINITIONS = [
     },
   },
   APP_SETTINGS_TOOL_DEFINITION,
+  ...DEAL_TOOL_DEFINITIONS,
   ...DESIGN_TOOL_DEFINITIONS,
 ].map((tool) => {
   const annotations = agentToolAnnotations(tool.name);

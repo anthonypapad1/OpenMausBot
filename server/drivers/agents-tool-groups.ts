@@ -1,6 +1,7 @@
 // Every built-in tool a bot can be shown, by the switch that leaves it out. agents-tool-groups.test.ts holds every
 // catalog tool to exactly one entry here, so a new tool is placed on purpose.
 import { isToolGroup, type ToolGroup } from "../../shared/tool-groups.ts";
+import { DEAL_TOOL_NAMES } from "./agents-deal-tools.ts";
 import { DESIGN_TOOL_NAMES } from "./agents-design-tools.ts";
 import { HOSTING_TOOL_NAMES } from "./agents-hosting-tools.ts";
 import { IMAGE_TOOL_NAMES } from "./agents-image-tools.ts";
@@ -26,7 +27,8 @@ export const OWN_SWITCH_TOOLS: Readonly<Record<"memory" | "research", ReadonlySe
   research: RESEARCH_TOOL_NAMES,
 };
 
-/** What every bot keeps: talking to the person and its team, its own setup, routines and waits, and its computer. */
+/** What every bot keeps: talking to the person and its team, its own setup, routines and waits, its computer, and the
+ * shared deal list. */
 export const CORE_TOOLS: ReadonlySet<string> = new Set([
   "tool_result_read", "list_shared_computers", "shared_computer", "ask_for_computer", "list_room_targets", "coordinate_bots",
   "assignment_status", "list_bots", "usage_limits", "list_rooms", "select_computer", "reset_cloud_computer", "list_threads",
@@ -35,7 +37,7 @@ export const CORE_TOOLS: ReadonlySet<string> = new Set([
   "propose_bot_deletion", "manage_room", "request_credential", "request_sign_in", "fill_login", "send_voice_note", "decide",
   "extract", "message_person", "report_bug", "retry_thread", "session_search", "trigger_info", "trigger", "delete_trigger",
   "wait_until", "list_waits", "cancel_wait", "check_back", "propose_profile", "propose_model", "propose_team_memory", "skills_list",
-  "skill_manage", "mcp_server", "app_settings", "list_unread_notifications", "mark_notifications_read",
+  "skill_manage", "mcp_server", "app_settings", "list_unread_notifications", "mark_notifications_read", ...DEAL_TOOL_NAMES,
 ]);
 
 /** The agents tools the groups in `off` leave out. */

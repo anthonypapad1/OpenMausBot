@@ -1,10 +1,12 @@
-// The phc_ token is a write-only public key, safe to ship in the client.
+// The phc_ token is a write-only public key, safe to ship in the client. Corso has no analytics project of its own
+// yet (the key this fork came with sent to OpenMausBot's), so a build without VITE_CORSO_POSTHOG_KEY sends nothing.
+// electron/launch-analytics.mjs holds the main process's copy of the same key and must change with this.
 // posthog-js loads on demand: a static import would put ~240 kB into the startup bundle.
 import type { CaptureResult, PostHog } from "posthog-js";
 import { appVersion } from "@/lib/app-links";
 import { readAdvancedMode } from "@/lib/interface-mode";
 
-const TOKEN = "phc_m2hP39w8y2gLPvHgDvSXAu6xcZ3agjf4ruL56rGcMZEe";
+const token = (): string => (import.meta.env.VITE_CORSO_POSTHOG_KEY as string | undefined)?.trim() ?? "";
 
 // Read before init(): an opted-out install must never call posthog.init(), so no request leaves the machine.
 const OPT_OUT_KEY = "omb-analytics-opt-out";
@@ -71,7 +73,7 @@ function keepStoredOptOut() {
 
 export function initAnalytics(): Promise<void> {
   keepStoredOptOut();
-  if (client || !analyticsEnabled()) return Promise.resolve();
+  if (client || !token() || !analyticsEnabled()) return Promise.resolve();
   loading ??= import("posthog-js")
     .then(({ default: posthog }) => start(posthog))
     .catch(() => {
@@ -88,7 +90,7 @@ function start(posthog: PostHog) {
     pending = [];
     return;
   }
-  posthog.init(TOKEN, {
+  posthog.init(token(), {
     api_host: "https://us.i.posthog.com",
     autocapture: false, // never capture clicked-element text (conversation leak)
     capture_pageview: false,

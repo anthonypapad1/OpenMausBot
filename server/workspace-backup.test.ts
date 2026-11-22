@@ -7,6 +7,7 @@ import { createServer as createNetServer } from "node:net";
 import { gzipSync } from "node:zlib";
 import { Header } from "tar";
 import { browserProfilesRoot } from "./browser-engine.ts";
+import { openDealStore } from "./deals/store.ts";
 import { openRuntimeStore } from "./runtime/store.ts";
 import type { Assignment } from "./runtime/types.ts";
 import { SessionRegistry } from "./sessions.ts";
@@ -138,6 +139,25 @@ describe("encrypted full workspace backups", () => {
     expect(readFileSync(join(target, "notes.md"), "utf8")).toBe("kept");
     expect(existsSync(join(target, "waits.json"))).toBe(false);
     expect(readFileSync(join(result.safetyCopyPath!, "data", "waits.json"), "utf8")).toBe(here);
+  });
+
+  it("carries the deal list whole while it is open, including writes still in its WAL, and none of its live sidecars", async () => {
+    const source = directory();
+    const deals = openDealStore(source);
+    try {
+      const deal = deals.saveDeal({ address: "1847 Larkspur Ln, Boulder, CO" });
+      deals.saveDeadline({ deal_id: deal.id, label: "Closing", due_date: "2026-12-18" });
+      expect(existsSync(join(source, "deals.db-wal"))).toBe(true);
+      const exported = await createWorkspaceBackup(source, { password: PASSWORD });
+      const target = directory();
+      const staged = await stageWorkspaceBackup(target, exported.path, { password: PASSWORD });
+      const manifest = readJson(join(target, ".backups", staged.id, "staged", "manifest.json"));
+      expect(manifest.entries.map((entry: { path: string }) => entry.path).filter((path: string) => path.startsWith("deals."))).toEqual(["deals.db"]);
+      const restored = openDealStore(join(target, ".backups", staged.id, "staged", "data"));
+      try {
+        expect(restored.get(deal.id)?.deadlines.map((row) => row.label)).toEqual(["Closing"]);
+      } finally { restored.close(); }
+    } finally { deals.close(); }
   });
 
   it("leaves Sync with My Cloud's own records out of a backup", async () => {

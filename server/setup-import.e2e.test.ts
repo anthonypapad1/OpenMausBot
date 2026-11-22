@@ -84,10 +84,13 @@ describe("bringing in another AI tool's setup through the desktop app's own serv
 
     const found = await api("GET", "/api/setup-import");
     expect(found.status).toBe(200);
-    expect(JSON.parse(found.text)).toEqual({
+    const look = JSON.parse(found.text) as Record<string, unknown>;
+    expect(look).toMatchObject({
       skills: [{ name: "release-notes", source: "claudeCode" }, { name: "review-pr", source: "codex" }],
       tools: [{ name: "github", source: "claudeCode" }],
     });
+    // when each tool was last used comes along, from its folders' change times; nothing here is memory to bring
+    expect(Object.keys(look).sort()).toEqual(["activity", "skills", "tools"]);
 
     const brought = await api("POST", "/api/setup-import", { skills: true, tools: true });
     expect(brought.status).toBe(200);
@@ -125,7 +128,7 @@ describe("bringing in another AI tool's setup through the desktop app's own serv
       expect.objectContaining({ name: "github", command: "npx", envKeys: ["GITHUB_TOKEN"], enabled: false }),
     ]);
 
-    expect(JSON.parse((await api("GET", "/api/setup-import")).text)).toEqual({ skills: [], tools: [] });
+    expect(JSON.parse((await api("GET", "/api/setup-import")).text)).toMatchObject({ skills: [], tools: [] });
     for (const said of [found.text, brought.text, mcp.text]) {
       expect(said).not.toContain(SENTINEL);
       expect(said).not.toContain("ghp_e2e_secret");

@@ -18,6 +18,8 @@ describe("built-in agent tool read policy", () => {
       "skills_list",
       "list_unread_notifications",
       "usage_limits",
+      "deals_list",
+      "deal_get",
       "design_templates_list",
     ]);
     for (const name of READ_ONLY_AGENT_TOOL_NAMES) {

@@ -1,8 +1,10 @@
 // The agents tools' internal calls that need only the capability's bot and conversation, its body and its folders: research,
-// the helper models' decide and extract, Corso's notifications, the usage limits, publishing an app and rendering marketing designs. Runs inside index.ts's /api/internal/ block, after the
+// the helper models' decide and extract, Corso's notifications, the usage limits, publishing an app, the deal list and rendering marketing designs. Runs inside index.ts's /api/internal/ block, after the
 // capability bearer is checked; each route answers its own paths and passes the rest on.
 import type { AppPublisher } from "../host/app-publisher.ts";
+import type { DealStore } from "../deals/store.ts";
 import { createAppHostingInternalRoutes } from "./app-hosting.ts";
+import { createDealToolRoutes } from "./deals.ts";
 import { createDesignToolRoutes, type DesignToolDeps } from "./design-tools.ts";
 import { createEngineLimitsRoutes, type EngineLimitsDeps } from "./engine-limits.ts";
 import { createHelperToolRoutes, type HelperToolContext, type HelperToolDeps } from "./helper-tools.ts";
@@ -10,8 +12,8 @@ import { createMausBotNotificationRoutes, type LiveNotificationsDeps } from "./m
 import { PASS } from "./table.ts";
 import { createXResearchInternalRoutes, type XResearchDeps } from "./x-research.ts";
 
-export function createInternalToolRoutes(deps: { helpers: HelperToolDeps; xResearch: XResearchDeps; notifications: LiveNotificationsDeps; engineLimits: EngineLimitsDeps; appPublisher: AppPublisher; design: DesignToolDeps }) {
-  const routes = [createXResearchInternalRoutes(deps.xResearch), createHelperToolRoutes(deps.helpers), createMausBotNotificationRoutes(deps.notifications), createEngineLimitsRoutes(deps.engineLimits), createAppHostingInternalRoutes(deps.appPublisher), createDesignToolRoutes(deps.design)];
+export function createInternalToolRoutes(deps: { helpers: HelperToolDeps; xResearch: XResearchDeps; notifications: LiveNotificationsDeps; engineLimits: EngineLimitsDeps; appPublisher: AppPublisher; deals: { store: DealStore; botName(botId: string): string; timeZone(): string }; design: DesignToolDeps }) {
+  const routes = [createXResearchInternalRoutes(deps.xResearch), createHelperToolRoutes(deps.helpers), createMausBotNotificationRoutes(deps.notifications), createEngineLimitsRoutes(deps.engineLimits), createAppHostingInternalRoutes(deps.appPublisher), createDealToolRoutes(deps.deals), createDesignToolRoutes(deps.design)];
   return async (ctx: HelperToolContext & { threadId: string }): Promise<typeof PASS | void> => {
     for (const route of routes) if (await route(ctx) !== PASS) return;
     return PASS;

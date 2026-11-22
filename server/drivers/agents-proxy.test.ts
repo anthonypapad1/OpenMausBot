@@ -691,6 +691,13 @@ describe("agents-proxy MCP surface", () => {
       "skill_manage",
       "mcp_server",
       "app_settings",
+      "deals_list",
+      "deal_get",
+      "deal_save",
+      "deal_deadline_save",
+      "deal_document_save",
+      "deal_party_save",
+      "deal_activity_add",
       "design_templates_list",
       "design_render",
     ]);
@@ -778,6 +785,7 @@ describe("agents-proxy MCP surface", () => {
       "assignment_status", "list_bots", "usage_limits", "list_rooms", "list_threads",
       "list_models", "list_team_setup",
       "session_search", "trigger_info", "list_waits", "skills_list",
+      "deals_list", "deal_get",
       "design_templates_list",
     ];
     expect(list.result.tools.filter((tool: any) => tool.annotations?.readOnlyHint)

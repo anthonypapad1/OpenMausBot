@@ -15,6 +15,10 @@ describe("what a confined turn reaches of Corso's own routes", () => {
     expect(outsideRouteRefused("DELETE", "/api/internal/memory")).toBe(true);
   });
 
+  it("refuses the deal list, reads included: it holds the person's clients and deals", () => {
+    for (const tool of ["deals_list", "deal_get", "deal_save", "deal_activity_add"]) expect(outsideRouteRefused("POST", `/api/internal/deals/${tool}`), tool).toBe(true);
+  });
+
   it("keeps what finishes the work here, asks a person or carries the lineage", () => {
     expect(outsideRouteRefused("POST", "/api/internal/hook")).toBe(false);
     expect(outsideRouteRefused("GET", "/api/internal/tool-result")).toBe(false);
