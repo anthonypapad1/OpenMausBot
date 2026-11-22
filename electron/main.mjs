@@ -1929,6 +1929,9 @@ function showContextMenu(win, params) {
 const mediaDownloads = createMediaDownloads({ dialog, shell, t: (...args) => nativeT(...args), log: slog,
   openDir: () => path.join(app.getPath("temp"), "openmausbot-open-media"), downloadsDir: () => app.getPath("downloads") });
 
+/** How much larger than 100% the main window opens. */
+const CORSO_ZOOM = 1.15;
+
 function createWindow({ deferNavigation = false } = {}) {
   const waitsForSkinSync = process.platform === "win32";
   const primary = screen.getPrimaryDisplay();
@@ -1945,6 +1948,9 @@ function createWindow({ deferNavigation = false } = {}) {
     ...windowChromeOptions(process.platform, windowFrameMade = desktopPrefs?.windowFrame() !== false),
     webPreferences: {
       contextIsolation: true,
+      // Corso reads a step larger than the app it forks: its people are agents and coordinators reading between
+      // showings, not developers. View > Actual Size still goes back to 100%; the rail undoes it in preload.cjs.
+      zoomFactor: CORSO_ZOOM,
       preload: path.join(__dirname, "preload.cjs"),
       additionalArguments: [...desktopCompanionRendererArguments(rendererOrigin(), desktopRemoteAccess),
         ...(app.isPackaged && !desktopRemoteAccess ? ["--omb-company-desktop=1"] : []), `--omb-app-version=${app.getVersion()}`, ...(linuxSoftwareRendering ? [SOFTWARE_RENDERING_ARG] : [])],

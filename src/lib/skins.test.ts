@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { SKINS, SKIN_IDS, DEFAULT_SKIN_CHOICE, PRIOR_INSTALL_SKIN, THEME_SKINS, resolveSkin } from "./skins";
+import { SKINS, SKIN_IDS, DEFAULT_SKIN_CHOICE, ONE_ACCENT_SKINS, PRIOR_INSTALL_SKIN, THEME_SKINS, resolveSkin } from "./skins";
 import en from "@/locales/en.json";
 
 const css = readFileSync(
@@ -15,6 +15,14 @@ const blocks = new Set(
 );
 
 describe("skins", () => {
+  it("keeps each one-accent skin's accent equal to its stylesheet accent and gives it the bot-button swap", () => {
+    const scope = /@scope \(([^)]*)\) to \(\[data-skin\]\) \{\n  \.bot-button:enabled \{/.exec(css)?.[1] ?? "";
+    for (const [id, accent] of Object.entries(ONE_ACCENT_SKINS)) {
+      const block = new RegExp(`\\[data-skin="${id}"\\] \\{([^}]*)\\}`).exec(css)?.[1] ?? "";
+      expect(/--color-accent:\s*(#[0-9a-f]{6})/i.exec(block)?.[1]?.toLowerCase()).toBe(accent);
+      expect(scope).toContain(`[data-skin="${id}"]`);
+    }
+  });
   it("gives every registered skin a stylesheet block", () => {
     for (const id of SKIN_IDS) expect(blocks).toContain(id);
   });
@@ -54,7 +62,7 @@ describe("skins", () => {
   it("selects a code-only light or dark palette in every nearest skin", () => {
     for (const id of SKIN_IDS) {
       const body = css.match(new RegExp(`\\[data-skin="${id}"\\]\\s*\\{([^}]*)\\}`))?.[1] ?? "";
-      const scheme = ["atelier", "lagoon", "linen", "daylight", "meadow", "pop"].includes(id) ? "light" : "dark";
+      const scheme = ["atelier", "lagoon", "linen", "daylight", "meadow", "pop", "corso"].includes(id) ? "light" : "dark";
       expect(body).toContain(`--code-color-scheme: ${scheme};`);
     }
     expect(css).toMatch(/\.chat-md \.shiki\s*\{\s*color-scheme:\s*var\(--code-color-scheme\);\s*\}/);
@@ -68,11 +76,11 @@ describe("skins", () => {
     expect(PRIOR_INSTALL_SKIN).toBe("midnight");
   });
 
-  it("follows the computer between Daylight and Midnight by default", () => {
+  it("follows the computer between Corso and Corso Night by default", () => {
     expect(DEFAULT_SKIN_CHOICE).toBe("system");
-    expect(THEME_SKINS).toEqual({ light: "daylight", dark: "midnight" });
-    expect(resolveSkin("system", false)).toBe("daylight");
-    expect(resolveSkin("system", true)).toBe("midnight");
+    expect(THEME_SKINS).toEqual({ light: "corso", dark: "corso-night" });
+    expect(resolveSkin("system", false)).toBe("corso");
+    expect(resolveSkin("system", true)).toBe("corso-night");
     expect(resolveSkin("meadow", true)).toBe("meadow");
   });
 
@@ -100,8 +108,9 @@ describe("skins", () => {
     },
   );
 
-  it("adds Aurora last, dark, with its light field kept off the picker miniature", () => {
-    expect(SKIN_IDS.at(-1)).toBe("aurora");
+  it("adds Aurora after the festival skins, dark, with its light field kept off the picker miniature", () => {
+    expect(SKIN_IDS[12]).toBe("aurora");
+    expect(SKIN_IDS.slice(13)).toEqual(["corso", "corso-night"]);
     expect(SKINS.find((s) => s.id === "aurora")?.name).toBe("Aurora");
     expect(css).toMatch(/\[data-skin="aurora"\] \{[^}]*--code-color-scheme: dark;/);
     expect(css).toMatch(/@scope \(\[data-skin="aurora"\]:not\(\[data-skin-preview\]\)\) to \(\[data-skin\]\)\s*\{\s*main\.bg-app\s*\{/);

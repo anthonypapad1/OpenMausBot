@@ -59,8 +59,8 @@ export function StepFrame({ art, title, sub, children, footer, wide = false }: {
   return (
     <div data-step-cascade="" className={cn("mx-auto my-auto flex w-full flex-col items-center px-6 pt-20 text-center", footer ? "pb-6" : "pb-12", wide ? "max-w-[640px]" : "max-w-[520px]")}>
       {art && <div aria-hidden="true" {...piece(0, "mb-6 flex h-16 items-end justify-center")}>{art}</div>}
-      <h1 id="welcome-title" tabIndex={-1} {...piece(1, "text-balance text-[28px] font-normal leading-[34px] tracking-[-0.02em] text-ink outline-none")}>{title}</h1>
-      {sub && <p {...piece(2, "mt-2 max-w-[420px] text-pretty text-[15px] leading-[22px] text-ink-secondary")}>{sub}</p>}
+      <h1 id="welcome-title" tabIndex={-1} {...piece(1, "text-balance text-[32px] font-extrabold leading-[38px] tracking-[-0.025em] text-ink outline-none")}>{title}</h1>
+      {sub && <p {...piece(2, "mt-3 max-w-[440px] text-pretty text-[16px] leading-[24px] text-ink-secondary")}>{sub}</p>}
       {children && <div {...piece(3, "mt-8 flex w-full flex-col items-center")}>{children}</div>}
       {/* a step taller than the window keeps its way on in view, over the content scrolling under it */}
       {footer && <div data-step-footer="" {...piece(4, "sticky bottom-0 z-[1] mt-4 flex w-full flex-col items-center gap-2 bg-app pb-6 pt-4")}>{footer}</div>}
