@@ -1,23 +1,30 @@
-// Dev-only gallery of the first run's two screens, served at /onboarding-preview.html; not in the packaged app.
+// Dev-only gallery of the first run's screens, served at /onboarding-preview.html; not in the packaged app.
 // It answers the app's own requests from a fixture, so it needs no server and never touches one.
 import { Component, StrictMode, useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { DesktopCapabilitiesProvider } from "@/components/DesktopCapabilities";
 import { WelcomeFlow } from "@/components/onboarding/WelcomeFlow";
 import { Select } from "@/components/Select";
-import { EMPTY_ONBOARDING, type BeatId } from "@/lib/onboarding";
+import { BEAT_ORDER, EMPTY_ONBOARDING, type BeatId } from "@/lib/onboarding";
 import { SKINS, type SkinId } from "@/lib/skins";
 import { StoreProvider } from "@/state/store";
 import "./styles.css";
 
-/** ?screen=chief&ai=0&bots=3&skin=daylight&reduced=1 opens any state directly; ?w=1338&h=870 sizes the stage. */
+const SCREENS: Record<BeatId, string> = {
+  welcome: "Welcome", ai: "Connect an AI", bring: "Bring what you already use", about: "About your business", voice: "Voice",
+  firstJob: "First job", permissions: "This Mac's permissions", chief: "Chief of Staff",
+};
+
+/** ?screen=welcome|ai|bring|about|voice|firstJob|permissions|chief&ai=0&found=0&bots=3&skin=daylight&reduced=1 opens any state directly;
+ * ?w=1338&h=870 sizes the stage. */
 function fromUrl() {
   const params = new URLSearchParams(location.search);
   const skin = params.get("skin") as SkinId | null;
   return {
-    screen: (params.get("screen") === "chief" ? "chief" : "meet") as BeatId,
+    screen: (BEAT_ORDER.find((beat) => beat === params.get("screen")) ?? "welcome") as BeatId,
     skin: skin && SKINS.some((s) => s.id === skin) ? skin : ("midnight" as SkinId),
     ai: params.get("ai") !== "0",
+    found: params.get("found") !== "0",
     bots: Math.max(0, Math.min(20, Number(params.get("bots")) || 0)),
     reduced: params.get("reduced") === "1",
     size: { width: Number(params.get("w")) || 1338, height: Number(params.get("h")) || 870 },
@@ -34,8 +41,19 @@ function bot(id: string, name: string, color: string, extra: Record<string, unkn
   };
 }
 
-function fixture(url: string, ai: boolean, bots: number): unknown {
+/** What the bring step finds: Claude Code used most days and knowing the person, a little from Codex and Cursor. */
+const DETECTION = {
+  skills: [{ name: "pdf", source: "codex" }, { name: "offer-review", source: "codex" }], tools: [{ name: "notion", source: "cursor" }],
+  memory: [{ source: "claudeCode", files: 6, notes: 24, topics: { preferences: true, aboutYou: true, workStyle: true, projects: 3 } }],
+  usage: { claudeCode: 22, codex: 3 }, activity: { claudeCode: Date.now(), codex: Date.now(), cursor: Date.now() - 40 * 86_400_000 },
+};
+
+function fixture(url: string, init: RequestInit | undefined, ai: boolean, bots: number, found: boolean): unknown {
   const path = new URL(url, location.href).pathname;
+  if (path === "/api/setup-import") {
+    if (init?.method === "POST") return { skills: { added: [], present: [], skipped: [], filesLeftOut: 0, review: [] }, tools: { added: [], present: [], skipped: [] }, memory: { added: 24, sources: ["claudeCode"], failed: false } };
+    return found ? DETECTION : { skills: [], tools: [] };
+  }
   if (path === "/api/bots") {
     return { bots: [
       bot("maus", "Corso", "chrome", { defaultBot: {}, chiefOfStaff: true }),
@@ -63,12 +81,12 @@ function fixture(url: string, ai: boolean, bots: number): unknown {
   return {};
 }
 
-function answerFromFixture(ai: boolean, bots: number) {
+function answerFromFixture(ai: boolean, bots: number, found: boolean) {
   const real = window.fetch.bind(window);
   window.fetch = async (input, init) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     if (!new URL(url, location.href).pathname.startsWith("/api/")) return real(input, init);
-    return new Response(JSON.stringify(fixture(url, ai, bots)), { status: 200, headers: { "content-type": "application/json" } });
+    return new Response(JSON.stringify(fixture(url, init, ai, bots, found)), { status: 200, headers: { "content-type": "application/json" } });
   };
 }
 
@@ -88,8 +106,7 @@ function Preview() {
         <h1 className="mr-2 text-[18px] font-semibold text-ink">First run</h1>
         <label className="flex items-center gap-1.5">Screen
           <Select size="sm" value={screen} onChange={(e) => { setScreen(e.target.value as BeatId); setRun((r) => r + 1); }}>
-            <option value="meet">Meet</option>
-            <option value="chief">Chief of Staff</option>
+            {BEAT_ORDER.map((beat) => <option key={beat} value={beat}>{SCREENS[beat]}</option>)}
           </Select>
         </label>
         <label className="flex items-center gap-1.5">Skin
@@ -98,7 +115,7 @@ function Preview() {
           </Select>
         </label>
         <button onClick={() => setRun((r) => r + 1)} className="rounded-lg bg-raised px-3 py-1.5 text-ink hover:bg-raised-hover">Replay</button>
-        <span className="ml-auto">?ai=0 for no AI, ?bots=3 for bots to choose from</span>
+        <span className="ml-auto">?ai=0 for no AI, ?found=0 for nothing to bring, ?bots=3 for bots to choose from</span>
       </header>
       <div className="relative overflow-hidden rounded-xl border border-hairline/40 bg-app" style={{ width, height }}>
         <WelcomeFlow key={`${screen}-${run}`} embedded initialBeat={screen} onDone={() => setRun((r) => r + 1)} />
@@ -117,8 +134,18 @@ class Crash extends Component<{ children: ReactNode }, { error: Error | null }> 
   }
 }
 
-const { ai, bots } = fromUrl();
-answerFromFixture(ai, bots);
+/** A Mac whose permissions start off and turn on when allowed, so the permissions step can be pressed through. */
+function fakeMac() {
+  const granted = { accessibility: "missing", screen: "missing" } as Record<"accessibility" | "screen", "granted" | "asked" | "missing">;
+  const status = async () => ({ supported: true as const, ...granted });
+  Object.assign(window, { ogb: { platform: "darwin", permOpenSettings: async () => {}, macPermissions: {
+    status, request: async (kind: "accessibility" | "screen") => { granted[kind] = kind === "screen" ? "asked" : "granted"; return status(); },
+  } } });
+}
+
+const { ai, bots, found } = fromUrl();
+answerFromFixture(ai, bots, found);
+fakeMac();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Crash>
