@@ -324,6 +324,16 @@ export const READY_BOTS: ReadyBot[] = [
   },
 ];
 
+/** The everyday helpers an agent or coordinator can use beside the Desks. The rest of READY_BOTS (a coder, a plant log, a
+ * travel planner…) came with OpenMausBot and stays addable by id, but the gallery doesn't offer it. */
+const EVERYDAY_HELPERS = new Set(["assistant", "inbox", "research", "writer", "meeting-notes", "call-coach"]);
+
+/** What the Templates gallery offers: the Desks first, then the everyday helpers. */
+export const GALLERY_BOTS: readonly ReadyBot[] = READY_BOTS.filter((bot) => bot.category === "realestate" || EVERYDAY_HELPERS.has(bot.id));
+
+/** The gallery's category chips: only those it has a bot for, in READY_BOT_CATEGORIES's order. */
+export const GALLERY_CATEGORIES: readonly ReadyBotCategory[] = READY_BOT_CATEGORIES.filter((category) => GALLERY_BOTS.some((bot) => bot.category === category));
+
 export const CLASSIC_ROLE_IDS = ["assistant", "inbox", "research", "coder", "community", "ops"] as const;
 
 export function readyBot(id: string): ReadyBot | undefined {

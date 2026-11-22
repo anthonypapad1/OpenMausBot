@@ -93,8 +93,15 @@ describe("design_render", () => {
 });
 
 describe("design_templates_list", () => {
+  it("never lists the test fixture to a bot, only the templates meant to post", () => {
+    const ids = templateListing(templates).map((one) => one.id);
+    expect(ids).not.toContain("sample-card");
+    expect(ids).toEqual(expect.arrayContaining(["just-listed", "open-house", "just-sold", "listing-flyer"]));
+  });
+
   it("says each template's formats, fields and photos", () => {
-    expect(templateListing(templates).find((one) => one.id === "sample-card")).toEqual({
+    const listed = templates.map((one) => ({ ...one, internal: false }));
+    expect(templateListing(listed).find((one) => one.id === "sample-card")).toEqual({
       id: "sample-card",
       name: "Sample card",
       purpose: expect.any(String),

@@ -1,11 +1,12 @@
 // The Today page's one copy of GET /api/deals/today, shared by the page and the sidebar's Today row, so the row's count is
 // always the page's. The server pushes no event when a deal changes, so it is read again every minute, when the window
 // comes back, each time the Today page is opened, and whenever a bot's turn ends, since a turn is how deals change.
-// Turn ends arrive through noteDealsTurnEvent, which src/lib/live-events.ts calls for every live runtime frame.
+// Turn ends arrive through noteDealsTurnEvent, subscribed below to every live runtime frame (src/lib/runtime-event-listeners.ts).
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import type { DealTodayView } from "../../shared/deals";
 import type { RuntimeEvent } from "../../shared/runtime-events";
 import { api } from "./api";
+import { onRuntimeEvent } from "@/lib/runtime-event-listeners";
 
 export const DEALS_TODAY_POLL_MS = 60_000;
 
@@ -57,6 +58,8 @@ export function noteDealsTurnEvent(event: Pick<RuntimeEvent, "type">): void {
   if (loaders === 0) return;
   if (event.type === "turn.completed" || event.type === "cap.exhausted" || event.type === "session.exited") void refreshDealsToday({ fresh: true });
 }
+
+onRuntimeEvent(noteDealsTurnEvent);
 
 /** Keeps the day current while the app is open: on mount, every DEALS_TODAY_POLL_MS, when the window gets focus, when
  * the Today page comes into view (`todayShown` turning true), and when a bot's turn ends. */

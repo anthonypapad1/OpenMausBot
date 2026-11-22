@@ -57,6 +57,8 @@ const entrySchema = z.object({
   logo: z.enum(["required", "optional"]).optional(),
   headshot: z.enum(["required", "optional"]).optional(),
   fields: z.array(fieldSchema).max(30),
+  /** A fixture for the template tests: never listed to a bot (routes/design-tools.ts templateListing). */
+  internal: z.boolean().optional(),
 }).strict();
 
 const manifestSchema = z.object({ templates: z.array(entrySchema).min(1) }).strict();

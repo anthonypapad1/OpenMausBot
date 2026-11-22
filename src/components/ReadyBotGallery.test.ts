@@ -11,7 +11,7 @@ vi.mock("./lazy-screens", () => ({
 vi.mock("@/state/store", () => ({ useStore: () => ({ dispatch: opened.dispatch, state: opened.state }) }));
 
 const { ReadyBotGallery } = await import("./ReadyBotGallery");
-const { READY_BOTS } = await import("@/lib/ready-bots");
+const { GALLERY_BOTS } = await import("@/lib/ready-bots");
 
 let root: Root;
 let host: HTMLElement;
@@ -38,22 +38,22 @@ beforeEach(() => {
 afterEach(() => { flushSync(() => root.unmount()); host.remove(); vi.unstubAllGlobals(); });
 
 describe("ready-made bots gallery", () => {
-  it("shows every ready-made bot with its own Add button", () => {
+  it("shows the Desks and the everyday helpers, each with its own Add button", () => {
     render();
-    expect(cards()).toEqual(READY_BOTS.map((bot) => bot.id));
+    expect(cards()).toEqual(GALLERY_BOTS.map((bot) => bot.id));
     const labels = [...host.querySelectorAll("button[aria-label^='Add ']")].map((add) => add.getAttribute("aria-label"));
-    expect(new Set(labels).size).toBe(READY_BOTS.length);
-    expect(host.textContent).toContain("Try: “Add my monstera: living room, bright indirect light”");
+    expect(new Set(labels).size).toBe(GALLERY_BOTS.length);
+    expect(host.textContent).toContain("Try: “Read this contract and set up the deal”");
     expect(host.textContent).toContain("Includes a paused routine");
   });
 
   it("narrows to a category and back to all", () => {
     render();
-    flushSync(() => button("Design").click());
-    expect(cards()).toEqual(["design-critic"]);
-    expect(button("Design").getAttribute("aria-pressed")).toBe("true");
+    flushSync(() => button("Sales").click());
+    expect(cards()).toEqual(["call-coach"]);
+    expect(button("Sales").getAttribute("aria-pressed")).toBe("true");
     flushSync(() => button("All").click());
-    expect(cards()).toHaveLength(READY_BOTS.length);
+    expect(cards()).toHaveLength(GALLERY_BOTS.length);
   });
 
   it("leads with Corso's five Desks, which Real estate narrows to", () => {
@@ -65,17 +65,25 @@ describe("ready-made bots gallery", () => {
     expect(button("Add Deal Desk, Contract to close")).toBeDefined();
   });
 
-  it("follows the Templates search and hides itself when nothing matches", () => {
+  it("offers none of the developer or hobby bots OpenMausBot came with, nor their empty categories", () => {
+    render();
+    for (const gone of ["coder", "community", "plant-care", "travel", "study", "design-critic", "humanizer"]) expect(cards()).not.toContain(gone);
+    for (const chip of ["Design", "Personal"]) expect([...host.querySelectorAll("button")].some((one) => one.textContent === chip)).toBe(false);
     render("plant");
-    expect(cards()).toEqual(["plant-care"]);
+    expect(host.querySelector("section")).toBeNull();
+  });
+
+  it("follows the Templates search and hides itself when nothing matches", () => {
+    render("coach");
+    expect(cards()).toEqual(["call-coach"]);
     render("no bot is called this");
     expect(host.querySelector("section")).toBeNull();
   });
 
   it("opens New bot filled in with the chosen bot, and tells Templates to step aside", () => {
     render();
-    flushSync(() => button("Add Fern, Plant care log").click());
-    expect(opened.props?.readyBotId).toBe("plant-care");
+    flushSync(() => button("Add Coach, Sales call coach").click());
+    expect(opened.props?.readyBotId).toBe("call-coach");
     expect(onDialog).toHaveBeenLastCalledWith(true);
     opened.props!.onCreated!({ id: "new-bot" });
     expect(onAdded).toHaveBeenCalledWith({ id: "new-bot" });
@@ -85,14 +93,14 @@ describe("ready-made bots gallery", () => {
   it("on a paired device, which cannot read the host's defaults, makes the bot at once", () => {
     vi.stubGlobal("ogb", { remoteClient: { active: true } });
     render();
-    flushSync(() => button("Add Fern, Plant care log").click());
+    flushSync(() => button("Add Coach, Sales call coach").click());
     expect(opened.props).toBeNull();
     expect(opened.dispatch).toHaveBeenCalledWith({ type: "newBot", onCreated: onAdded });
   });
 
   it("gives Templates its keys back when New bot is closed without creating", () => {
     render();
-    flushSync(() => button("Add Echo, Humanizer").click());
+    flushSync(() => button("Add Quill, Writer").click());
     flushSync(() => opened.props!.onClose!());
     expect(onDialog).toHaveBeenLastCalledWith(false);
     expect(onAdded).not.toHaveBeenCalled();
@@ -102,7 +110,7 @@ describe("ready-made bots gallery", () => {
     const { botLimitShown, closeBotLimit } = await import("@/lib/bot-limit");
     opened.state = { config: { botLimit: 5 }, bots: Array.from({ length: 5 }, () => ({})) };
     render();
-    flushSync(() => button("Add Fern, Plant care log").click());
+    flushSync(() => button("Add Coach, Sales call coach").click());
     expect(opened.props).toBeNull();
     expect(onDialog).not.toHaveBeenCalled();
     expect(botLimitShown()).toBe(true);

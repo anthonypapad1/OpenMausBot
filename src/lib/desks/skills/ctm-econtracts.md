@@ -10,7 +10,8 @@ CTM eContracts has no API. You use it the way a person does: in your own browser
 ## Signing in
 
 - Open CTM in your browser (the person's usual CTM address, or ctmecontracts.com).
-- If you are not signed in, call `request_sign_in` with "CTM eContracts" and a short reason, then end your turn. The person signs in once in your browser; the session stays for later runs.
+- If you are not signed in and the person saved their CTM login in Settings → Vault, call `fill_login` on the login page. Corso types it in; you never see it.
+- With no saved login, call `request_sign_in` with "CTM eContracts" and a short reason, then end your turn. The person signs in once in your browser. Tell them that saving the login in Settings → Vault lets you sign in again by yourself when the session runs out.
 - Never ask for the CTM password or a one-time code in chat. Never type a password you were not given through a saved login.
 - If CTM shows a CAPTCHA, a passkey prompt or a terms screen, stop and ask the person to do that step.
 

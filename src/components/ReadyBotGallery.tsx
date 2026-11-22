@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { stoppedAtBotLimit } from "@/lib/bot-limit";
 import { BotInitialsAvatar } from "./Avatar";
 import { NewBotDialog } from "./lazy-screens";
-import { READY_BOT_CATEGORIES, READY_BOTS, matchesReadyBot, readyBotCopy, type ReadyBotCategory } from "@/lib/ready-bots";
+import { GALLERY_BOTS, GALLERY_CATEGORIES, matchesReadyBot, readyBotCopy, type ReadyBotCategory } from "@/lib/ready-bots";
 import { cn } from "@/lib/cn";
 import { t } from "@/lib/i18n";
 import type { LocaleKey } from "@/locales";
@@ -13,7 +13,7 @@ import { useStore, type Bot } from "@/state/store";
 const APP_LABELS: Record<string, string> = {
   gmail: "Gmail", github: "GitHub", discord: "Discord", slack: "Slack", googlecalendar: "Google Calendar",
   notion: "Notion", linear: "Linear", figma: "Figma", gong: "Gong", hubspot: "HubSpot", postiz: "Postiz",
-  googledrive: "Google Drive", outlook: "Outlook",
+  googledrive: "Google Drive", outlook: "Outlook", canva: "Canva",
 };
 
 const CATEGORY_KEYS: Record<ReadyBotCategory, LocaleKey> = {
@@ -36,7 +36,7 @@ export function ReadyBotGallery({ search, onDialog, onAdded }: {
     if (id !== null && window.ogb?.remoteClient?.active) { dispatch({ type: "newBot", onCreated: onAdded }); return; }
     setAdding(id); onDialog(id !== null);
   };
-  const visible = READY_BOTS.filter((bot) => (!category || bot.category === category) && matchesReadyBot(bot, search));
+  const visible = GALLERY_BOTS.filter((bot) => (!category || bot.category === category) && matchesReadyBot(bot, search));
   if (search.trim() && visible.length === 0) return null;
   return <section className="mb-8" aria-labelledby="ready-bots-title">
     <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
@@ -44,7 +44,7 @@ export function ReadyBotGallery({ search, onDialog, onAdded }: {
       <p className="text-[12px] text-ink-tertiary">{t("readyBots.subtitle")}</p>
     </div>
     <div className="mb-3 mt-2 flex flex-wrap gap-1.5" role="group" aria-label={t("readyBots.categories")}>
-      {[null, ...READY_BOT_CATEGORIES].map((value) => <button key={value ?? "all"} type="button" aria-pressed={category === value}
+      {[null, ...GALLERY_CATEGORIES].map((value) => <button key={value ?? "all"} type="button" aria-pressed={category === value}
         onClick={() => setCategory(value)}
         className={cn("rounded-full px-3 py-1 text-[13px] transition-colors",
           category === value ? "bg-ink text-panel" : "bg-raised/70 text-ink-secondary hover:text-ink")}>

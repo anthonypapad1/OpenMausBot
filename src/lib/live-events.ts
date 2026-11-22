@@ -2,7 +2,7 @@
 import type { ServerFrame } from "../../shared/wire";
 import { cloudAsleep, markCloudAsleep, onCloudPower, sleepingFrame } from "./cloud-power";
 import { recordBotTextMessage, recordRuntimeEvent } from "./voice-latency-probe";
-import { noteDealsTurnEvent } from "@/state/deals-today";
+import { emitRuntimeEvent } from "./runtime-event-listeners";
 import { noteTurnEvent } from "@/state/turn-status";
 import { forgetLiveReplies, noteLiveReplyEvent, noteLiveReplyMessage } from "@/state/live-reply";
 
@@ -145,8 +145,8 @@ function tapLiveFrame(frame: ServerFrame): void {
   if (frame.kind === "runtime") {
     // The chat's status line reads every live runtime frame; none of them is stored.
     noteTurnEvent(frame.event);
-    // Today's deals are read again when a turn ends (src/state/deals-today.ts).
-    noteDealsTurnEvent(frame.event);
+    // Subscribers such as Today's deals, read again when a turn ends (src/state/deals-today.ts).
+    emitRuntimeEvent(frame.event);
     noteLiveReplyEvent(frame.event);
     recordRuntimeEvent(frame.event);
   } else if (frame.kind === "message" && frame.message?.role === "bot" && frame.message?.kind === "text") {

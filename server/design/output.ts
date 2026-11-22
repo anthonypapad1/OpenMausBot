@@ -1,6 +1,6 @@
 // Where a rendered design is saved: marketing/ in the bot's working folder, named so a person can find it by date,
 // property and kind: 2026-11-21-1847-larkspur-ln-just-listed-square.png.
-import { existsSync } from "node:fs";
+import { closeSync, openSync } from "node:fs";
 import { join } from "node:path";
 
 export const MARKETING_FOLDER = "marketing";
@@ -24,12 +24,19 @@ export function designFileName(parts: { date: string; address?: string; template
   return `${[parts.date, place, parts.template, parts.format].filter(Boolean).join("-")}.${parts.output}`;
 }
 
-/** `name` in `folder`, or the first of name-2, name-3… not taken, so a render never replaces an earlier one. */
-export function freePath(folder: string, name: string, exists: (path: string) => boolean = existsSync): string {
+/** `name` in `folder`, or the first of name-2, name-3… not taken, so a render never replaces an earlier one. The name is
+ * taken for good: the file is created empty with O_EXCL (`wx`), so two renders running at once can never pick the same
+ * name. The caller then writes the bytes over it. */
+export function claimPath(folder: string, name: string, create: (path: string) => void = (path) => closeSync(openSync(path, "wx"))): string {
   const dot = name.lastIndexOf(".");
   const [stem, extension] = [name.slice(0, dot), name.slice(dot)];
   for (let copy = 1; ; copy += 1) {
     const path = join(folder, copy === 1 ? name : `${stem}-${copy}${extension}`);
-    if (!exists(path)) return path;
+    try {
+      create(path);
+      return path;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
   }
 }

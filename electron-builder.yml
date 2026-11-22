@@ -154,7 +154,7 @@ mac:
     NSBonjourServices:
       - _openmausbot._tcp
     NSScreenCaptureUsageDescription: Corso uses Screen Recording so bots can see this Mac before acting.
-    NSDownloadsFolderUsageDescription: Corso looks in Downloads for the file your Grok Bot saved when you move it here.
+    NSDownloadsFolderUsageDescription: Corso looks in Downloads for the notes file another AI app saved for you, when you bring your notes in.
   # Notarization runs manually after the build (notarytool + staple),
   # mirroring the BlueyLite ship_release.sh flow.
   notarize: false
