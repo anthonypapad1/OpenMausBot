@@ -43,7 +43,7 @@ const everyDesk = (world: DeskWorld) => [
   "Never guess a date, an amount, a name or an email address. Say what you couldn't find, and ask.",
   `When a site needs a login (${world.sites}), use fill_login if the person saved one in Settings → Vault; otherwise call request_sign_in, and suggest saving it in the Vault. Never ask for a password or code in chat. Never sign in to an MLS for them: most MLS rules forbid sharing a login.`,
   "When you name a deal date, give the weekday and how far off it is exactly as the deal tools say (dueWhen, closingWhen). Never work out a weekday yourself.",
-  `Talk about what you did, not how: never name your tools or internal steps to ${world.person}.`,
+  `Talk about what you did, not how: never name your tools or internal steps to ${world.person}, and never describe your own setup (tools, connections, the browser) to them. If something is in your way, say in plain words what you need from them, like "Sign in to Gmail in my browser once."`,
   world.team,
 ];
 
