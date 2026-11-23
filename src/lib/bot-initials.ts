@@ -1,6 +1,6 @@
 import type { MausColor } from "@/lib/mascot";
 
-/** Corso's five default bots keep one colour each wherever they appear (the Today page's DeskAvatar uses the same). */
+/** Corso's five default bots keep one colour each wherever they appear. src/components/today/DeskAvatar.tsx keeps the same map: change them together. */
 const DESK_COLORS: Record<string, MausColor> = {
   "deal desk": "blue",
   "listing desk": "cyan",
