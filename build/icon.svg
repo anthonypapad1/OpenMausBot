@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img">
   <title>Corso</title>
-  <!-- Placeholder until the final Corso logo: the evergreen tile and white peak mark from the Alpine design direction.
+  <!-- Placeholder until the final Corso logo: the navy tile and white peak mark from the Maritime design direction.
        Drawn on the macOS icon grid (824 pt tile, 100 pt margin). After editing, run `node build/render-icon.mjs`. -->
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#24694F"/>
-      <stop offset="1" stop-color="#1E5B45"/>
+      <stop offset="0" stop-color="#22345A"/>
+      <stop offset="1" stop-color="#16233F"/>
     </linearGradient>
   </defs>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)"/>

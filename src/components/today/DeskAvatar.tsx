@@ -3,9 +3,10 @@ import { deskInitials, deskOf, type Desk } from "@/lib/today";
 import type { Bot } from "@/state/store";
 import { BotAvatar } from "../Avatar";
 
+/** Same colours as DESK_COLORS in src/lib/bot-initials.ts (the sidebar and chat avatars): change them together. */
 const DESK_COLOR: Record<Desk, string> = {
-  "Deal Desk": "var(--identity-green)",
-  "Listing Desk": "var(--identity-blue)",
+  "Deal Desk": "var(--identity-blue)",
+  "Listing Desk": "var(--identity-cyan)",
   "Inbox Desk": "var(--identity-purple)",
   "Compliance Desk": "var(--identity-orange)",
   "Marketing Desk": "var(--identity-pink)",
