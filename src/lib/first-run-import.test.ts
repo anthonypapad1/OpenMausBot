@@ -87,7 +87,7 @@ describe("bringing the chosen in", () => {
   it("names a failure, and a failed find stays one to bring in again", async () => {
     const apply = vi.fn(async () => { throw new Error("offline"); });
     await bringChosen(localFinds(DETECTION, NOW), { firstBotId: null, client: { detect: vi.fn(), apply } });
-    expect(bringRunNow()).toMatchObject({ kind: "done", failed: true, line: "Some of it couldn't come in. Try again from Settings → Import.", brought: [] });
+    expect(bringRunNow()).toMatchObject({ kind: "done", failed: true, line: "Some of it couldn't come in. Try again from Settings → Import & export.", brought: [] });
   });
 
   it("brings one app in on its own Bring in, and remembers it alongside the next", async () => {
