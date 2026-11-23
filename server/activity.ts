@@ -95,6 +95,8 @@ const TEAM_ACTION_KEYS: Record<string, string> = {
   deal_party_save: "activity.tool.team.dealPartySave",
   deal_save: "activity.tool.team.dealSave",
   deals_list: "activity.tool.team.dealsList",
+  design_render: "activity.tool.team.designRender",
+  design_templates_list: "activity.tool.team.designTemplatesList",
   create_bot: "activity.tool.team.createBot",
   create_room: "activity.tool.team.createRoom",
   create_trigger: "activity.tool.team.createTrigger",
