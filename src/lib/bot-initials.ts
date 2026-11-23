@@ -1,9 +1,9 @@
 import type { MausColor } from "@/lib/mascot";
 
-/** Corso's five default bots keep one colour each wherever they appear (the Today page's DeskAvatar uses the same). */
+/** Corso's five default bots keep one colour each wherever they appear. src/components/today/DeskAvatar.tsx keeps the same map: change them together. */
 const DESK_COLORS: Record<string, MausColor> = {
-  "deal desk": "green",
-  "listing desk": "blue",
+  "deal desk": "blue",
+  "listing desk": "cyan",
   "inbox desk": "purple",
   "compliance desk": "orange",
   "marketing desk": "pink",
@@ -20,9 +20,9 @@ export function botInitials(name: string | undefined): string {
   return letters.join("").toUpperCase();
 }
 
-/** A Desk's own colour, else the bot's colour; a pale grey bot reads in green. */
+/** A Desk's own colour, else the bot's colour; a pale grey bot reads in blue. */
 export function botInitialsColor(name: string | undefined, color: MausColor): MausColor {
   const desk = DESK_COLORS[(name ?? "").trim().toLowerCase()];
   if (desk) return desk;
-  return PALE.includes(color) ? "green" : color;
+  return PALE.includes(color) ? "blue" : color;
 }
