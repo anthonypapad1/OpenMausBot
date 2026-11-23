@@ -11340,7 +11340,7 @@
   "bring.copyFailed": "Não foi possível copiar o prompt. Tente novamente.",
   "bring.copyPrimary": "Copiar o prompt",
   "bring.done": "Foram trazidos {list}.",
-  "bring.failed": "Parte disso não pôde ser trazida. Tente novamente em Configurações → Importar.",
+  "bring.failed": "Parte disso não pôde ser trazida. Tente novamente em Configurações → Importar e exportar.",
   "bring.hidePrompt": "Ocultar o prompt",
   "bring.howCopy": "Copie o prompt.",
   "bring.howFile": "Ele cria um arquivo. Cole ou solte esse arquivo em qualquer chat aqui e tudo será configurado.",
