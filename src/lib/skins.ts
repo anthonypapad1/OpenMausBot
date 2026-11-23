@@ -27,8 +27,8 @@ export const SKINS: readonly Skin[] = [
   { id: "halloween", name: "Halloween", tagline: "Plum after dark, lit in pumpkin orange. Bats optional." },
   { id: "diwali", name: "Diwali", tagline: "Indigo night, lit in marigold and diya gold. Fireworks optional." },
   { id: "aurora", name: "Aurora", tagline: "Near-black, crossed by a band of green light. Glass on top." },
-  { id: "corso", name: "Corso", tagline: "Fresh snow, evergreen and aspen gold. The Corso look." },
-  { id: "corso-night", name: "Corso Night", tagline: "Corso after dark, on deep spruce." },
+  { id: "corso", name: "Corso", tagline: "Harbor fog, deep navy and brass. The Corso look." },
+  { id: "corso-night", name: "Corso Night", tagline: "Corso after dark, on deep harbor navy." },
 ];
 
 /** "system" follows the OS between the light and dark skins below; anything else pins one skin. */
@@ -39,7 +39,7 @@ export const THEME_SKINS = { light: "corso", dark: "corso-night" } as const sati
  * Stop button take this colour instead of the bot's, so a blue bot doesn't paint a Corso window blue; the bot keeps its
  * colour on its own mark. Each value is that skin's `--color-accent` in src/styles.css, where the `.bot-button` rule
  * for the same skins makes the same swap: change them together. */
-export const ONE_ACCENT_SKINS: Partial<Record<SkinId, string>> = { corso: "#1e5b45", "corso-night": "#2a7257" };
+export const ONE_ACCENT_SKINS: Partial<Record<SkinId, string>> = { corso: "#16233f", "corso-night": "#2e4a7f" };
 
 export const DEFAULT_SKIN_CHOICE: SkinChoice = "system";
 export const PRIOR_INSTALL_SKIN: SkinId = "midnight";

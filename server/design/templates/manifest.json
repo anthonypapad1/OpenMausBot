@@ -107,7 +107,7 @@
         {
           "name": "brand_color",
           "required": false,
-          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's navy.",
           "kind": "color"
         },
         {
@@ -210,7 +210,7 @@
         {
           "name": "brand_color",
           "required": false,
-          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's navy.",
           "kind": "color"
         },
         {
@@ -283,7 +283,7 @@
         {
           "name": "brand_color",
           "required": false,
-          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's navy.",
           "kind": "color"
         },
         {
@@ -414,7 +414,7 @@
         {
           "name": "brand_color",
           "required": false,
-          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's evergreen.",
+          "description": "The agent's main brand colour as a hex code, such as #1f3d2b. Empty keeps Corso's navy.",
           "kind": "color"
         },
         {
