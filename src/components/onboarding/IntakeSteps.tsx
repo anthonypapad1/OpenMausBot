@@ -1,15 +1,23 @@
 // Corso's three first-run questions (about, voice, first job), shown by WelcomeFlow between the bring step and the
-// Chief of Staff. The answers are plain state here; WelcomeFlow saves them into About me (corso-intake.ts).
-import type { ReactNode } from "react";
-import { Building2, Check, ListChecks, MessageSquareText } from "lucide-react";
+// Chief of Staff. The about step opens with the kind of work the person does, which picks the questions under it and the
+// first jobs offered. The answers are plain state here; WelcomeFlow saves them into About me (corso-intake.ts).
+import type { ChangeEvent, ReactNode } from "react";
+import { Building2, Check, ListChecks, MessageSquareText, Upload } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
+  choosePath,
   DEAL_VOLUMES,
-  FIRST_JOB_IDS,
+  DETAILS,
+  PATH_FIRST_JOBS,
+  PATH_QUESTIONS,
+  pathOf,
   VOICE_IDS,
+  WORK_PATHS,
+  type DetailId,
   type FirstJobId,
   type IntakeAnswers,
   type VoiceId,
+  type WorkPath,
 } from "@/lib/corso-intake";
 import { t } from "@/lib/i18n";
 import type { LocaleKey } from "@/locales";
@@ -34,7 +42,29 @@ export const FIRST_JOB_KEYS: Record<FirstJobId, LocaleKey> = {
   deadlines: "onboarding.intake.firstJob.deadlines",
   signatures: "onboarding.intake.firstJob.signatures",
   inbox: "onboarding.intake.firstJob.inbox",
+  criticalDates: "onboarding.intake.firstJob.criticalDates",
+  dealDates: "onboarding.intake.firstJob.dealDates",
+  renewals: "onboarding.intake.firstJob.renewals",
+  maintenance: "onboarding.intake.firstJob.maintenance",
+  ownerReports: "onboarding.intake.firstJob.ownerReports",
+  explainContract: "onboarding.intake.firstJob.explainContract",
+  moveDates: "onboarding.intake.firstJob.moveDates",
+  agentQuestions: "onboarding.intake.firstJob.agentQuestions",
+  audit: "onboarding.intake.firstJob.audit",
+  licenses: "onboarding.intake.firstJob.licenses",
 };
+
+/** The about step's words for each path: residential keeps the step's own. */
+const ABOUT_KEYS: Record<WorkPath, { title: LocaleKey; lede: LocaleKey }> = {
+  residential: { title: "onboarding.intake.about.title", lede: "onboarding.intake.about.lede" },
+  commercial: { title: "onboarding.intake.about.commercial.title", lede: "onboarding.intake.about.commercial.lede" },
+  property: { title: "onboarding.intake.about.property.title", lede: "onboarding.intake.about.property.lede" },
+  consumer: { title: "onboarding.intake.about.consumer.title", lede: "onboarding.intake.about.consumer.lede" },
+  brokerage: { title: "onboarding.intake.about.brokerage.title", lede: "onboarding.intake.about.brokerage.lede" },
+};
+
+/** A follow-up question's words: its label, a typed one's placeholder, a choice's own name. */
+export const detailKey = (id: DetailId, part: string): LocaleKey => `onboarding.intake.detail.${id}.${part}` as LocaleKey;
 
 const ART: Record<IntakeBeat, ReactNode> = {
   about: <Building2 size={STEP_ICON} aria-hidden="true" />,
@@ -74,32 +104,91 @@ function Frame({ beat, title, lede, canContinue, onNext, onSkip, children }: {
   );
 }
 
+function Field({ label, value, placeholder, autoFocus, onChange }: {
+  label: string; value: string; placeholder: string; autoFocus?: boolean; onChange: (value: string) => void;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
+      {label}
+      <input className={inputClass} value={value} autoFocus={autoFocus} placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function Choices<Id extends string>({ label, ids, on, name, onPick, columns }: {
+  label: string; ids: readonly Id[]; on: Id | null | undefined; name: (id: Id) => ReactNode; onPick: (id: Id | null) => void; columns?: number;
+}) {
+  return (
+    <div role="radiogroup" aria-label={label} className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
+      {label}
+      <div className={cn("grid gap-2", columns === 4 ? "grid-cols-4" : "grid-cols-2")}>
+        {ids.map((id) => (
+          <Choice key={id} on={on === id} className={columns === 4 ? "justify-center text-center" : undefined}
+            onClick={() => onPick(on === id ? null : id)}>
+            {name(id)}
+          </Choice>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Detail({ id, answers, setAnswers }: StepProps & { id: DetailId }) {
+  const details = answers.details ?? {};
+  const set = (value: string | null) => {
+    const next = { ...details };
+    if (value) next[id] = value;
+    else delete next[id];
+    setAnswers({ ...answers, details: next });
+  };
+  const choices = DETAILS[id].choices;
+  if (!choices) {
+    return <Field label={t(detailKey(id, "label"))} value={details[id] ?? ""} placeholder={t(detailKey(id, "placeholder"))} onChange={set} />;
+  }
+  const ids = Object.keys(choices);
+  return <Choices label={t(detailKey(id, "label"))} ids={ids} on={details[id]} columns={ids.length === 4 ? 4 : undefined}
+    name={(choice) => t(detailKey(id, choice))} onPick={set} />;
+}
+
+function Checklist({ answers, setAnswers }: StepProps) {
+  const read = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void file.text().then((text) => setAnswers({ ...answers, checklist: text }), () => {});
+  };
+  return (
+    <div className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
+      <label htmlFor="intake-checklist">{t("onboarding.intake.checklist.label")}</label>
+      <textarea id="intake-checklist" rows={4} className={cn(inputClass, "resize-y text-[13px]")} value={answers.checklist ?? ""}
+        placeholder={t("onboarding.intake.checklist.placeholder")}
+        onChange={(event) => setAnswers({ ...answers, checklist: event.target.value })} />
+      <span className="flex items-center justify-between gap-2 text-[12px] text-ink-tertiary">
+        {t("onboarding.intake.checklist.hint")}
+        <label className={cn(TILE, "flex shrink-0 cursor-pointer items-center gap-1.5 px-3 py-1.5 text-ink")}>
+          <Upload size={13} aria-hidden="true" />
+          {t("onboarding.intake.checklist.upload")}
+          <input type="file" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv" className="sr-only" onChange={read} />
+        </label>
+      </span>
+    </div>
+  );
+}
+
 function AboutStep({ answers, setAnswers }: StepProps) {
+  const asks = PATH_QUESTIONS[pathOf(answers)];
   return (
     <div className="flex flex-col gap-4 text-left">
-      <label className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
-        {t("onboarding.intake.about.brokerage")}
-        <input className={inputClass} value={answers.brokerage} autoFocus
-          placeholder={t("onboarding.intake.about.brokeragePlaceholder")}
-          onChange={(event) => setAnswers({ ...answers, brokerage: event.target.value })} />
-      </label>
-      <label className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
-        {t("onboarding.intake.about.market")}
-        <input className={inputClass} value={answers.market}
-          placeholder={t("onboarding.intake.about.marketPlaceholder")}
-          onChange={(event) => setAnswers({ ...answers, market: event.target.value })} />
-      </label>
-      <div role="radiogroup" aria-label={t("onboarding.intake.about.volume")} className="flex flex-col gap-1.5 text-[13px] text-ink-secondary">
-        {t("onboarding.intake.about.volume")}
-        <div className="grid grid-cols-4 gap-2">
-          {DEAL_VOLUMES.map((volume) => (
-            <Choice key={volume} on={answers.volume === volume} className="justify-center text-center"
-              onClick={() => setAnswers({ ...answers, volume: answers.volume === volume ? null : volume })}>
-              {volume}
-            </Choice>
-          ))}
-        </div>
-      </div>
+      <Choices label={t("onboarding.intake.path.label")} ids={WORK_PATHS} on={answers.path}
+        name={(path) => t(`onboarding.intake.path.${path}` as LocaleKey)} onPick={(path) => setAnswers(choosePath(answers, path))} />
+      {asks.brokerage && <Field label={t("onboarding.intake.about.brokerage")} value={answers.brokerage} autoFocus
+        placeholder={t("onboarding.intake.about.brokeragePlaceholder")} onChange={(brokerage) => setAnswers({ ...answers, brokerage })} />}
+      {asks.market && <Field label={t("onboarding.intake.about.market")} value={answers.market} autoFocus={!asks.brokerage}
+        placeholder={t("onboarding.intake.about.marketPlaceholder")} onChange={(market) => setAnswers({ ...answers, market })} />}
+      {asks.volume && <Choices label={t("onboarding.intake.about.volume")} ids={DEAL_VOLUMES} on={answers.volume} columns={4}
+        name={(volume) => volume} onPick={(volume) => setAnswers({ ...answers, volume })} />}
+      {asks.details.map((id) => <Detail key={id} id={id} answers={answers} setAnswers={setAnswers} />)}
+      {asks.checklist && <Checklist answers={answers} setAnswers={setAnswers} />}
     </div>
   );
 }
@@ -119,10 +208,10 @@ function VoiceStep({ answers, setAnswers }: StepProps) {
   );
 }
 
-function FirstJobStep({ job, setJob }: { job: FirstJobId | null; setJob: (job: FirstJobId | null) => void }) {
+function FirstJobStep({ path, job, setJob }: { path: WorkPath; job: FirstJobId | null; setJob: (job: FirstJobId | null) => void }) {
   return (
     <div role="radiogroup" aria-label={t("onboarding.intake.firstJob.title")} className="flex flex-col gap-2">
-      {FIRST_JOB_IDS.map((id) => (
+      {PATH_FIRST_JOBS[path].map((id) => (
         <Choice key={id} on={job === id} onClick={() => setJob(job === id ? null : id)}>
           {t(FIRST_JOB_KEYS[id])}
         </Choice>
@@ -133,7 +222,7 @@ function FirstJobStep({ job, setJob }: { job: FirstJobId | null; setJob: (job: F
 
 /** The answers with one step's left out, for Skip: a skipped question leaves nothing behind. */
 export function withoutStep(answers: IntakeAnswers, beat: IntakeBeat): IntakeAnswers {
-  if (beat === "about") return { ...answers, brokerage: "", market: "", volume: null };
+  if (beat === "about") return { ...answers, brokerage: "", market: "", volume: null, path: null, details: {}, checklist: "" };
   if (beat === "voice") return { ...answers, voice: null };
   return answers;
 }
@@ -153,9 +242,10 @@ export function IntakeSteps({ beat, answers, setAnswers, job, setJob, onNext, on
   onSkip: () => void;
 }) {
   const frame = { beat, onNext, onSkip, canContinue: true };
+  const path = pathOf(answers);
   if (beat === "about") {
     return (
-      <Frame {...frame} title={t("onboarding.intake.about.title")} lede={t("onboarding.intake.about.lede")}>
+      <Frame {...frame} title={t(ABOUT_KEYS[path].title)} lede={t(ABOUT_KEYS[path].lede)}>
         <AboutStep answers={answers} setAnswers={setAnswers} />
       </Frame>
     );
@@ -169,7 +259,7 @@ export function IntakeSteps({ beat, answers, setAnswers, job, setJob, onNext, on
   }
   return (
     <Frame {...frame} title={t("onboarding.intake.firstJob.title")} lede={t("onboarding.intake.firstJob.lede")}>
-      <FirstJobStep job={job} setJob={setJob} />
+      <FirstJobStep path={path} job={job} setJob={setJob} />
     </Frame>
   );
 }
