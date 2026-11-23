@@ -3,6 +3,8 @@ import { setEmailGateDone, track } from "@/lib/analytics";
 import { looksLikeNotes } from "@/lib/assistant-notes";
 import { cn } from "@/lib/cn";
 import { EMPTY_INTAKE, intakeAnswered, mergeAboutMe, type FirstJobId, type IntakeAnswers } from "@/lib/corso-intake";
+import { firstRunMakesDesks, pathDesks } from "@/lib/desks/path-desks";
+import { createFirstRunDesks } from "@/lib/first-run-desks";
 import { chiefStepFits, myDefaultBot, setChiefStepOpen, useViewerEmail } from "@/lib/default-bot";
 import { appendComposerDraft } from "@/lib/drafts";
 import { bringChosen, localFinds, useBringRun, type LocalFind } from "@/lib/first-run-import";
@@ -108,7 +110,14 @@ export function WelcomeFlow({
   const record = useRef(state.config?.onboarding);
   record.current = state.config?.onboarding;
   const [answers, setAnswers] = useState<IntakeAnswers>(EMPTY_INTAKE);
+  const intake = useRef(answers);
+  intake.current = answers;
   const [job, setJob] = useState<FirstJobId | null>(null);
+  // a first job belongs to its path: picking another path drops it
+  const answer = useCallback((next: IntakeAnswers) => {
+    if ((next.path ?? null) !== (intake.current.path ?? null)) setJob(null);
+    setAnswers(next);
+  }, []);
   const firstJob = useRef<FirstJobId | null>(null);
   firstJob.current = job;
   const bots = useRef(state.bots);
@@ -152,6 +161,8 @@ export function WelcomeFlow({
       // The first job waits in the chosen bot's message box, for the person to send (Composer's draft id).
       const lead = bots.current.find((bot) => bot.id === botId) ?? maus;
       if (firstJob.current && lead) appendComposerDraft(`bot:${lead.id}:${lead.threadId}`, t(FIRST_JOB_KEYS[firstJob.current]));
+      // the path's Desks join the sidebar behind the Chief's chat
+      if (!embedded && !hosted && firstRunMakesDesks(intake.current)) void createFirstRunDesks(pathDesks(intake.current), bots.current, dispatch);
       try {
         const patch = replay ? completionPatch() : firstRunPatch(record.current, new Date());
         const config = await api("/api/config", { method: "PUT", body: JSON.stringify(patch), signal: AbortSignal.timeout(10_000) });
@@ -159,7 +170,7 @@ export function WelcomeFlow({
       } catch {
       }
     },
-    [beat, dispatch, onDone, replay, embedded, keepsDraft, maus],
+    [beat, dispatch, onDone, replay, embedded, hosted, keepsDraft, maus],
   );
 
   // The answers join the person's About me once the questions are behind them, replacing a Brokerage or Market line the
@@ -251,9 +262,9 @@ export function WelcomeFlow({
   if (chief) body = <ChiefIntro replay={replay} onLeave={fadeScrim} onDone={(botId) => void finish("completed", botId)} />;
   else if (isIntakeBeat(beat)) {
     body = (
-      <IntakeSteps beat={beat} answers={answers} setAnswers={setAnswers} job={job} setJob={setJob}
+      <IntakeSteps beat={beat} answers={answers} setAnswers={answer} job={job} setJob={setJob}
         onNext={next}
-        onSkip={() => { setAnswers(withoutStep(answers, beat)); if (beat === "firstJob") setJob(null); next(); }} />
+        onSkip={() => { answer(withoutStep(answers, beat)); if (beat === "firstJob") setJob(null); next(); }} />
     );
   } else if (beat === "ai") body = <AiStep tested={tested} hosted={hosted} onChoose={setChosen} onNext={next} />;
   else if (beat === "bring") body = <BringStep finds={finds} run={bringRun} onBring={bring} onNext={next} />;

@@ -12,24 +12,49 @@ import morningBrief from "./skills/morning-brief.md?raw";
 import readPurchaseContract from "./skills/read-purchase-contract.md?raw";
 import requiredDocs from "./notes/required-docs.md?raw";
 
-const EVERY_DESK = [
-  "You work for a real estate agent, or for the transaction coordinator who supports them. Your notes say which; if they don't, ask once and write it down.",
+export { requiredDocs };
+
+/** The work a set of Desks does, in the words every one of its Desks is told: who they work for, the outside systems
+ * and sign-in sites they meet, whom they talk to, and the other Desks beside them. path-desks.ts gives each first-run
+ * path its own. */
+export interface DeskWorld {
+  who: string;
+  outside: string;
+  sites: string;
+  person: string;
+  team: string;
+}
+
+const RESIDENTIAL: DeskWorld = {
+  who: "You work for a real estate agent, or for the transaction coordinator who supports them. Your notes say which; if they don't, ask once and write it down.",
+  outside: "CTM eContracts, email or a CRM",
+  sites: "CTM eContracts, Dotloop, SkySlope, a showing service",
+  person: "the agent",
+  team: "The other Desks share the same deal list: Deal Desk works contracts to close, Listing Desk works listings, Inbox Desk works email, Compliance Desk checks the documents, Marketing Desk makes the posts, flyers and marketing emails. Hand work to the right one when it isn't yours.",
+};
+
+/** The lines every Desk ends with. The one against naming tools stays in every world. */
+const everyDesk = (world: DeskWorld) => [
+  world.who,
   "Write in plain, warm, short sentences. Lead with what matters today.",
-  "Always ask before you send an email, sign anything, or change anything in an outside system such as CTM eContracts, email or a CRM. Show exactly what you will do, and wait for a yes. A yes covers that one action.",
+  `Always ask before you send an email, sign anything, or change anything in an outside system such as ${world.outside}. Show exactly what you will do, and wait for a yes. A yes covers that one action.`,
   "Saving to the deal list is fine without asking. Say what you saved.",
   "Log each thing you do on a deal with deal_activity_add, in one line. It is signed with your name for you.",
   "Never guess a date, an amount, a name or an email address. Say what you couldn't find, and ask.",
-  "When a site needs a login (CTM eContracts, Dotloop, SkySlope, a showing service), use fill_login if the person saved one in Settings → Vault; otherwise call request_sign_in, and suggest saving it in the Vault. Never ask for a password or code in chat. Never sign in to an MLS for them: most MLS rules forbid sharing a login.",
+  `When a site needs a login (${world.sites}), use fill_login if the person saved one in Settings → Vault; otherwise call request_sign_in, and suggest saving it in the Vault. Never ask for a password or code in chat. Never sign in to an MLS for them: most MLS rules forbid sharing a login.`,
   "When you name a deal date, give the weekday and how far off it is exactly as the deal tools say (dueWhen, closingWhen). Never work out a weekday yourself.",
-  "Talk about what you did, not how: never name your tools or internal steps to the agent.",
-  "The other Desks share the same deal list: Deal Desk works contracts to close, Listing Desk works listings, Inbox Desk works email, Compliance Desk checks the documents, Marketing Desk makes the posts, flyers and marketing emails. Hand work to the right one when it isn't yours.",
+  `Talk about what you did, not how: never name your tools or internal steps to ${world.person}.`,
+  world.team,
 ];
 
-const soul = (...lines: string[]) => [...lines, ...EVERY_DESK].join("\n");
+/** A Desk's instructions: its own lines, then its world's shared ones. */
+export const deskSoul = (world: DeskWorld, ...lines: string[]) => [...lines, ...everyDesk(world)].join("\n");
+
+const soul = (...lines: string[]) => deskSoul(RESIDENTIAL, ...lines);
 
 const HOW_WE_WORK = "---\ntitle: How we work\naliases: [signature, brokerage, transaction coordinator, who I work for]\n---\n\n- Who I work for (the agent, or their transaction coordinator):\n- Name and email signature to sign with:\n- Brokerage:\n- Transaction system (for example CTM eContracts):\n- Lenders and title companies we use most:\n";
 
-const BRAND = "---\ntitle: Brand and voice\naliases: [brand kit, logo, headshot, colors, voice, brokerage]\n---\n\n## Brand\n\n- Name as it appears:\n- Phone:\n- Email:\n- Website:\n- Brokerage (shown on every piece):\n- Logo file:\n- Headshot file:\n- Brand colors (hex):\n- What the managing broker requires on ads:\n\n## How I write\n\n## Rules from the agent\n";
+export const BRAND = "---\ntitle: Brand and voice\naliases: [brand kit, logo, headshot, colors, voice, brokerage]\n---\n\n## Brand\n\n- Name as it appears:\n- Phone:\n- Email:\n- Website:\n- Brokerage (shown on every piece):\n- Logo file:\n- Headshot file:\n- Brand colors (hex):\n- What the managing broker requires on ads:\n\n## How I write\n\n## Rules from the agent\n";
 
 const howWeWork = (index: string): Record<string, string> => ({
   "MEMORY.md": `- Who I work for, the signature to use and our usual partners live in memory/how-we-work.md.\n${index}`,

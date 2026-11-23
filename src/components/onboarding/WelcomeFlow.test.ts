@@ -12,9 +12,10 @@ import { saveWelcomeDraft } from "@/lib/welcome-draft";
 import type { InstanceInfo } from "@/state/store";
 
 const f = vi.hoisted(() => ({ state: {} as Record<string, unknown>, dispatch: vi.fn(), api: vi.fn(), landed: vi.fn(), onDone: vi.fn(),
-  checks: [] as string[], draft: vi.fn() }));
+  checks: [] as string[], draft: vi.fn(), desks: vi.fn() }));
 vi.mock("@/state/store", () => ({ useStore: () => ({ state: f.state, dispatch: f.dispatch }), api: f.api }));
 vi.mock("@/lib/drafts", () => ({ appendComposerDraft: f.draft }));
+vi.mock("@/lib/first-run-desks", () => ({ createFirstRunDesks: f.desks }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn(), setEmailGateDone: vi.fn() }));
 vi.mock("@/components/Avatar", () => ({ BotAvatar: () => null, MausAvatar: () => null }));
 vi.mock("@/components/mascot-clock", () => ({ usePrefersReducedMotion: () => true }));
@@ -105,6 +106,7 @@ beforeEach(() => {
   f.landed.mockReset();
   f.onDone.mockReset();
   f.draft.mockReset();
+  f.desks.mockReset();
   f.api.mockReset();
   f.checks = [];
   f.api.mockImplementation(async (path: string, init?: { body?: string }) => {
@@ -231,6 +233,104 @@ describe("Corso's questions", () => {
     await throughQuestions("Skip for now");
     await act(async () => {});
     expect(saved().filter((body) => "profile" in body), "nothing answered, nothing saved").toEqual([]);
+  });
+});
+
+describe("the kind of work the person does", () => {
+  const meetChief = async () => {
+    await tick(100);
+    await tick(CHIEF_GUARD_MS);
+    await press("Create Chief of Staff");
+    await tick(CHIEF_FADE_MS);
+  };
+  const made = () => (f.desks.mock.calls[0]?.[0] as Array<{ name: string; notes?: Record<string, string> }> | undefined);
+
+  it("asks a commercial broker their own questions, offers their first jobs, and makes their Desks once the Chief is in", async () => {
+    await show();
+    await throughHello();
+    expect(text()).toContain("What kind of work do you do?");
+    await pick("Commercial real estate");
+    expect(title()).toBe("Tell us about your deals");
+    expect([...host.querySelectorAll("label")].map((node) => node.textContent), "no brokerage field").not.toContain("Brokerage");
+    await type("Where you work", "Denver");
+    await type("Property types", "industrial");
+    await pick("Leasing");
+    await press("Continue");
+    await tick(100);
+    await press("Continue");
+    await tick(100);
+    expect(text()).not.toContain("Chase the signatures");
+    await pick("Pull the critical dates");
+    await press("Continue");
+    await act(async () => {});
+    expect(saved()[0]).toEqual({ profile: { aboutMe: "What I do: commercial real estate\nMarket: Denver\nProperty types: industrial\nSales or leasing: leasing" } });
+    expect(f.desks, "not before the Chief").not.toHaveBeenCalled();
+    await meetChief();
+    expect(f.draft).toHaveBeenCalledExactlyOnceWith("bot:maus:t", "Pull the critical dates out of a lease I send you");
+    expect(made()!.map((desk) => desk.name)).toEqual(["Deal Desk", "Lease Desk", "Marketing Desk", "Inbox Desk"]);
+  });
+
+  it("keeps a residential agent's run as it was: the same questions and lines, and no Desks made", async () => {
+    await show();
+    await throughHello();
+    await pick("Residential agent");
+    expect(title()).toBe("Tell us about your business");
+    await type("Brokerage", "Kentwood");
+    await pick("6-15");
+    await throughQuestions();
+    await act(async () => {});
+    expect(saved()[0]).toEqual({ profile: { aboutMe: "Brokerage: Kentwood\nDeals open at a time: 6-15" } });
+    await tick(CHIEF_GUARD_MS);
+    await press("Create Chief of Staff");
+    await tick(CHIEF_FADE_MS);
+    expect(f.desks).not.toHaveBeenCalled();
+  });
+
+  it("seeds a brokerage's Office Compliance Desk with the checklist they paste", async () => {
+    await show();
+    await throughHello();
+    await pick("Brokerage");
+    expect(title()).toBe("Tell us about your brokerage");
+    const area = host.querySelector("textarea")!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!.set!.call(area, "- Listing agreement");
+      area.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await pick("Maybe later");
+    await throughQuestions();
+    await act(async () => {});
+    expect(saved()[0]).toEqual({ profile: { aboutMe: "What I do: I run a brokerage (broker, managing broker or compliance)\nPlans to offer Corso to our agents: maybe later" } });
+    await tick(CHIEF_GUARD_MS);
+    await press("Create Chief of Staff");
+    await tick(CHIEF_FADE_MS);
+    expect(made()!.map((desk) => desk.name)).toEqual(["Office Compliance Desk", "Inbox Desk", "Deal Desk", "Listing Desk", "Marketing Desk"]);
+    expect(made()![0]!.notes!["memory/required-docs.md"]).toContain("- Listing agreement");
+  });
+
+  it("drops a first job from another path, and Skip for now drops the path", async () => {
+    await show();
+    await throughHello();
+    await pick("Buying or selling my own home");
+    expect(title()).toBe("Tell us about your move");
+    await press("Continue");
+    await tick(100);
+    await press("Continue");
+    await tick(100);
+    await pick("Explain my contract");
+    await press("Back");
+    await tick(100);
+    await press("Back");
+    await tick(100);
+    await pick("Property management");
+    await press("Skip for now");
+    await tick(100);
+    await press("Continue");
+    await tick(100);
+    expect(text(), "skipped, so the residential jobs").toContain("Chase the signatures");
+    await press("Continue");
+    await meetChief();
+    expect(f.draft, "the consumer's job went with its path").not.toHaveBeenCalled();
+    expect(f.desks).not.toHaveBeenCalled();
   });
 });
 
