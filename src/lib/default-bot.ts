@@ -165,3 +165,23 @@ export function stageIntro(botId: string | null): void {
 export function introStaged(botId: string): boolean {
   return staged === botId;
 }
+
+let botsComing = 0;
+const botsCameListeners: Array<() => void> = [];
+
+/** Bots are on their way (a first run, then the Desks it makes): Corso's follow-up counts the person's bots only once
+ * every hold is released. The returned release is safe to call more than once. */
+export function holdBotCount(): () => void {
+  botsComing += 1;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    botsComing -= 1;
+    if (botsComing === 0) botsCameListeners.splice(0).forEach((listener) => listener());
+  };
+}
+
+export function botCountSettled(): Promise<void> {
+  return botsComing === 0 ? Promise.resolve() : new Promise((resolve) => botsCameListeners.push(resolve));
+}

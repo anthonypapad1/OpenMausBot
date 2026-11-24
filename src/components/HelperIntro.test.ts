@@ -5,7 +5,7 @@
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setWelcomingBot, stageIntro } from "@/lib/default-bot";
+import { holdBotCount, setWelcomingBot, stageIntro } from "@/lib/default-bot";
 import { setLocale, t } from "@/lib/i18n";
 import type { Bot, InstanceInfo, Message } from "@/state/store";
 import type { HelperFollowupFacts } from "../../shared/helper-followup";
@@ -256,6 +256,19 @@ describe("as a first run lands in the chat", () => {
     expect(chips()).toEqual(["apps", "phone", "cloud"]);
     await show();
     expect(f.followups, "never asked twice").toHaveLength(1);
+  });
+
+  it("counts the person's bots only once the Desks the first run is making are all in", async () => {
+    f.reduced = true;
+    const desks = holdBotCount();
+    stageIntro("maus");
+    await show();
+    expect(f.followups, "not while Desks are still coming").toEqual([]);
+    expect(lines()).toHaveLength(3);
+    f.bots = 4;
+    await act(async () => desks());
+    expect(f.followups).toHaveLength(1);
+    expect(lines()[3]).toContain("You have 4 other bots");
   });
 
   it("with no AI shows no typing row, and follows up soon after the last line", async () => {

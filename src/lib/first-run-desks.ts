@@ -6,6 +6,7 @@ import { api, type Action, type Bot } from "@/state/store";
 import { BotCreationDraft } from "./bot-creation-draft";
 import { isBotLimitRefusal } from "./bot-limit";
 import { createConfiguredBot } from "./create-configured-bot";
+import { holdBotCount } from "./default-bot";
 import { t } from "./i18n";
 import { announceNewBot, startingTemplate, type BotDefaultsAnswer } from "./new-bot";
 
@@ -17,6 +18,7 @@ export async function createFirstRunDesks(desks: readonly ReadyBot[], bots: Read
   const missing = desks.filter((desk) => !taken.has(desk.name.toLowerCase()));
   const made: string[] = [];
   if (!missing.length) return made;
+  const counted = holdBotCount();
   try {
     const defaults = startingTemplate(await request<BotDefaultsAnswer>("/api/bot-defaults"), true);
     for (const desk of missing) {
@@ -33,6 +35,8 @@ export async function createFirstRunDesks(desks: readonly ReadyBot[], bots: Read
     }
   } catch (cause) {
     if (!isBotLimitRefusal(cause)) dispatch({ type: "error", message: t("newBot.failed", { error: cause instanceof Error ? cause.message : String(cause) }) });
+  } finally {
+    counted();
   }
   return made;
 }

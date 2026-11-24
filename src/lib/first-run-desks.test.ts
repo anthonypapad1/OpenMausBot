@@ -44,6 +44,19 @@ describe("the first run's Desks", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  it("holds Corso's count of the person's bots until the last Desk is made", async () => {
+    const { botCountSettled } = await import("./default-bot");
+    let settled = false;
+    const making = createFirstRunDesks(COMMERCIAL_DESKS, [], vi.fn(), request);
+    void botCountSettled().then(() => { settled = true; });
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    await making;
+    await Promise.resolve();
+    expect(settled).toBe(true);
+    expect(f.drafts).toHaveLength(4);
+  });
+
   it("leaves a Desk the person already has", async () => {
     await createFirstRunDesks(COMMERCIAL_DESKS, [{ name: "deal desk" }, { name: "Inbox Desk" }], vi.fn(), request);
     expect(f.drafts.map((draft) => draft.bot.name)).toEqual(["Lease Desk", "Marketing Desk"]);

@@ -1,5 +1,5 @@
 // The Desks each first-run path gets (corso-intake.ts's WorkPath). Residential is the five Desks of desks.ts, which the
-// gallery already offers; every other path's Desks live here, in their own world's words, and the first run makes them
+// gallery also offers; every other path's Desks live here, in their own world's words, and the first run makes them
 // (first-run-desks.ts). Like desks.ts, their instructions and skills call the deal-list tools by name.
 import type { ReadyBot } from "@/lib/ready-bots";
 import { paused, WEEKDAYS } from "@/lib/ready-bot-routines";
@@ -277,6 +277,6 @@ export function pathDesks(answers: IntakeAnswers): ReadyBot[] {
   return DESK_BOTS;
 }
 
-/** Whether the first run makes the path's Desks. Residential keeps the first run as it was: its five Desks wait in the
- * gallery, one Add each. */
-export const firstRunMakesDesks = (answers: IntakeAnswers): boolean => pathOf(answers) !== "residential";
+/** Whether the first run makes the path's Desks: once the person picked a path, residential included. Skipping the
+ * question makes none; the gallery still offers them, one Add each. */
+export const firstRunMakesDesks = (answers: IntakeAnswers): boolean => answers.path != null;
