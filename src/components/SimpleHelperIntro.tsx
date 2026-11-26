@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
-import { introChips, introStaged, stageIntro, useWelcomingBot } from "@/lib/default-bot";
+import { botCountSettled, introChips, introStaged, stageIntro, useWelcomingBot } from "@/lib/default-bot";
 import { activeLocale, t } from "@/lib/i18n";
 import { detectSetupWithin, localSetupImport, setupImportApi } from "@/lib/setup-import";
 import { api, useStore, type Bot, type InstanceInfo, type Message } from "@/state/store";
@@ -142,10 +142,10 @@ export function SimpleHelperIntro({ botId, threadId, message, answered, followup
   useEffect(() => {
     if (!first || !look.settled || followup || asked.current) return;
     asked.current = true;
-    void api<{ message?: Message }>(`/api/bots/${encodeURIComponent(botId)}/helper-followup`, {
+    void botCountSettled().then(() => api<{ message?: Message }>(`/api/bots/${encodeURIComponent(botId)}/helper-followup`, {
       method: "POST",
       body: JSON.stringify({ threadId, ai, apps: look.apps ?? [] }),
-    }).then((answer) => (answer.message?.helperFollowup ? setPosted(answer.message.helperFollowup) : setUnsaved(true)), () => setUnsaved(true));
+    })).then((answer) => (answer.message?.helperFollowup ? setPosted(answer.message.helperFollowup) : setUnsaved(true)), () => setUnsaved(true));
   }, [first, look.settled, look.apps, followup, botId, threadId, ai]);
 
   // An intro from before follow-ups were written says what it sees, without saving it.

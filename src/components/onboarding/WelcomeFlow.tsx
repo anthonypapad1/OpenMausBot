@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { EMPTY_INTAKE, intakeAnswered, mergeAboutMe, type FirstJobId, type IntakeAnswers } from "@/lib/corso-intake";
 import { firstRunMakesDesks, pathDesks } from "@/lib/desks/path-desks";
 import { createFirstRunDesks } from "@/lib/first-run-desks";
-import { chiefStepFits, myDefaultBot, setChiefStepOpen, useViewerEmail } from "@/lib/default-bot";
+import { chiefStepFits, holdBotCount, myDefaultBot, setChiefStepOpen, useViewerEmail } from "@/lib/default-bot";
 import { appendComposerDraft } from "@/lib/drafts";
 import { bringChosen, localFinds, useBringRun, type LocalFind } from "@/lib/first-run-import";
 import { t } from "@/lib/i18n";
@@ -122,6 +122,14 @@ export function WelcomeFlow({
   firstJob.current = job;
   const bots = useRef(state.bots);
   bots.current = state.bots;
+  const firstRun = !replay && !embedded && !hosted;
+  const desksCounted = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    if (!firstRun) return;
+    const release = holdBotCount();
+    desksCounted.current = release;
+    return release;
+  }, [firstRun]);
   // An AI counts once it answered a test message (or cannot be sent one); the free backup only once picked here.
   const [chosen, setChosen] = useState<string | null>(null);
   const tested = useWelcomeAi(state.instances, !hosted, chosen, "meet");
@@ -163,6 +171,7 @@ export function WelcomeFlow({
       if (firstJob.current && lead) appendComposerDraft(`bot:${lead.id}:${lead.threadId}`, t(FIRST_JOB_KEYS[firstJob.current]));
       // the path's Desks join the sidebar behind the Chief's chat
       if (!embedded && !hosted && firstRunMakesDesks(intake.current)) void createFirstRunDesks(pathDesks(intake.current), bots.current, dispatch);
+      desksCounted.current?.();
       try {
         const patch = replay ? completionPatch() : firstRunPatch(record.current, new Date());
         const config = await api("/api/config", { method: "PUT", body: JSON.stringify(patch), signal: AbortSignal.timeout(10_000) });

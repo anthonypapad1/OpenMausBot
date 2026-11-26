@@ -51,12 +51,11 @@ describe("the Desks each first-run path gets", () => {
     });
   });
 
-  it("keeps residential exactly as it was: its five Desks, from the gallery, none made by the first run", () => {
+  it("makes every picked path's Desks, residential's five included, and none when the question was skipped", () => {
     expect(pathDesks(EMPTY_INTAKE)).toBe(DESK_BOTS);
     expect(pathDesks(path("residential"))).toBe(DESK_BOTS);
     expect(firstRunMakesDesks(EMPTY_INTAKE)).toBe(false);
-    expect(firstRunMakesDesks(path("residential"))).toBe(false);
-    for (const one of ["commercial", "property", "consumer", "brokerage"] as const) expect(firstRunMakesDesks(path(one)), one).toBe(true);
+    for (const one of WORK_PATHS) expect(firstRunMakesDesks(path(one)), one).toBe(true);
   });
 
   it("gives the brokerage the residential Desks themselves", () => {

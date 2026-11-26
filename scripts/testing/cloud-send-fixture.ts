@@ -175,7 +175,7 @@ const ITEMS = ${JSON.stringify(items)};
 exports.createClient = async ({ auth }) => {
   if (auth !== ${JSON.stringify(token)}) throw new Error("error authenticating: invalid service account token");
   return {
-    vaults: { list: async () => [{ id: "v1", title: "Shared with OpenMausBot" }] },
+    vaults: { list: async () => [{ id: "v1", title: "Shared with Corso" }] },
     items: {
       list: async () => ITEMS.map(({ id, title, category }) => ({ id, title, category, websites: [] })),
       getAll: async (vaultId, ids) => ({ individualResponses: ITEMS.filter((item) => ids.includes(item.id)).map(({ id, fields }) => ({ content: { id, fields } })) }),
@@ -196,7 +196,7 @@ export async function launchCloudSendFixture({ onePasswordToken, cloudOnePasswor
   onePasswordToken: string; cloudOnePasswordToken?: string; toolCalls?: number;
   /** A fake Bitwarden tool already in each server's data folder, holding this one account (no download, no network). */
   bitwarden?: FakeBwAccount;
-  /** What every server's fake 1Password vault ("Shared with OpenMausBot") holds; empty by default. */
+  /** What every server's fake 1Password vault ("Shared with Corso") holds; empty by default. */
   onePasswordItems?: readonly FakeOnePasswordItem[];
   /** A Team Cloud too (OMB_CLOUD_ROLE=team), with its own environment and synthetic Claude CLI lines. */
   team?: { id: string; name: string; env?: NodeJS.ProcessEnv; engine?: string; noAi?: boolean;

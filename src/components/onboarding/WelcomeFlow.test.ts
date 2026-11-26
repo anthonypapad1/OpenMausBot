@@ -4,7 +4,7 @@
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { introStaged, stageIntro, useChiefStepOpen } from "@/lib/default-bot";
+import { botCountSettled, introStaged, stageIntro, useChiefStepOpen } from "@/lib/default-bot";
 import { setLocale } from "@/lib/i18n";
 import { WHATS_NEW_NOTICE } from "@/lib/notices";
 import { EMPTY_ONBOARDING, MET_CHIEF_HINT, WELCOME_VERSION } from "@/lib/onboarding";
@@ -270,7 +270,7 @@ describe("the kind of work the person does", () => {
     expect(made()!.map((desk) => desk.name)).toEqual(["Deal Desk", "Lease Desk", "Marketing Desk", "Inbox Desk"]);
   });
 
-  it("keeps a residential agent's run as it was: the same questions and lines, and no Desks made", async () => {
+  it("keeps a residential agent's questions and lines, and makes their five Desks once the Chief is in", async () => {
     await show();
     await throughHello();
     await pick("Residential agent");
@@ -280,10 +280,15 @@ describe("the kind of work the person does", () => {
     await throughQuestions();
     await act(async () => {});
     expect(saved()[0]).toEqual({ profile: { aboutMe: "Brokerage: Kentwood\nDeals open at a time: 6-15" } });
+    expect(f.desks, "not before the Chief").not.toHaveBeenCalled();
     await tick(CHIEF_GUARD_MS);
     await press("Create Chief of Staff");
     await tick(CHIEF_FADE_MS);
-    expect(f.desks).not.toHaveBeenCalled();
+    expect(made()!.map((desk) => desk.name)).toEqual(["Deal Desk", "Listing Desk", "Inbox Desk", "Compliance Desk", "Marketing Desk"]);
+    let counted = false;
+    void botCountSettled().then(() => { counted = true; });
+    await act(async () => {});
+    expect(counted, "the run hands Corso's count over to the Desks").toBe(true);
   });
 
   it("seeds a brokerage's Office Compliance Desk with the checklist they paste", async () => {
